@@ -10,18 +10,16 @@ import fi.iki.elonen.NanoHTTPD
 
 class HttpDebugger(port: Int) : NanoHTTPD(port) {
 
+    val matchRegister = ArrayList<IHttpRouterMatch>()
+
     override fun serve(session: IHTTPSession): Response {
-        val method = session.method
-        val uri = session.uri
-        var msg = "<html><body><h1>Hello server</h1>\n"
-        val parms = session.parms
-        if (parms["username"] == null) {
-            msg += "<form action='?' method='get'>\n" + "  <p>Your name: <input type='text' name='username'></p>\n" + "</form>\n"
-        } else {
-            msg += "<p>Hello, " + parms["username"] + "!</p>"
+        matchRegister.forEach {
+            if (it.matchRouter(session.uri, session.method)) {
+                val response = it.handle(session)
+                if (response != null)
+                    return response
+            }
         }
-        msg += "<p>method:$method   uri:$uri</p>"
-        msg += "</body></html>\n"
-        return newFixedLengthResponse(msg)
+        return newFixedLengthResponse("Error")
     }
 }

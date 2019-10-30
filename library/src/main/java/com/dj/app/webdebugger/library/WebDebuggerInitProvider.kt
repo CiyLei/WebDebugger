@@ -25,7 +25,7 @@ class WebDebuggerInitProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
         val port = context?.getString(R.string.PORT_NUMBER)?.toInt() ?: 8080
-        HttpDebugger(port).start(NanoHTTPD.SOCKET_READ_TIMEOUT)
+        WebDebugger.startHttpServer(port, context.applicationContext)
         return true
     }
 
