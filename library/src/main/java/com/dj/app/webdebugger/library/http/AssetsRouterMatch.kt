@@ -2,7 +2,7 @@ package com.dj.app.webdebugger.library.http
 
 import android.content.Context
 import android.content.res.AssetManager
-import com.dj.app.webdebugger.library.utils.StreamUtil
+import com.dj.app.webdebugger.library.utils.FileUtil
 import fi.iki.elonen.NanoHTTPD
 import java.io.File
 
@@ -63,7 +63,7 @@ internal class AssetsRouterMatch(context: Context) : IHttpRouterMatch {
     }
 
     private fun getAssetsString(path: String): String {
-        return StreamUtil.inputStreamToString(assetManager.open(path))
+        return FileUtil.inputStreamToString(assetManager.open(path))
     }
 
 }

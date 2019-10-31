@@ -5,6 +5,7 @@ import com.dj.app.webdebugger.library.http.AssetsRouterMatch
 import com.dj.app.webdebugger.library.http.AutoRouterMatch
 import com.dj.app.webdebugger.library.http.HttpDebugger
 import com.dj.app.webdebugger.library.http.IHttpRouterMatch
+import com.dj.app.webdebugger.library.http.resource.ResourceDebugger
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
@@ -24,9 +25,10 @@ class WebDebugger {
         internal val environment = HashMap<String, String>()
 
         @JvmStatic
-        fun start(context: Context, httpPort: Int, webSocketPort: Int) {
+        fun start(context: Context, httpPort: Int, webSocketPort: Int, ResourcePort: Int) {
             startHttpServer(httpPort, context)
             startWebSocketServer(webSocketPort, context)
+            ResourceDebugger.create(context, ResourcePort)?.start(0)
         }
 
         @JvmStatic

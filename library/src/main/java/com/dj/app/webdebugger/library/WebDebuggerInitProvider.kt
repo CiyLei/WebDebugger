@@ -24,7 +24,8 @@ internal class WebDebuggerInitProvider : ContentProvider() {
     override fun onCreate(): Boolean {
         val httpPort = context!!.getString(R.string.HTTP_PORT).toInt()
         val webSocketPort = context!!.getString(R.string.WEB_SOCKET_PORT).toInt()
-        WebDebugger.start(context!!.applicationContext, httpPort, webSocketPort)
+        val resourcePort = context!!.getString(R.string.RESOURCE_PORT).toInt()
+        WebDebugger.start(context!!.applicationContext, httpPort, webSocketPort, resourcePort)
         return true
     }
 
