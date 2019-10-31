@@ -1,6 +1,7 @@
 package com.dj.app.webdebugger.library.http
 
 import fi.iki.elonen.NanoHTTPD
+import java.lang.Exception
 
 
 /**
@@ -15,9 +16,13 @@ class HttpDebugger(port: Int) : NanoHTTPD(port) {
     override fun serve(session: IHTTPSession): Response {
         httpMatchs.forEach {
             if (it.matchRouter(session.uri, session.method)) {
-                val response = it.handle(session)
-                if (response != null)
-                    return response
+                try {
+                    val response = it.handle(session)
+                    if (response != null)
+                        return response
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
         return newFixedLengthResponse("Error")

@@ -3,6 +3,7 @@ package com.dj.app.webdebugger.library.websocket
 import android.content.Context
 import fi.iki.elonen.NanoWSD
 import java.io.IOException
+import java.lang.Exception
 
 /**
  * Create by ChenLei on 2019/10/31
@@ -16,9 +17,13 @@ class WebSocketDebugger(port: Int) : NanoWSD(port) {
     override fun openWebSocket(handshake: IHTTPSession): WebSocket {
         webSocketMatchs.forEach {
             if (it.matchWebSocket(handshake.uri)) {
-                val webSocket = it.openMatchWebSocket(handshake)
-                if (webSocket != null)
-                    return webSocket
+                try {
+                    val webSocket = it.openMatchWebSocket(handshake)
+                    if (webSocket != null)
+                        return webSocket
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
         return NonWebSocket(handshake)

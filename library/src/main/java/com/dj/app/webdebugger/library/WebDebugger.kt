@@ -9,6 +9,7 @@ import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
 import fi.iki.elonen.NanoHTTPD
+import retrofit2.Retrofit
 
 /**
  * Create by ChenLei on 2019/10/30
@@ -19,6 +20,8 @@ class WebDebugger {
     companion object {
         val httpMatchs = ArrayList<IHttpRouterMatch>()
         val webSocketMatchs = ArrayList<IWebSocketMatch>()
+        var retrofit: Retrofit? = null
+        val environment = HashMap<String, String>()
 
         @JvmStatic
         fun start(context: Context, httpPort: Int, webSocketPort: Int) {
@@ -43,6 +46,16 @@ class WebDebugger {
             // 添加自带的模块
             webSocketDebugger.webSocketMatchs.add(AutoWebSocketMatch(context))
             webSocketDebugger.start(0)
+        }
+
+        /**
+         * @environment: 设置预设的环境（key：环境名称，value：环境url）
+         */
+        @JvmStatic
+        fun injectionRetrofit(retrofit: Retrofit, environment: Map<String, String>) {
+            this.retrofit = retrofit
+            this.environment.clear()
+            this.environment.putAll(environment)
         }
     }
 }
