@@ -9,7 +9,6 @@ import com.dj.app.webdebugger.library.ResponseConstant
 import com.dj.app.webdebugger.library.utils.FileUtil
 import com.dj.app.webdebugger.library.utils.ScreenUtil
 import com.dj.app.webdebugger.library.websocket.server.media.MediaListBean
-import java.io.File
 
 /**
  * Create by ChenLei on 2019/10/31
@@ -26,12 +25,12 @@ internal class MediaController : HttpController() {
 
     @GetMapping("/list")
     fun list(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        val cachePath = File(FileUtil.getCachePath(context!!))
+        val cachePath = FileUtil.getMediaCacheFile(context!!)
         if (cachePath.isDirectory) {
             return success(
                 MediaListBean(
                     context!!.getString(R.string.RESOURCE_PORT).toInt(),
-                    cachePath.listFiles().map { it.name }.toList()
+                    cachePath.listFiles().map { FileUtil.getMediaCachePath() + it.name }.toList()
                 )
             )
         }

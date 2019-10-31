@@ -47,10 +47,10 @@ internal object ScreenUtil {
         if (bitmap != null) {
             try {
                 // 获取内置SD卡路径
-                val sdCardPath = FileUtil.getCachePath(activity)
+                val sdCardPath = FileUtil.getMediaCacheFile(activity).absolutePath
                 // 图片文件路径
                 val fileName = getScreenCaptureName()
-                val filePath = sdCardPath + fileName
+                val filePath = sdCardPath + File.separator + fileName
                 val file = File(filePath)
                 val os = FileOutputStream(file)
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)

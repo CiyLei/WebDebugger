@@ -31,7 +31,7 @@ internal object FileUtil {
     /**
      * 获取缓存目录
      */
-    fun getCachePath(context: Context): String {
+    fun getCachePath(context: Context): File {
         val cacheName = "WebDebuggerCache"
         var path = ""
         if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()
@@ -39,12 +39,29 @@ internal object FileUtil {
         ) {
             path = context.externalCacheDir.path + File.separator + cacheName + File.separator;
         } else {
-            path = context.cacheDir.path + File.separator + cacheName;
+            path = context.cacheDir.path + File.separator + cacheName + File.separator;
         }
         val pathFile = File(path)
         if (!pathFile.exists()) {
             pathFile.mkdirs()
         }
-        return path
+        return pathFile
     }
+
+    /**
+     * 媒体缓存相对路径
+     */
+    fun getMediaCachePath(): String = "media${File.separator}"
+
+    /**
+     * 获取媒体缓存路径
+     */
+    fun getMediaCacheFile(context: Context): File {
+        val mediaCacheFile = File(getCachePath(context).absolutePath + File.separator + getMediaCachePath())
+        if (!mediaCacheFile.exists()) {
+            mediaCacheFile.mkdirs()
+        }
+        return mediaCacheFile
+    }
+
 }

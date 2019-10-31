@@ -30,7 +30,7 @@ internal class ResourceDebugger(port: Int, rootResource: File) :
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                val cacheFile = File(FileUtil.getCachePath(context))
+                val cacheFile = FileUtil.getCachePath(context)
                 if (!cacheFile.exists()) {
                     cacheFile.mkdirs()
                 }
