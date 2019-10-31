@@ -3,6 +3,7 @@ package com.dj.app.webdebugger
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import com.dj.app.webdebugger.library.WebDebugger
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.ResponseBody
@@ -13,7 +14,7 @@ import retrofit2.Retrofit
 
 class MainActivity : AppCompatActivity() {
 
-        val retrofit = Retrofit.Builder().baseUrl("http://www.baidu.com").build()
+    val retrofit = Retrofit.Builder().baseUrl("http://www.baidu.com").build()
     val apiServer = retrofit.create(ApiServer::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
+        Toast.makeText(this, "34543243545555", Toast.LENGTH_LONG).show()
     }
 
     override fun onRequestPermissionsResult(

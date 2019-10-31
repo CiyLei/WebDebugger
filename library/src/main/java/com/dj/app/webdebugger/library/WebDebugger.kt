@@ -5,15 +5,21 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.widget.Toast
 import com.dj.app.webdebugger.library.WebDebuggerConstant.PERMISSION_START_RESOURECE
+import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREENCAPTURE
 import com.dj.app.webdebugger.library.WebDebuggerConstant.RESOURCE_SERVER_FAILED_TO_OPEN
+import com.dj.app.webdebugger.library.WebDebuggerConstant.SCREEN_CAPTURE_FAILED
 import com.dj.app.webdebugger.library.http.AssetsRouterMatch
 import com.dj.app.webdebugger.library.http.AutoRouterMatch
 import com.dj.app.webdebugger.library.http.HttpDebugger
 import com.dj.app.webdebugger.library.http.IHttpRouterMatch
 import com.dj.app.webdebugger.library.http.resource.ResourceDebugger
+import com.dj.app.webdebugger.library.http.server.media.MediaProjectionManagerScreenCapture
+import com.dj.app.webdebugger.library.utils.ScreenUtil
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
@@ -143,8 +149,40 @@ class WebDebugger {
             }
         }
 
+        /**
+         * 截屏和录屏需要用到
+         */
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
+            when (requestCode) {
+                // 请求截屏
+                REQUEST_SCREENCAPTURE -> {
+                    if (data == null) {
+                        // 申请失败
+                        Toast.makeText(context, SCREEN_CAPTURE_FAILED, Toast.LENGTH_LONG).show()
+                    } else if (resultCode == Activity.RESULT_OK) {
+                        // 开始截屏
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                            // 以防太快导致申请权限的弹框还在
+                            Handler().postDelayed({
+                                val screenCapture =
+                                    MediaProjectionManagerScreenCapture(
+                                        context!!,
+                                        resultCode,
+                                        data,
+                                        object :
+                                            MediaProjectionManagerScreenCapture.OnImageListener {
+                                            override fun onImagePath(fileName: String) {
+                                                ScreenUtil.setMediaProjectionManagerScreenCapturePath(
+                                                    fileName
+                                                )
+                                            }
+                                        })
+                                screenCapture.screenCapture()
+                            }, 500)
+                        }
+                    }
+                }
+            }
         }
     }
 }

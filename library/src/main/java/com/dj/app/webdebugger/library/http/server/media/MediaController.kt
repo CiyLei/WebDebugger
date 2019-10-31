@@ -4,10 +4,11 @@ import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.annotation.GetMapping
 import com.dj.app.webdebugger.library.http.server.HttpController
 import fi.iki.elonen.NanoHTTPD
-import android.content.Context.MEDIA_PROJECTION_SERVICE
-import android.media.projection.MediaProjectionManager
-import android.os.Build
+import com.dj.app.webdebugger.library.R
 import com.dj.app.webdebugger.library.ResponseConstant
+import com.dj.app.webdebugger.library.utils.FileUtil
+import com.dj.app.webdebugger.library.utils.ScreenUtil
+import java.io.File
 
 /**
  * Create by ChenLei on 2019/10/31
@@ -18,11 +19,31 @@ internal class MediaController : HttpController() {
 
     @GetMapping("/screenCapture")
     fun screenCapture(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            val mMediaProjectionManager =
-                context?.getSystemService(MEDIA_PROJECTION_SERVICE) as? MediaProjectionManager
-
+        if (context != null) {
+            val savePath = ScreenUtil.saveScreenCapture(context!!)
+            if (savePath != null) {
+                return success(
+                    ScreenCaptureBean(
+                        context!!.getString(R.string.RESOURCE_PORT).toInt(),
+                        savePath
+                    )
+                )
+            }
         }
         return fail(ResponseConstant.FAIL_VERSION)
+    }
+
+    @GetMapping("/list")
+    fun list(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val cachePath = File(FileUtil.getCachePath(context!!))
+        if (cachePath.isDirectory) {
+            return success(
+                MediaListBean(
+                    context!!.getString(R.string.RESOURCE_PORT).toInt(),
+                    cachePath.listFiles().map { it.name }.toList()
+                )
+            )
+        }
+        return fail(ResponseConstant.FAILED_ACQUISITION)
     }
 }
