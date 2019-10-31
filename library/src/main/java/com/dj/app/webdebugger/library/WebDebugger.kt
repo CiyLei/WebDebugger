@@ -20,8 +20,8 @@ class WebDebugger {
     companion object {
         val httpMatchs = ArrayList<IHttpRouterMatch>()
         val webSocketMatchs = ArrayList<IWebSocketMatch>()
-        var retrofit: Retrofit? = null
-        val environment = HashMap<String, String>()
+        internal var retrofit: Retrofit? = null
+        internal val environment = HashMap<String, String>()
 
         @JvmStatic
         fun start(context: Context, httpPort: Int, webSocketPort: Int) {
@@ -30,7 +30,7 @@ class WebDebugger {
         }
 
         @JvmStatic
-        fun startHttpServer(port: Int, context: Context) {
+        internal fun startHttpServer(port: Int, context: Context) {
             val httpDebugger = HttpDebugger(port)
             httpDebugger.httpMatchs.addAll(httpMatchs)
             // 添加自带的模块
@@ -40,7 +40,7 @@ class WebDebugger {
         }
 
         @JvmStatic
-        fun startWebSocketServer(port: Int, context: Context) {
+        internal fun startWebSocketServer(port: Int, context: Context) {
             val webSocketDebugger = WebSocketDebugger(port)
             webSocketDebugger.webSocketMatchs.addAll(webSocketMatchs)
             // 添加自带的模块
