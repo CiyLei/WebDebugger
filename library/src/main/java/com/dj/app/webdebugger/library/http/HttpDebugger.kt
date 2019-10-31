@@ -5,15 +5,15 @@ import fi.iki.elonen.NanoHTTPD
 
 /**
  * Create by ChenLei on 2019/10/30
- * Describe:
+ * Describe: Http 服务器
  */
 
 class HttpDebugger(port: Int) : NanoHTTPD(port) {
 
-    val matchRegister = ArrayList<IHttpRouterMatch>()
+    val httpMatchs = ArrayList<IHttpRouterMatch>()
 
     override fun serve(session: IHTTPSession): Response {
-        matchRegister.forEach {
+        httpMatchs.forEach {
             if (it.matchRouter(session.uri, session.method)) {
                 val response = it.handle(session)
                 if (response != null)

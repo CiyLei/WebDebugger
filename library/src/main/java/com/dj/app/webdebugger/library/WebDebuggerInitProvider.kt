@@ -4,8 +4,6 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
-import com.dj.app.webdebugger.library.http.HttpDebugger
-import fi.iki.elonen.NanoHTTPD
 
 /**
  * Create by ChenLei on 2019/10/30
@@ -24,8 +22,9 @@ class WebDebuggerInitProvider : ContentProvider() {
     ): Cursor? = null
 
     override fun onCreate(): Boolean {
-        val port = context?.getString(R.string.PORT_NUMBER)?.toInt() ?: 8080
-        WebDebugger.startHttpServer(port, context.applicationContext)
+        val httpPort = context!!.getString(R.string.HTTP_PORT).toInt()
+        val webSocketPort = context!!.getString(R.string.WEB_SOCKET_PORT).toInt()
+        WebDebugger.start(context!!.applicationContext, httpPort, webSocketPort)
         return true
     }
 

@@ -14,7 +14,8 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
-        resValue("string", "PORT_NUMBER", "8080")
+        resValue("string", "HTTP_PORT", "8080")
+        resValue("string", "WEB_SOCKET_PORT", "8081")
     }
 
     buildTypes {

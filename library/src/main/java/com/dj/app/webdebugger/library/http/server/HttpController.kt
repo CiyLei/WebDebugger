@@ -8,10 +8,10 @@ import fi.iki.elonen.NanoHTTPD
 
 /**
  * Create by ChenLei on 2019/10/30
- * Describe: 封装了快捷返回Response的Controller
+ * Describe: Http 基本控制类
  */
 
-open class ContextController {
+open class HttpController {
 
     var context: Context? = null
 

@@ -1,10 +1,10 @@
 package com.dj.app.webdebugger.library.http
 
 import android.content.Context
-import com.dj.app.webdebugger.library.http.annotation.Controller
-import com.dj.app.webdebugger.library.http.annotation.GetMapping
-import com.dj.app.webdebugger.library.http.annotation.PostMapping
-import com.dj.app.webdebugger.library.http.server.ContextController
+import com.dj.app.webdebugger.library.annotation.Controller
+import com.dj.app.webdebugger.library.annotation.GetMapping
+import com.dj.app.webdebugger.library.annotation.PostMapping
+import com.dj.app.webdebugger.library.http.server.HttpController
 import com.dj.app.webdebugger.library.utils.ClazzUtils
 import fi.iki.elonen.NanoHTTPD
 import java.lang.reflect.Method
@@ -16,7 +16,7 @@ import java.lang.reflect.Method
  */
 class AutoRouterMatch(context: Context, scanPackName: String = "") : IHttpRouterMatch {
 
-    val controllers = HashMap<String, ContextController>()
+    val controllers = HashMap<String, HttpController>()
     val getMethods = HashMap<String, ControllerMathod>()
     val postMethods = HashMap<String, ControllerMathod>()
 
@@ -32,11 +32,14 @@ class AutoRouterMatch(context: Context, scanPackName: String = "") : IHttpRouter
             )
         )
         controllerClassList.forEach {
-            val controllClass = context.classLoader.loadClass(it)
+            val controllerClass = context.classLoader.loadClass(it)
             // 遍历所有 Controller 注解过的类
-            if (controllClass.isAnnotationPresent(Controller::class.java)) {
-                val controllerUri = controllClass.getAnnotation(Controller::class.java)?.value
-                val controller = controllClass.newInstance() as? ContextController
+            if (controllerClass.isAnnotationPresent(Controller::class.java) && HttpController::class.java.isAssignableFrom(
+                    controllerClass
+                )
+            ) {
+                val controllerUri = controllerClass.getAnnotation(Controller::class.java)?.value
+                val controller = controllerClass.newInstance() as? HttpController
                 if (controller != null && controllerUri != null) {
                     controller.context = context
                     controllers[controllerUri] = controller
@@ -45,12 +48,14 @@ class AutoRouterMatch(context: Context, scanPackName: String = "") : IHttpRouter
                         if (method.isAnnotationPresent(GetMapping::class.java)) {
                             val getUri = method.getAnnotation(GetMapping::class.java).value
                             method.isAccessible = true
-                            getMethods[controllerUri + getUri] = ControllerMathod(controller, method)
+                            getMethods[controllerUri + getUri] =
+                                ControllerMathod(controller, method)
                         }
                         if (method.isAnnotationPresent(PostMapping::class.java)) {
                             val postUri = method.getAnnotation(PostMapping::class.java).value
                             method.isAccessible = true
-                            postMethods[controllerUri + postUri] = ControllerMathod(controller, method)
+                            postMethods[controllerUri + postUri] =
+                                ControllerMathod(controller, method)
                         }
                     }
                 }
@@ -80,6 +85,6 @@ class AutoRouterMatch(context: Context, scanPackName: String = "") : IHttpRouter
         return null
     }
 
-    class ControllerMathod(val controller: ContextController, val method: Method)
+    class ControllerMathod(val controller: HttpController, val method: Method)
 
 }
