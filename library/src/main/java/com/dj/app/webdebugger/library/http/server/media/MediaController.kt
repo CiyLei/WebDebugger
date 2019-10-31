@@ -36,4 +36,15 @@ internal class MediaController : HttpController() {
         }
         return fail(ResponseConstant.FAILED_ACQUISITION)
     }
+
+    @GetMapping("/clean")
+    fun clean(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val cachePath = FileUtil.getMediaCacheFile(context!!)
+        if (cachePath.exists()) {
+            cachePath.listFiles().forEach {
+                it.delete()
+            }
+        }
+        return success(true)
+    }
 }
