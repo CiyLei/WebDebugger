@@ -3,9 +3,11 @@ package com.dj.app.webdebugger.library.http.resource
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.widget.Toast
+import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.utils.FileUtil
+import com.dj.app.webdebugger.library.WebDebuggerConstant.PERMISSION_START_RESOURECE
 import fi.iki.elonen.SimpleWebServer
 import java.io.File
 
@@ -19,6 +21,8 @@ internal class ResourceDebugger(port: Int, rootResource: File) :
     SimpleWebServer("0.0.0.0", port, rootResource, true) {
 
     companion object {
+        var isStart = false
+
         @JvmStatic
         fun create(context: Context, port: Int): ResourceDebugger? {
             if (ContextCompat.checkSelfPermission(
@@ -26,14 +30,19 @@ internal class ResourceDebugger(port: Int, rootResource: File) :
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                val cacheFile = FileUtil.getCachePath(context)
+                val cacheFile = File(FileUtil.getCachePath(context))
                 if (!cacheFile.exists()) {
                     cacheFile.mkdirs()
                 }
+                isStart = true
                 return ResourceDebugger(port, cacheFile)
+            } else {
+                if (WebDebugger.topActivity != null) {
+                    ActivityCompat.requestPermissions(WebDebugger.topActivity!!, arrayOf(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ), PERMISSION_START_RESOURECE)
+                }
             }
-            Toast.makeText(context, "WebDebugger资源服务器开启失败，请在设置中开启写入文件的权限并重启app", Toast.LENGTH_LONG)
-                .show()
             return null
         }
     }

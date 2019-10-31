@@ -9,4 +9,5 @@ internal enum class ResponseConstant(val code: Int, val message: String) {
     NO_RETROFIT(101,"未设置Retrofit实例"),
     FAIL_BASE_URL(102,"无法获取Retrofit的BaseUrl"),
     FAIL_EDIT_URL(103,"修改RetrofitUrl失败"),
+    FAIL_VERSION(104,"该功能支持Android5.0以上"),
 }

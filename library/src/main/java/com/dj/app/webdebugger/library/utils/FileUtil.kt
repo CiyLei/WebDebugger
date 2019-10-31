@@ -31,14 +31,14 @@ internal object FileUtil {
     /**
      * 获取缓存目录
      */
-    fun getCachePath(context: Context): File {
+    fun getCachePath(context: Context): String {
         val cacheName = "WebDebuggerCache"
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
             || !Environment.isExternalStorageRemovable()
         ) {
-            return File(context.externalCacheDir.path + File.separator + cacheName);
+            return context.externalCacheDir.path + File.separator + cacheName;
         } else {
-            return File(context.cacheDir.path + File.separator + cacheName);
+            return context.cacheDir.path + File.separator + cacheName;
         }
     }
 }

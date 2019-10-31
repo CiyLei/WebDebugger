@@ -1,6 +1,14 @@
 package com.dj.app.webdebugger.library
 
+import android.app.Activity
+import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.os.Bundle
+import android.widget.Toast
+import com.dj.app.webdebugger.library.WebDebuggerConstant.PERMISSION_START_RESOURECE
+import com.dj.app.webdebugger.library.WebDebuggerConstant.RESOURCE_SERVER_FAILED_TO_OPEN
 import com.dj.app.webdebugger.library.http.AssetsRouterMatch
 import com.dj.app.webdebugger.library.http.AutoRouterMatch
 import com.dj.app.webdebugger.library.http.HttpDebugger
@@ -21,8 +29,11 @@ class WebDebugger {
     companion object {
         val httpMatchs = ArrayList<IHttpRouterMatch>()
         val webSocketMatchs = ArrayList<IWebSocketMatch>()
+        internal var context: Context? = null
+        internal var resourcePort: Int? = null
         internal var retrofit: Retrofit? = null
         internal val environment = HashMap<String, String>()
+        internal var topActivity: Activity? = null
 
         /**
          * 框架启动入口
@@ -34,7 +45,10 @@ class WebDebugger {
         fun start(context: Context, httpPort: Int, webSocketPort: Int, resourcePort: Int) {
             startHttpServer(httpPort, context)
             startWebSocketServer(webSocketPort, context)
-            reloadResourceServer(context, resourcePort)
+
+            this.context = context
+            this.resourcePort = resourcePort
+            reloadResourceServer()
         }
 
         @JvmStatic
@@ -71,8 +85,66 @@ class WebDebugger {
          * 因为需要写文件的权限才能开启成功，所以开放这个方法，可以由外部获得权限后调用开启
          */
         @JvmStatic
-        fun reloadResourceServer(context: Context, port: Int) {
-            ResourceDebugger.create(context, port)?.start(0)
+        internal fun reloadResourceServer() {
+            ResourceDebugger.create(this.context!!, this.resourcePort!!)?.start(0)
+        }
+
+        /**
+         * 在Application中初始化（主要的目的是为了获取顶层的Activity）
+         */
+        fun initApplication(application: Application) {
+            application.registerActivityLifecycleCallbacks(object :
+                Application.ActivityLifecycleCallbacks {
+                override fun onActivityPaused(activity: Activity?) {
+                }
+
+                override fun onActivityResumed(activity: Activity?) {
+                }
+
+                override fun onActivityStarted(activity: Activity?) {
+                    topActivity = activity
+                    if (!ResourceDebugger.isStart) {
+                        reloadResourceServer()
+                    }
+                }
+
+                override fun onActivityDestroyed(activity: Activity?) {
+                }
+
+                override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
+                }
+
+                override fun onActivityStopped(activity: Activity?) {
+                }
+
+                override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
+                }
+            })
+        }
+
+        /**
+         * 需要监听申请权限的返回值
+         */
+        fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+        ) {
+            when (requestCode) {
+                // 开启资源服务器
+                PERMISSION_START_RESOURECE -> {
+                    if (grantResults[0] == PERMISSION_GRANTED) {
+                        reloadResourceServer()
+                    } else {
+                        Toast.makeText(context, RESOURCE_SERVER_FAILED_TO_OPEN, Toast.LENGTH_LONG)
+                            .show()
+                    }
+                }
+            }
+        }
+
+        fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
         }
     }
 }
