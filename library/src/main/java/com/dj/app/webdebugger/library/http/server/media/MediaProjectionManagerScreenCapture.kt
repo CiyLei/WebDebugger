@@ -54,7 +54,7 @@ internal class MediaProjectionManagerScreenCapture(
 
     private fun createVirtualEnvironment() {
         fileName = ScreenUtil.getScreenCaptureName()
-        pathImage = FileUtil.getCachePath(mContext) + File.separator + fileName
+        pathImage = FileUtil.getCachePath(mContext) + fileName
         val mWindowManager = mContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowWidth = mWindowManager.defaultDisplay.width
         windowHeight = mWindowManager.defaultDisplay.height

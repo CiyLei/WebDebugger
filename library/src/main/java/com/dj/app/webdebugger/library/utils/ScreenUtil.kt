@@ -20,29 +20,26 @@ import java.util.*
  * Describe: 屏幕工具类
  */
 internal object ScreenUtil {
-    val screenCaptureLock = Object()
-    var screenCapturePath = ""
 
     /**
      * 保存截屏
      */
-    fun saveScreenCapture(context: Context): String? {
+    fun saveScreenCapture(context: Context) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             // 5.0以上使用MediaProjectionManager
-            return saveMediaProjectionManagerScreenCapture()
+            saveMediaProjectionManagerScreenCapture()
         } else {
             // 5.0一下尝试截取顶层Activity
             if (WebDebugger.topActivity != null) {
-                return saveActivityScreenCapture(WebDebugger.topActivity!!)
+                saveActivityScreenCapture(WebDebugger.topActivity!!)
             }
         }
-        return null
     }
 
     /**
      * 保持某个Activity的截屏
      */
-    private fun saveActivityScreenCapture(activity: Activity): String? {
+    private fun saveActivityScreenCapture(activity: Activity) {
         val dView = activity.window.decorView
         dView.isDrawingCacheEnabled = true
         dView.buildDrawingCache()
@@ -53,52 +50,36 @@ internal object ScreenUtil {
                 val sdCardPath = FileUtil.getCachePath(activity)
                 // 图片文件路径
                 val fileName = getScreenCaptureName()
-                val filePath = sdCardPath + File.separator + fileName
+                val filePath = sdCardPath + fileName
                 val file = File(filePath)
                 val os = FileOutputStream(file)
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)
                 os.flush()
                 os.close()
-                return fileName
             } catch (e: Exception) {
             }
+            WebDebugger.mediaObservable.notifyObservers()
         }
-        return null
     }
 
     /**
      * 使用MediaProjectionManager截屏
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun saveMediaProjectionManagerScreenCapture(): String? {
+    private fun saveMediaProjectionManagerScreenCapture() {
         if (WebDebugger.topActivity != null) {
-            screenCapturePath = ""
             val mediaProjectionManager =
                 WebDebugger.topActivity!!.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             WebDebugger.topActivity!!.startActivityForResult(
                 mediaProjectionManager.createScreenCaptureIntent(),
                 REQUEST_SCREENCAPTURE
             )
-            // 等待截图保存完毕（最大等待2秒）
-            synchronized(screenCaptureLock) {
-                screenCaptureLock.wait(NanoHTTPD.SOCKET_READ_TIMEOUT.toLong())
-                if (screenCapturePath.isNotEmpty()) {
-                    return screenCapturePath
-                }
-            }
-        }
-        return null
-    }
-
-    fun setMediaProjectionManagerScreenCapturePath(fileName: String) {
-        screenCapturePath = fileName
-        synchronized(screenCaptureLock) {
-            screenCaptureLock.notifyAll()
         }
     }
 
     /**
      * 获取截屏名称
      */
-    fun getScreenCaptureName(): String = "${SimpleDateFormat.getDateTimeInstance().format(Date())} 截屏.png"
+    fun getScreenCaptureName(): String =
+        "${SimpleDateFormat.getDateTimeInstance().format(Date())} 截屏.png"
 }

@@ -8,6 +8,7 @@ import com.dj.app.webdebugger.library.R
 import com.dj.app.webdebugger.library.ResponseConstant
 import com.dj.app.webdebugger.library.utils.FileUtil
 import com.dj.app.webdebugger.library.utils.ScreenUtil
+import com.dj.app.webdebugger.library.websocket.server.media.MediaListBean
 import java.io.File
 
 /**
@@ -19,18 +20,8 @@ internal class MediaController : HttpController() {
 
     @GetMapping("/screenCapture")
     fun screenCapture(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        if (context != null) {
-            val savePath = ScreenUtil.saveScreenCapture(context!!)
-            if (savePath != null) {
-                return success(
-                    ScreenCaptureBean(
-                        context!!.getString(R.string.RESOURCE_PORT).toInt(),
-                        savePath
-                    )
-                )
-            }
-        }
-        return fail(ResponseConstant.FAIL_VERSION)
+        ScreenUtil.saveScreenCapture(context!!)
+        return success(true)
     }
 
     @GetMapping("/list")

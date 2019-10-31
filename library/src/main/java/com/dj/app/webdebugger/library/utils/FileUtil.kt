@@ -33,12 +33,18 @@ internal object FileUtil {
      */
     fun getCachePath(context: Context): String {
         val cacheName = "WebDebuggerCache"
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+        var path = ""
+        if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()
             || !Environment.isExternalStorageRemovable()
         ) {
-            return context.externalCacheDir.path + File.separator + cacheName;
+            path = context.externalCacheDir.path + File.separator + cacheName + File.separator;
         } else {
-            return context.cacheDir.path + File.separator + cacheName;
+            path = context.cacheDir.path + File.separator + cacheName;
         }
+        val pathFile = File(path)
+        if (!pathFile.exists()) {
+            pathFile.mkdirs()
+        }
+        return path
     }
 }

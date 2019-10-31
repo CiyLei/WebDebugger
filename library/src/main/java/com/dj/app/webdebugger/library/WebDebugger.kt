@@ -19,12 +19,14 @@ import com.dj.app.webdebugger.library.http.HttpDebugger
 import com.dj.app.webdebugger.library.http.IHttpRouterMatch
 import com.dj.app.webdebugger.library.http.resource.ResourceDebugger
 import com.dj.app.webdebugger.library.http.server.media.MediaProjectionManagerScreenCapture
-import com.dj.app.webdebugger.library.utils.ScreenUtil
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
 import fi.iki.elonen.NanoHTTPD
 import retrofit2.Retrofit
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * Create by ChenLei on 2019/10/30
@@ -40,6 +42,8 @@ class WebDebugger {
         internal var retrofit: Retrofit? = null
         internal val environment = HashMap<String, String>()
         internal var topActivity: Activity? = null
+        // 媒体变化被观察者
+        internal val mediaObservable = MediaObservable()
 
         /**
          * 框架启动入口
@@ -172,17 +176,27 @@ class WebDebugger {
                                         object :
                                             MediaProjectionManagerScreenCapture.OnImageListener {
                                             override fun onImagePath(fileName: String) {
-                                                ScreenUtil.setMediaProjectionManagerScreenCapturePath(
-                                                    fileName
-                                                )
+                                                mediaObservable.notifyObservers()
                                             }
                                         })
                                 screenCapture.screenCapture()
-                            }, 500)
+                            }, 300)
                         }
                     }
                 }
             }
+        }
+    }
+
+    internal class MediaObservable : Observable() {
+        override fun notifyObservers() {
+            setChanged()
+            super.notifyObservers()
+        }
+
+        override fun notifyObservers(arg: Any?) {
+            setChanged()
+            super.notifyObservers(arg)
         }
     }
 }

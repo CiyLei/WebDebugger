@@ -1,4 +1,4 @@
-package com.dj.app.webdebugger.library.http.server.media
+package com.dj.app.webdebugger.library.websocket.server.media
 
 /**
  * Create by ChenLei on 2019/10/31
