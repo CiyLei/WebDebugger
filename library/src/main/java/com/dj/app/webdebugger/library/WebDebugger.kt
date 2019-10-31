@@ -24,11 +24,17 @@ class WebDebugger {
         internal var retrofit: Retrofit? = null
         internal val environment = HashMap<String, String>()
 
+        /**
+         * 框架启动入口
+         * @httpPort Http服务器端口
+         * @webSocketPort WebSocket服务器端口
+         * @ResourcePort 资源服务器端口
+         */
         @JvmStatic
-        fun start(context: Context, httpPort: Int, webSocketPort: Int, ResourcePort: Int) {
+        fun start(context: Context, httpPort: Int, webSocketPort: Int, resourcePort: Int) {
             startHttpServer(httpPort, context)
             startWebSocketServer(webSocketPort, context)
-            ResourceDebugger.create(context, ResourcePort)?.start(0)
+            reloadResourceServer(context, resourcePort)
         }
 
         @JvmStatic
@@ -58,6 +64,15 @@ class WebDebugger {
             this.retrofit = retrofit
             this.environment.clear()
             this.environment.putAll(environment)
+        }
+
+        /**
+         * 加载资源服务器
+         * 因为需要写文件的权限才能开启成功，所以开放这个方法，可以由外部获得权限后调用开启
+         */
+        @JvmStatic
+        fun reloadResourceServer(context: Context, port: Int) {
+            ResourceDebugger.create(context, port)?.start(0)
         }
     }
 }
