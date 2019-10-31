@@ -10,7 +10,7 @@ import java.lang.Exception
  * Describe: WebSocket 服务器
  */
 
-class WebSocketDebugger(port: Int) : NanoWSD(port) {
+internal class WebSocketDebugger(port: Int) : NanoWSD(port) {
 
     val webSocketMatchs = ArrayList<IWebSocketMatch>()
 

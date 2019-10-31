@@ -12,7 +12,7 @@ import java.io.File
  * Describe: assets Assets 资源目录路由匹配
  */
 
-class AssetsRouterMatch(context: Context) : IHttpRouterMatch {
+internal class AssetsRouterMatch(context: Context) : IHttpRouterMatch {
     companion object {
         val HTTP_ROOT_PATH = "webdebug"
         val HTTP_INDEX_PATH = HTTP_ROOT_PATH + File.separator + "index.html"

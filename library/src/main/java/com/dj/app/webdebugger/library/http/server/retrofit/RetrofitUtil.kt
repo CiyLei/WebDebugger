@@ -9,7 +9,7 @@ import java.util.Map
  * Create by ChenLei on 2019/10/31
  * Describe: Retrofit 工具类
  */
-object RetrofitUtil {
+internal object RetrofitUtil {
     fun replaceRetrofitUrl(retrofit: Retrofit, newUrl: String): Boolean {
         return replaceBaseUrl(retrofit, newUrl) && replaceServiceMethod(retrofit, newUrl)
     }

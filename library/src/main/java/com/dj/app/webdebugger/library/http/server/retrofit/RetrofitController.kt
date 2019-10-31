@@ -16,7 +16,7 @@ import java.lang.reflect.Field
  * Describe: 编辑Retrofit Url 的控制类
  */
 @Controller("/retrofit")
-class RetrofitController : HttpController() {
+internal class RetrofitController : HttpController() {
 
     @PostMapping("/edit")
     fun handleEditUrl(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {

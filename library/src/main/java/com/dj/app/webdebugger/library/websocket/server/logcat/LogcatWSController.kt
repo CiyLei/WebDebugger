@@ -12,7 +12,7 @@ import java.lang.Exception
  * Describe: 日志查看WebSocket
  */
 @Controller("/logcat")
-class LogcatWSController(handle: NanoHTTPD.IHTTPSession) : WSController(handle) {
+internal class LogcatWSController(handle: NanoHTTPD.IHTTPSession) : WSController(handle) {
 
     private var logcat: LogcatReader? = null
 

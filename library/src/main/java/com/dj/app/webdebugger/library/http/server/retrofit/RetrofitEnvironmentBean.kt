@@ -5,4 +5,4 @@ package com.dj.app.webdebugger.library.http.server.retrofit
  * Describe: Retrofit 环境模型
  */
 
-data class RetrofitEnvironmentBean(val name: String, val url: String)
+internal data class RetrofitEnvironmentBean(val name: String, val url: String)

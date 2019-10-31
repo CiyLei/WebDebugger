@@ -9,7 +9,7 @@ import fi.iki.elonen.NanoWSD
  * Describe: WebSocket 基本控制类
  */
 
-abstract class WSController(handle: NanoHTTPD.IHTTPSession) : NanoWSD.WebSocket(handle) {
+internal abstract class WSController(handle: NanoHTTPD.IHTTPSession) : NanoWSD.WebSocket(handle) {
 
     var context: Context? = null
 

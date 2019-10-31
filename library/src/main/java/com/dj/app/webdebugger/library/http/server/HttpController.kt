@@ -12,7 +12,7 @@ import fi.iki.elonen.NanoHTTPD
  * Describe: Http 基本控制类
  */
 
-open class HttpController {
+internal open class HttpController {
 
     var context: Context? = null
 

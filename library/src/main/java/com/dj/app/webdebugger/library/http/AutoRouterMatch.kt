@@ -14,7 +14,7 @@ import java.lang.reflect.Method
  * Create by ChenLei on 2019/10/30
  * Describe: 注解方式的路由匹配
  */
-class AutoRouterMatch(context: Context, scanPackName: String = "") : IHttpRouterMatch {
+internal class AutoRouterMatch(context: Context, scanPackName: String = "") : IHttpRouterMatch {
 
     val controllers = HashMap<String, HttpController>()
     val getMethods = HashMap<String, ControllerMathod>()
@@ -61,7 +61,6 @@ class AutoRouterMatch(context: Context, scanPackName: String = "") : IHttpRouter
                 }
             }
         }
-        println(1)
     }
 
     override fun matchRouter(uri: String, method: NanoHTTPD.Method): Boolean {

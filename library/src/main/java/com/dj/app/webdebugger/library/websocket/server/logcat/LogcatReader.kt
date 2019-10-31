@@ -11,7 +11,7 @@ import java.io.InputStreamReader
  * Describe: 读取日志的线程
  */
 
-class LogcatReader : Thread() {
+internal class LogcatReader : Thread() {
 
     private var logcatProcess: Process? = null
     private var logcatReader: BufferedReader? = null

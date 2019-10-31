@@ -12,7 +12,7 @@ import fi.iki.elonen.NanoWSD
  * Describe: 注解方式的WebSocket匹配
  */
 
-class AutoWebSocketMatch(val context: Context, scanPackName: String = "") : IWebSocketMatch {
+internal class AutoWebSocketMatch(val context: Context, scanPackName: String = "") : IWebSocketMatch {
 
     val controllers = HashMap<String, Class<WSController>>()
 

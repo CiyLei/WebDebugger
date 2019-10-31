@@ -10,7 +10,7 @@ import android.net.Uri
  * Describe: 框架初始化入口
  */
 
-class WebDebuggerInitProvider : ContentProvider() {
+internal class WebDebuggerInitProvider : ContentProvider() {
     override fun insert(uri: Uri, values: ContentValues?): Uri? = null
 
     override fun query(

@@ -9,7 +9,7 @@ import java.lang.Exception
  * Describe: Http 服务器
  */
 
-class HttpDebugger(port: Int) : NanoHTTPD(port) {
+internal class HttpDebugger(port: Int) : NanoHTTPD(port) {
 
     val httpMatchs = ArrayList<IHttpRouterMatch>()
 

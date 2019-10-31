@@ -10,7 +10,7 @@ import java.io.InputStreamReader
  * Describe: 流工具类
  */
 
-object StreamUtil {
+internal object StreamUtil {
     fun inputStreamToString(inputStream: InputStream): String {
         val br = BufferedReader(InputStreamReader(inputStream))
         val sb = StringBuffer()
