@@ -18,6 +18,10 @@ import java.lang.reflect.Field
 @Controller("/retrofit")
 internal class RetrofitController : HttpController() {
 
+    /**
+     * 编辑Retrofit的Url
+     * @newUrl post参数 新地址
+     */
     @PostMapping("/edit")
     fun handleEditUrl(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         return if (WebDebugger.retrofit == null) {
@@ -37,6 +41,9 @@ internal class RetrofitController : HttpController() {
         }
     }
 
+    /**
+     * 查看Retrofit的当前url和预配置的地址
+     */
     @GetMapping("/info")
     fun handleInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         if (WebDebugger.retrofit != null) {

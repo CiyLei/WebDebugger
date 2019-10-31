@@ -15,9 +15,9 @@ import kotlin.collections.ArrayList
 
 /**
  * Create by ChenLei on 2019/10/31
- * Describe: 监听媒体缓存文件的WebSocket
+ * Describe: 监听添加媒体缓存文件的WebSocket
  */
-@Controller("/media/list")
+@Controller("/media/add")
 internal class MediaWSController(handle: NanoHTTPD.IHTTPSession) : WSController(handle), Observer {
 
     private val fileCacheList = ArrayList<String>()

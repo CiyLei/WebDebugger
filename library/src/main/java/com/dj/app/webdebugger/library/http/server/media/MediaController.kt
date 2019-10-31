@@ -17,12 +17,18 @@ import com.dj.app.webdebugger.library.websocket.server.media.MediaListBean
 @Controller("/media")
 internal class MediaController : HttpController() {
 
+    /**
+     * 截屏
+     */
     @GetMapping("/screenCapture")
     fun screenCapture(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         ScreenUtil.saveScreenCapture(context!!)
         return success(true)
     }
 
+    /**
+     * 查看媒体缓存列表信息
+     */
     @GetMapping("/list")
     fun list(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val cachePath = FileUtil.getMediaCacheFile(context!!)
@@ -37,6 +43,9 @@ internal class MediaController : HttpController() {
         return fail(ResponseConstant.FAILED_ACQUISITION)
     }
 
+    /**
+     * 清除媒体缓存
+     */
     @GetMapping("/clean")
     fun clean(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val cachePath = FileUtil.getMediaCacheFile(context!!)
