@@ -1,4 +1,4 @@
-package com.dj.app.webdebugger.library.websocket.server.net
+package com.dj.app.webdebugger.library.websocket.server.logcat
 
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.annotation.Controller

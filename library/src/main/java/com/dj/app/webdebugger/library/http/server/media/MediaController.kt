@@ -71,7 +71,7 @@ internal class MediaController : HttpController() {
     }
 
     /**
-     * 开始录屏
+     * 结束录屏
      */
     @GetMapping("/stopScreenRecording")
     fun stopScreenRecording(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
