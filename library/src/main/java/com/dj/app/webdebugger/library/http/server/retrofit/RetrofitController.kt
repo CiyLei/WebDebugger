@@ -1,6 +1,6 @@
 package com.dj.app.webdebugger.library.http.server.retrofit
 
-import com.dj.app.webdebugger.library.ResponseConstant
+import com.dj.app.webdebugger.library.common.ResponseConstant
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.annotation.GetMapping

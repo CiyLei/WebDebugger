@@ -1,4 +1,4 @@
-package com.dj.app.webdebugger.library
+package com.dj.app.webdebugger.library.common
 
 /**
  * Create by ChenLei on 2019/10/31

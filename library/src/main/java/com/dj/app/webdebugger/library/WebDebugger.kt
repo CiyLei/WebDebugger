@@ -9,12 +9,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.widget.Toast
-import com.dj.app.webdebugger.library.WebDebuggerConstant.PERMISSION_START_RESOURECE
-import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
-import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
-import com.dj.app.webdebugger.library.WebDebuggerConstant.RESOURCE_SERVER_FAILED_TO_OPEN
-import com.dj.app.webdebugger.library.WebDebuggerConstant.SCREEN_CAPTURE_FAILED
-import com.dj.app.webdebugger.library.WebDebuggerConstant.SCREEN_RECORDING_FAILED
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.PERMISSION_START_RESOURECE
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.RESOURCE_SERVER_FAILED_TO_OPEN
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.SCREEN_CAPTURE_FAILED
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.SCREEN_RECORDING_FAILED
 import com.dj.app.webdebugger.library.http.AssetsRouterMatch
 import com.dj.app.webdebugger.library.http.AutoRouterMatch
 import com.dj.app.webdebugger.library.http.HttpDebugger
@@ -47,7 +47,7 @@ class WebDebugger {
         internal val environment = HashMap<String, String>()
         internal var topActivity: Activity? = null
         // 媒体变化被观察者
-        internal val mediaObservable = MediaObservable()
+        internal val mediaObservable = WebDebuggerObservable()
         // 录屏的实例
         internal var screenRecordingHelp: MediaProjectionManagerScreenHelp? = null
 
@@ -212,7 +212,7 @@ class WebDebugger {
         }
     }
 
-    internal class MediaObservable : Observable() {
+    internal class WebDebuggerObservable : Observable() {
         override fun notifyObservers() {
             setChanged()
             super.notifyObservers()

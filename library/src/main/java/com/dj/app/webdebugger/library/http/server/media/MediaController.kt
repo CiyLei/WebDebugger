@@ -5,8 +5,7 @@ import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.annotation.GetMapping
 import com.dj.app.webdebugger.library.http.server.HttpController
 import fi.iki.elonen.NanoHTTPD
-import com.dj.app.webdebugger.library.R
-import com.dj.app.webdebugger.library.ResponseConstant
+import com.dj.app.webdebugger.library.common.ResponseConstant
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.utils.FileUtil
 import com.dj.app.webdebugger.library.utils.ScreenUtil

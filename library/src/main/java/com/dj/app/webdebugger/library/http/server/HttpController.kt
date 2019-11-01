@@ -1,8 +1,8 @@
 package com.dj.app.webdebugger.library.http.server
 
 import android.content.Context
-import com.dj.app.webdebugger.library.BaseResponseBean
-import com.dj.app.webdebugger.library.ResponseConstant
+import com.dj.app.webdebugger.library.common.BaseResponseBean
+import com.dj.app.webdebugger.library.common.ResponseConstant
 import com.google.gson.Gson
 import fi.iki.elonen.NanoHTTPD
 

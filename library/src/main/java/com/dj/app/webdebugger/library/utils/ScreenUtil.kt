@@ -7,8 +7,8 @@ import com.dj.app.webdebugger.library.WebDebugger
 import android.graphics.Bitmap
 import android.media.projection.MediaProjectionManager
 import android.support.annotation.RequiresApi
-import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
-import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat

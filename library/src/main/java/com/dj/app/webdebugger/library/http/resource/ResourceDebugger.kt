@@ -7,7 +7,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.utils.FileUtil
-import com.dj.app.webdebugger.library.WebDebuggerConstant.PERMISSION_START_RESOURECE
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.PERMISSION_START_RESOURECE
 import fi.iki.elonen.SimpleWebServer
 import java.io.File
 

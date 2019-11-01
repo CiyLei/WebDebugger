@@ -1,4 +1,4 @@
-package com.dj.app.webdebugger.library
+package com.dj.app.webdebugger.library.common
 
 
 /**
