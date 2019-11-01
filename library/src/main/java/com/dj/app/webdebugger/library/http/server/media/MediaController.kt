@@ -7,6 +7,7 @@ import com.dj.app.webdebugger.library.http.server.HttpController
 import fi.iki.elonen.NanoHTTPD
 import com.dj.app.webdebugger.library.R
 import com.dj.app.webdebugger.library.ResponseConstant
+import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.utils.FileUtil
 import com.dj.app.webdebugger.library.utils.ScreenUtil
 import com.dj.app.webdebugger.library.websocket.server.media.MediaListBean
@@ -36,7 +37,7 @@ internal class MediaController : HttpController() {
         if (cachePath.isDirectory) {
             return success(
                 MediaListBean(
-                    context!!.getString(R.string.RESOURCE_PORT).toInt(),
+                    WebDebugger.resourcePort,
                     cachePath.listFiles().map { FileUtil.getMediaCachePath() + it.name }.toList()
                 )
             )

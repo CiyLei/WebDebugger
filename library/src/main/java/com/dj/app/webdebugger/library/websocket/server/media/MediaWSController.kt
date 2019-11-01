@@ -1,6 +1,7 @@
 package com.dj.app.webdebugger.library.websocket.server.media
 
 import com.dj.app.webdebugger.library.R
+import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.WebDebugger.Companion.mediaObservable
 import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.utils.FileUtil
@@ -32,7 +33,7 @@ internal class MediaWSController(handle: NanoHTTPD.IHTTPSession) : WSController(
             send(
                 Gson().toJson(
                     MediaListBean(
-                        context!!.getString(R.string.RESOURCE_PORT).toInt(),
+                        WebDebugger.resourcePort,
                         addList
                     )
                 )
@@ -48,7 +49,7 @@ internal class MediaWSController(handle: NanoHTTPD.IHTTPSession) : WSController(
             send(
                 Gson().toJson(
                     MediaListBean(
-                        context!!.getString(R.string.RESOURCE_PORT).toInt(),
+                        WebDebugger.resourcePort,
                         fileCacheList
                     )
                 )

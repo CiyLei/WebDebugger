@@ -40,7 +40,9 @@ class WebDebugger {
         val httpMatchs = ArrayList<IHttpRouterMatch>()
         val webSocketMatchs = ArrayList<IWebSocketMatch>()
         internal var context: Context? = null
-        internal var resourcePort: Int? = null
+        internal var httpPort: Int = 8080
+        internal var webSocketPort: Int = 8081
+        internal var resourcePort: Int = 8082
         internal var retrofit: Retrofit? = null
         internal val environment = HashMap<String, String>()
         internal var topActivity: Activity? = null
@@ -57,11 +59,12 @@ class WebDebugger {
          */
         @JvmStatic
         fun start(context: Context, httpPort: Int, webSocketPort: Int, resourcePort: Int) {
+            this.context = context
+            this.httpPort = httpPort
+            this.webSocketPort = webSocketPort
+            this.resourcePort = resourcePort
             startHttpServer(httpPort, context)
             startWebSocketServer(webSocketPort, context)
-
-            this.context = context
-            this.resourcePort = resourcePort
             reloadResourceServer()
         }
 
