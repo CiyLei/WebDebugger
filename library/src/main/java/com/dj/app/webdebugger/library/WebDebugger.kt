@@ -10,15 +10,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.widget.Toast
 import com.dj.app.webdebugger.library.WebDebuggerConstant.PERMISSION_START_RESOURECE
-import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREENCAPTURE
+import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
+import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
 import com.dj.app.webdebugger.library.WebDebuggerConstant.RESOURCE_SERVER_FAILED_TO_OPEN
 import com.dj.app.webdebugger.library.WebDebuggerConstant.SCREEN_CAPTURE_FAILED
+import com.dj.app.webdebugger.library.WebDebuggerConstant.SCREEN_RECORDING_FAILED
 import com.dj.app.webdebugger.library.http.AssetsRouterMatch
 import com.dj.app.webdebugger.library.http.AutoRouterMatch
 import com.dj.app.webdebugger.library.http.HttpDebugger
 import com.dj.app.webdebugger.library.http.IHttpRouterMatch
 import com.dj.app.webdebugger.library.http.resource.ResourceDebugger
-import com.dj.app.webdebugger.library.http.server.media.MediaProjectionManagerScreenCapture
+import com.dj.app.webdebugger.library.http.server.media.MediaProjectionManagerScreenHelp
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
@@ -44,6 +46,8 @@ class WebDebugger {
         internal var topActivity: Activity? = null
         // 媒体变化被观察者
         internal val mediaObservable = MediaObservable()
+        // 录屏的实例
+        internal var screenRecordingHelp: MediaProjectionManagerScreenHelp? = null
 
         /**
          * 框架启动入口
@@ -159,7 +163,7 @@ class WebDebugger {
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             when (requestCode) {
                 // 请求截屏
-                REQUEST_SCREENCAPTURE -> {
+                REQUEST_SCREEN_CAPTURE -> {
                     if (data == null) {
                         // 申请失败
                         Toast.makeText(context, SCREEN_CAPTURE_FAILED, Toast.LENGTH_LONG).show()
@@ -169,18 +173,35 @@ class WebDebugger {
                             // 以防太快导致申请权限的弹框还在
                             Handler().postDelayed({
                                 val screenCapture =
-                                    MediaProjectionManagerScreenCapture(
+                                    MediaProjectionManagerScreenHelp(
                                         context!!,
                                         resultCode,
-                                        data,
-                                        object :
-                                            MediaProjectionManagerScreenCapture.OnImageListener {
-                                            override fun onImagePath(fileName: String) {
-                                                mediaObservable.notifyObservers()
-                                            }
-                                        })
-                                screenCapture.screenCapture()
+                                        data
+                                    )
+                                screenCapture.screenCapture(
+                                    object :
+                                        MediaProjectionManagerScreenHelp.OnImageListener {
+                                        override fun onImagePath(fileName: String) {
+                                            mediaObservable.notifyObservers()
+                                        }
+                                    })
                             }, 300)
+                        }
+                    }
+                }
+                // 请求录屏
+                REQUEST_SCREEN_RECORDING -> {
+                    if (data == null) {
+                        // 申请失败
+                        Toast.makeText(context, SCREEN_RECORDING_FAILED, Toast.LENGTH_LONG).show()
+                    } else if (resultCode == Activity.RESULT_OK) {
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                            // 开始录屏
+                            if (screenRecordingHelp == null) {
+                                screenRecordingHelp =
+                                    MediaProjectionManagerScreenHelp(context!!, resultCode, data)
+                                screenRecordingHelp!!.startScreenRecording()
+                            }
                         }
                     }
                 }

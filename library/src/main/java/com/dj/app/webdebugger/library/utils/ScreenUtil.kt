@@ -7,8 +7,8 @@ import com.dj.app.webdebugger.library.WebDebugger
 import android.graphics.Bitmap
 import android.media.projection.MediaProjectionManager
 import android.support.annotation.RequiresApi
-import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREENCAPTURE
-import fi.iki.elonen.NanoHTTPD
+import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
+import com.dj.app.webdebugger.library.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -22,12 +22,12 @@ import java.util.*
 internal object ScreenUtil {
 
     /**
-     * 保存截屏
+     * 截屏
      */
-    fun saveScreenCapture(context: Context) {
+    fun screenCapture(context: Context) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             // 5.0以上使用MediaProjectionManager
-            saveMediaProjectionManagerScreenCapture()
+            requestMediaProjectionManagerScreenCapture()
         } else {
             // 5.0一下尝试截取顶层Activity
             if (WebDebugger.topActivity != null) {
@@ -66,20 +66,50 @@ internal object ScreenUtil {
      * 使用MediaProjectionManager截屏
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun saveMediaProjectionManagerScreenCapture() {
+    private fun requestMediaProjectionManagerScreenCapture() {
         if (WebDebugger.topActivity != null) {
             val mediaProjectionManager =
                 WebDebugger.topActivity!!.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             WebDebugger.topActivity!!.startActivityForResult(
                 mediaProjectionManager.createScreenCaptureIntent(),
-                REQUEST_SCREENCAPTURE
+                REQUEST_SCREEN_CAPTURE
             )
         }
     }
 
     /**
-     * 获取截屏名称
+     * 获取截屏文件名称
      */
     fun getScreenCaptureName(): String =
         "${SimpleDateFormat.getDateTimeInstance().format(Date())} 截屏.png"
+
+    /**
+     * 开始录屏
+     */
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    fun startScreenRecording(context: Context) {
+        if (WebDebugger.topActivity != null) {
+            val mediaProjectionManager =
+                WebDebugger.topActivity!!.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+            WebDebugger.topActivity!!.startActivityForResult(
+                mediaProjectionManager.createScreenCaptureIntent(),
+                REQUEST_SCREEN_RECORDING
+            )
+        }
+    }
+    /**
+     * 开始录屏
+     */
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    fun stopScreenRecording() {
+        WebDebugger.screenRecordingHelp?.stopScreenRecording()
+        WebDebugger.mediaObservable.notifyObservers()
+        WebDebugger.screenRecordingHelp = null
+    }
+
+    /**
+     * 获取录屏文件名称
+     */
+    fun getScreenRecordingName(): String =
+        "${SimpleDateFormat.getDateTimeInstance().format(Date())} 录屏.mp4"
 }

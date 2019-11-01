@@ -1,5 +1,6 @@
 package com.dj.app.webdebugger.library.http.server.media
 
+import android.os.Build
 import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.annotation.GetMapping
 import com.dj.app.webdebugger.library.http.server.HttpController
@@ -22,8 +23,8 @@ internal class MediaController : HttpController() {
      */
     @GetMapping("/screenCapture")
     fun screenCapture(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        ScreenUtil.saveScreenCapture(context!!)
-        return success(true)
+        ScreenUtil.screenCapture(context!!)
+        return success()
     }
 
     /**
@@ -40,7 +41,7 @@ internal class MediaController : HttpController() {
                 )
             )
         }
-        return fail(ResponseConstant.FAILED_ACQUISITION)
+        return fail(ResponseConstant.MEDIA_CACHE_ACQUISITION_FAILED)
     }
 
     /**
@@ -54,6 +55,30 @@ internal class MediaController : HttpController() {
                 it.delete()
             }
         }
-        return success(true)
+        return success()
+    }
+
+    /**
+     * 开始录屏
+     */
+    @GetMapping("/startScreenRecording")
+    fun startScreenRecording(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            ScreenUtil.startScreenRecording(context!!)
+            return success()
+        }
+        return fail(ResponseConstant.RECORDING_SCREENONLY_SUPPORTS_ANDROID5)
+    }
+
+    /**
+     * 开始录屏
+     */
+    @GetMapping("/stopScreenRecording")
+    fun stopScreenRecording(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            ScreenUtil.stopScreenRecording()
+            return success()
+        }
+        return fail(ResponseConstant.RECORDING_SCREENONLY_SUPPORTS_ANDROID5)
     }
 }
