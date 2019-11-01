@@ -31,7 +31,7 @@ internal class RetrofitController : HttpController() {
             val newUrl = session.parameters["newUrl"]
             if (newUrl?.isNotEmpty() == true) {
                 if (RetrofitUtil.replaceRetrofitUrl(WebDebugger.retrofit!!, newUrl[0])) {
-                    success(true)
+                    success()
                 } else {
                     fail(ResponseConstant.FAIL_EDIT_URL)
                 }

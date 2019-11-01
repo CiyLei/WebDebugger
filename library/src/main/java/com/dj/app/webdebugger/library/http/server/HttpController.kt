@@ -16,7 +16,7 @@ internal open class HttpController {
 
     var context: Context? = null
 
-    fun success(data: Any, message: String = ""): NanoHTTPD.Response {
+    fun success(data: Any? = null, message: String = ""): NanoHTTPD.Response {
         return NanoHTTPD.newFixedLengthResponse(
             Gson().toJson(
                 BaseResponseBean(
