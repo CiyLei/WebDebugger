@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.dj.app.webdebugger.library.WebDebugger
+import com.dj.app.webdebugger.library.WebDebuggerInterceptor
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,7 +16,8 @@ import retrofit2.Retrofit
 
 class MainActivity : AppCompatActivity() {
 
-    val retrofit = Retrofit.Builder().baseUrl("http://www.baidu.com").build()
+    val okHttpClient = OkHttpClient.Builder().addInterceptor(WebDebuggerInterceptor()).build()
+    val retrofit = Retrofit.Builder().baseUrl("https://www.sogou.com").client(okHttpClient).build()
     val apiServer = retrofit.create(ApiServer::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {

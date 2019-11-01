@@ -50,6 +50,8 @@ class WebDebugger {
         internal val mediaObservable = WebDebuggerObservable()
         // 录屏的实例
         internal var screenRecordingHelp: MediaProjectionManagerScreenHelp? = null
+        // 网络调试被观察者
+        internal val netObservable = WebDebuggerObservable()
 
         /**
          * 框架启动入口
