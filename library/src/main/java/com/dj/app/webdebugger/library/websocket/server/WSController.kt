@@ -1,6 +1,7 @@
 package com.dj.app.webdebugger.library.websocket.server
 
 import android.content.Context
+import com.google.gson.Gson
 import fi.iki.elonen.NanoHTTPD
 import fi.iki.elonen.NanoWSD
 import java.lang.Exception
@@ -27,5 +28,9 @@ internal abstract class WSController(handle: NanoHTTPD.IHTTPSession) : NanoWSD.W
                 e.printStackTrace()
             }
         }
+    }
+
+    fun sendOfJson(data: Any) {
+        send(Gson().toJson(data))
     }
 }

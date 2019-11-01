@@ -53,12 +53,12 @@ internal class LogcatWSController(handle: NanoHTTPD.IHTTPSession) : WSController
     }
 
     override fun onException(exception: IOException?) {
-        logcat?.cancel()
-        try {
-            logcat?.join()
-        } catch (ignore: InterruptedException) {
-        }
-        logcat = null
+//        logcat?.cancel()
+//        try {
+//            logcat?.join()
+//        } catch (ignore: InterruptedException) {
+//        }
+//        logcat = null
     }
 
 }

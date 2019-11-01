@@ -1,15 +1,12 @@
 package com.dj.app.webdebugger.library.websocket.server.media
 
-import com.dj.app.webdebugger.library.R
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.WebDebugger.Companion.mediaObservable
 import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.utils.FileUtil
 import com.dj.app.webdebugger.library.websocket.server.WSController
-import com.google.gson.Gson
 import fi.iki.elonen.NanoHTTPD
 import fi.iki.elonen.NanoWSD
-import java.io.File
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
@@ -30,14 +27,7 @@ internal class MediaWSController(handle: NanoHTTPD.IHTTPSession) : WSController(
                 ArrayList<String>(cachePath.listFiles().map { FileUtil.getMediaCachePath() + it.name })
             // 发生添加的文件名称
             val addList = c.filter { !fileCacheList.contains(it) }
-            send(
-                Gson().toJson(
-                    MediaListBean(
-                        WebDebugger.resourcePort,
-                        addList
-                    )
-                )
-            )
+            sendOfJson(MediaListBean(WebDebugger.resourcePort, addList))
             fileCacheList.addAll(addList)
         }
     }
@@ -46,14 +36,7 @@ internal class MediaWSController(handle: NanoHTTPD.IHTTPSession) : WSController(
         val cachePath = FileUtil.getMediaCacheFile(context!!)
         if (cachePath.isDirectory) {
             fileCacheList.addAll(cachePath.listFiles().map { FileUtil.getMediaCachePath() + it.name })
-            send(
-                Gson().toJson(
-                    MediaListBean(
-                        WebDebugger.resourcePort,
-                        fileCacheList
-                    )
-                )
-            )
+            sendOfJson(MediaListBean(WebDebugger.resourcePort, fileCacheList))
         }
         mediaObservable.addObserver(this)
     }
@@ -73,7 +56,7 @@ internal class MediaWSController(handle: NanoHTTPD.IHTTPSession) : WSController(
     }
 
     override fun onException(exception: IOException?) {
-        mediaObservable.deleteObserver(this)
+//        mediaObservable.deleteObserver(this)
     }
 
 }
