@@ -35,10 +35,6 @@ internal class DeviceController : HttpController() {
                         DeviceInfoBean.Info("品牌", Build.BRAND),
                         DeviceInfoBean.Info("型号", Build.MODEL),
                         DeviceInfoBean.Info("制造商", Build.MANUFACTURER),
-                        DeviceInfoBean.Info(
-                            "时间",
-                            SimpleDateFormat.getDateTimeInstance().format(Date(Build.TIME))
-                        ),
                         DeviceInfoBean.Info("Android 版本", Build.VERSION.RELEASE),
                         DeviceInfoBean.Info("SDK", Build.VERSION.SDK_INT.toString()),
                         DeviceInfoBean.Info("IMEI", getIMEI())
@@ -46,7 +42,10 @@ internal class DeviceController : HttpController() {
                 ),
                 DeviceInfoBean.Group(
                     "详细信息", arrayListOf(
-                        DeviceInfoBean.Info("设备标识", Build.FINGERPRINT),
+                        DeviceInfoBean.Info(
+                            "出厂日期",
+                            SimpleDateFormat.getDateTimeInstance().format(Date(Build.TIME))
+                        ),
                         DeviceInfoBean.Info("主机地址", Build.HOST),
                         DeviceInfoBean.Info("产品", Build.PRODUCT),
                         DeviceInfoBean.Info("版本信息", Build.TYPE),
@@ -54,6 +53,7 @@ internal class DeviceController : HttpController() {
                         DeviceInfoBean.Info("驱动", Build.DEVICE),
                         DeviceInfoBean.Info("基板", Build.BOARD),
                         DeviceInfoBean.Info("硬件", Build.HARDWARE),
+                        DeviceInfoBean.Info("设备标识", Build.FINGERPRINT),
                         DeviceInfoBean.Info("用户", Build.USER)
                     )
                 )
