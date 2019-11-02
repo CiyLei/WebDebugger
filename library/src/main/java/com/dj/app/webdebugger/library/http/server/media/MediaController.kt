@@ -37,7 +37,7 @@ internal class MediaController : HttpController() {
             return success(
                 MediaListBean(
                     WebDebugger.resourcePort,
-                    cachePath.listFiles().map { FileUtil.getMediaCachePath() + it.name }.toList()
+                    cachePath.listFiles().map { FileUtil.getMediaCachePath() + it.name }.toList().sorted().reversed()
                 )
             )
         }
