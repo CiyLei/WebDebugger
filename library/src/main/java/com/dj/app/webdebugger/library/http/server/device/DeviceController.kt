@@ -29,7 +29,7 @@ internal class DeviceController : HttpController() {
     @GetMapping("/info")
     fun info(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         val deviceInfoBean = DeviceInfoBean(
-            WebDebugger.resourcePort, arrayListOf(
+            WebDebugger.webSocketPort, arrayListOf(
                 DeviceInfoBean.Group(
                     "基本信息", arrayListOf(
                         DeviceInfoBean.Info("品牌", Build.BRAND),
