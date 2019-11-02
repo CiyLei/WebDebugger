@@ -21,11 +21,11 @@ internal class LogcatWSController(handle: NanoHTTPD.IHTTPSession) : WSController
             logcat = LogcatReader()
             logcat!!.onLogcatListener = object : LogcatReader.OnLogcatListener {
                 override fun onLine(line: String) {
-                    try {
+                    if (isOpen) {
                         send(line)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        close(NanoWSD.WebSocketFrame.CloseCode.NormalClosure, "", false)
+                    } else {
+                        logcat?.cancel()
+                        logcat = null
                     }
                 }
             }
@@ -53,12 +53,12 @@ internal class LogcatWSController(handle: NanoHTTPD.IHTTPSession) : WSController
     }
 
     override fun onException(exception: IOException?) {
-//        logcat?.cancel()
-//        try {
-//            logcat?.join()
-//        } catch (ignore: InterruptedException) {
-//        }
-//        logcat = null
+        logcat?.cancel()
+        try {
+            logcat?.join()
+        } catch (ignore: InterruptedException) {
+        }
+        logcat = null
     }
 
 }

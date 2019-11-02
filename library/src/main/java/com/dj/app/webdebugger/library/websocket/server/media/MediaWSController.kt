@@ -21,14 +21,16 @@ internal class MediaWSController(handle: NanoHTTPD.IHTTPSession) : WSController(
     private val fileCacheList = ArrayList<String>()
 
     override fun update(o: Observable?, arg: Any?) {
-        val cachePath = FileUtil.getMediaCacheFile(context!!)
-        if (cachePath.isDirectory) {
-            val c =
-                ArrayList<String>(cachePath.listFiles().map { FileUtil.getMediaCachePath() + it.name })
-            // 发生添加的文件名称
-            val addList = c.filter { !fileCacheList.contains(it) }
-            sendOfJson(MediaListBean(WebDebugger.resourcePort, addList))
-            fileCacheList.addAll(addList)
+        if (isOpen) {
+            val cachePath = FileUtil.getMediaCacheFile(context!!)
+            if (cachePath.isDirectory) {
+                val c =
+                    ArrayList<String>(cachePath.listFiles().map { FileUtil.getMediaCachePath() + it.name })
+                // 发生添加的文件名称
+                val addList = c.filter { !fileCacheList.contains(it) }
+                sendOfJson(MediaListBean(WebDebugger.resourcePort, addList))
+                fileCacheList.addAll(addList)
+            }
         }
     }
 
@@ -56,7 +58,7 @@ internal class MediaWSController(handle: NanoHTTPD.IHTTPSession) : WSController(
     }
 
     override fun onException(exception: IOException?) {
-//        mediaObservable.deleteObserver(this)
+        mediaObservable.deleteObserver(this)
     }
 
 }

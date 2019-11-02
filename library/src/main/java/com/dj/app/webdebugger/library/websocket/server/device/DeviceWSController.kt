@@ -31,20 +31,22 @@ internal class DeviceWSController(handle: NanoHTTPD.IHTTPSession) : WSController
 
     private val runnable: Runnable = object : Runnable {
         override fun run() {
-            val systemMemInfo = ActivityManager.MemoryInfo()
-            am?.getMemoryInfo(systemMemInfo)
-            val processMemInfo = am?.getProcessMemoryInfo(intArrayOf(Process.myPid()))?.get(0)
-            // 内存总大小（单位KB）
-            var totalMem = 0L
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                totalMem = systemMemInfo.totalMem / 1024
+            if (isOpen) {
+                val systemMemInfo = ActivityManager.MemoryInfo()
+                am?.getMemoryInfo(systemMemInfo)
+                val processMemInfo = am?.getProcessMemoryInfo(intArrayOf(Process.myPid()))?.get(0)
+                // 内存总大小（单位KB）
+                var totalMem = 0L
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    totalMem = systemMemInfo.totalMem / 1024
+                }
+                // 返回应用占用内存大小（单位KB）
+                var totalPrivateDirty = processMemInfo?.totalPrivateDirty ?: 0
+                // 返回应用实际占用内存大小（单位KB）
+                var totalPss = processMemInfo?.totalPss ?: 0
+                sendOfJson(DeviceMemoryFpsBean(totalMem, totalPrivateDirty, totalPss, fps))
+                handler.postDelayed(this, interval)
             }
-            // 返回应用占用内存大小（单位KB）
-            var totalPrivateDirty = processMemInfo?.totalPrivateDirty ?: 0
-            // 返回应用实际占用内存大小（单位KB）
-            var totalPss = processMemInfo?.totalPss ?: 0
-            sendOfJson(DeviceMemoryFpsBean(totalMem, totalPrivateDirty, totalPss, fps))
-            handler.postDelayed(this, interval)
         }
     }
 
@@ -76,6 +78,9 @@ internal class DeviceWSController(handle: NanoHTTPD.IHTTPSession) : WSController
     }
 
     override fun onException(exception: IOException?) {
+        handler.removeCallbacks(runnable)
+        fpsThread?.quit()
+        fpsThread = null
     }
 
     inner class FPSThread : Thread() {
