@@ -3,6 +3,7 @@ package com.dj.app.webdebugger
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.WebDebuggerInterceptor
@@ -13,6 +14,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +31,12 @@ class MainActivity : AppCompatActivity() {
         map["搜狗"] = "https://www.sogou.com"
         WebDebugger.injectionRetrofit(retrofit, map)
         btnTest.setOnClickListener {
+            Log.v("v", "v")
+            Log.d("d", "d")
+            Log.i("i", "i")
+            Log.w("w", "w")
+            Log.e("e", "e")
+            Log.wtf("wtf", "wtf")
             apiServer.test().enqueue(object : Callback<ResponseBody> {
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     tvContent.text = t.message
@@ -42,7 +50,6 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
-        Toast.makeText(this, "34543243545555", Toast.LENGTH_LONG).show()
     }
 
     override fun onRequestPermissionsResult(
