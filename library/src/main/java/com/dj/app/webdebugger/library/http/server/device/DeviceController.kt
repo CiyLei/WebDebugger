@@ -53,7 +53,7 @@ internal class DeviceController : HttpController() {
                         DeviceInfoBean.Info("驱动", Build.DEVICE),
                         DeviceInfoBean.Info("基板", Build.BOARD),
                         DeviceInfoBean.Info("硬件", Build.HARDWARE),
-                        DeviceInfoBean.Info("设备标识", Build.FINGERPRINT),
+//                        DeviceInfoBean.Info("设备标识", Build.FINGERPRINT),
                         DeviceInfoBean.Info("用户", Build.USER)
                     )
                 )
