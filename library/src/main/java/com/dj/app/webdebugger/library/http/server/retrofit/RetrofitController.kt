@@ -6,6 +6,7 @@ import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.annotation.GetMapping
 import com.dj.app.webdebugger.library.annotation.PostMapping
 import com.dj.app.webdebugger.library.http.server.HttpController
+import com.google.gson.Gson
 import fi.iki.elonen.NanoHTTPD
 import okhttp3.HttpUrl
 import java.lang.reflect.Field
@@ -27,16 +28,16 @@ internal class RetrofitController : HttpController() {
         return if (WebDebugger.retrofit == null) {
             fail(ResponseConstant.NO_RETROFIT)
         } else {
-            session.parseBody(HashMap<String,String>())
-            val newUrl = session.parameters["newUrl"]
+            val param = getPostParamt(session)
+            var newUrl = param?.get("newUrl") as? String
             if (newUrl?.isNotEmpty() == true) {
-                if (RetrofitUtil.replaceRetrofitUrl(WebDebugger.retrofit!!, newUrl[0])) {
+                if (RetrofitUtil.replaceRetrofitUrl(WebDebugger.retrofit!!, newUrl)) {
                     success()
                 } else {
                     fail(ResponseConstant.FAIL_EDIT_URL)
                 }
             } else {
-                fail(201, "缺少newUrl参数")
+                fail(201, null, "缺少newUrl参数")
             }
         }
     }

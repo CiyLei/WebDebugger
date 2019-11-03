@@ -45,4 +45,17 @@ internal open class HttpController {
     fun fail(responseCon: ResponseConstant, data: Any? = null): NanoHTTPD.Response {
         return fail(responseCon.code, data, responseCon.message)
     }
+
+    /**
+     * 获取参数
+     */
+    fun getPostParamt(session: NanoHTTPD.IHTTPSession): Map<String, Any>? {
+        val param = HashMap<String, String>()
+        session.parseBody(param)
+        if (param.containsKey("postData")) {
+            val postData = param["postData"]
+            return Gson().fromJson<Map<String, Any>>(postData, Map::class.java)
+        }
+        return null
+    }
 }
