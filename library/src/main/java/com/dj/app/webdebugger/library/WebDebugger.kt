@@ -8,7 +8,10 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
+import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.widget.Toast
+import com.dj.app.webdebugger.library.common.ScreenRecordingPrompt
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.PERMISSION_START_RESOURECE
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
@@ -51,6 +54,8 @@ class WebDebugger {
         internal var screenRecordingHelp: MediaProjectionManagerScreenHelp? = null
         // 网络调试被观察者
         internal val netObservable = WebDebuggerObservable()
+        // 录像显示的红点
+        internal var screenRecordingPrompt: ScreenRecordingPrompt? = null
 
         /**
          * 框架启动入口
@@ -115,6 +120,7 @@ class WebDebugger {
             val webSocketPort = application.getString(R.string.WEB_SOCKET_PORT).toInt()
             val resourcePort = application.getString(R.string.RESOURCE_PORT).toInt()
             start(application, httpPort, webSocketPort, resourcePort)
+            screenRecordingPrompt = ScreenRecordingPrompt(application)
 
             application.registerActivityLifecycleCallbacks(object :
                 Application.ActivityLifecycleCallbacks {
@@ -205,6 +211,22 @@ class WebDebugger {
                         Toast.makeText(context, SCREEN_RECORDING_FAILED, Toast.LENGTH_LONG).show()
                     } else if (resultCode == Activity.RESULT_OK) {
                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                if (topActivity != null && !Settings.canDrawOverlays(topActivity)) {
+                                    // 没有显示录像红点的权限
+                                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    topActivity?.startActivityForResult(intent, 1)
+                                    Toast.makeText(
+                                        topActivity,
+                                        "没有录屏提示的权限，必须开启且重新开始录屏",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    return
+                                }
+                            }
+                            // 显示录像红点
+                            screenRecordingPrompt?.show()
                             // 开始录屏
                             if (screenRecordingHelp == null) {
                                 screenRecordingHelp =

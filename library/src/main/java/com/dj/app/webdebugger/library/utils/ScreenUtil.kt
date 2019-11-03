@@ -102,6 +102,7 @@ internal object ScreenUtil {
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun stopScreenRecording() {
+        WebDebugger.screenRecordingPrompt?.hide()
         WebDebugger.screenRecordingHelp?.stopScreenRecording()
         WebDebugger.mediaObservable.notifyObservers()
         WebDebugger.screenRecordingHelp = null
