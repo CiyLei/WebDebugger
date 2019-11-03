@@ -111,6 +111,11 @@ class WebDebugger {
          * 在Application中初始化（主要的目的是为了获取顶层的Activity）
          */
         fun initApplication(application: Application) {
+            val httpPort = application.getString(R.string.HTTP_PORT).toInt()
+            val webSocketPort = application.getString(R.string.WEB_SOCKET_PORT).toInt()
+            val resourcePort = application.getString(R.string.RESOURCE_PORT).toInt()
+            start(application, httpPort, webSocketPort, resourcePort)
+
             application.registerActivityLifecycleCallbacks(object :
                 Application.ActivityLifecycleCallbacks {
                 override fun onActivityPaused(activity: Activity?) {

@@ -22,10 +22,10 @@ internal class WebDebuggerInitProvider : ContentProvider() {
     ): Cursor? = null
 
     override fun onCreate(): Boolean {
-        val httpPort = context!!.getString(R.string.HTTP_PORT).toInt()
-        val webSocketPort = context!!.getString(R.string.WEB_SOCKET_PORT).toInt()
-        val resourcePort = context!!.getString(R.string.RESOURCE_PORT).toInt()
-        WebDebugger.start(context!!.applicationContext, httpPort, webSocketPort, resourcePort)
+//        val httpPort = context!!.getString(R.string.HTTP_PORT).toInt()
+//        val webSocketPort = context!!.getString(R.string.WEB_SOCKET_PORT).toInt()
+//        val resourcePort = context!!.getString(R.string.RESOURCE_PORT).toInt()
+//        WebDebugger.start(context!!.applicationContext, httpPort, webSocketPort, resourcePort)
         return true
     }
 
