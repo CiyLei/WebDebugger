@@ -52,6 +52,16 @@ internal class AssetsRouterMatch(context: Context) : IHttpRouterMatch {
 
     override fun handle(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         if (assetsPaths.contains(session.uri)) {
+            for (entry in mimeTypeMap()) {
+                if (session.uri.endsWith(entry.key)) {
+                    return NanoHTTPD.newFixedLengthResponse(
+                        NanoHTTPD.Response.Status.OK,
+                        entry.value,
+                        assetManager.open(HTTP_ROOT_PATH + session.uri),
+                        -1
+                    )
+                }
+            }
             return NanoHTTPD.newFixedLengthResponse(getAssetsString(HTTP_ROOT_PATH + session.uri))
         } else {
             // 无uri的时候，展示 index.html
@@ -64,6 +74,15 @@ internal class AssetsRouterMatch(context: Context) : IHttpRouterMatch {
 
     private fun getAssetsString(path: String): String {
         return FileUtil.inputStreamToString(assetManager.open(path))
+    }
+
+    private fun mimeTypeMap(): Map<String, String> {
+        val map = HashMap<String, String>()
+        map[".css"] = "text/css; charset=utf-8"
+        map[".ttf"] = "font/ttf;"
+        map[".woff"] = "font/woff;"
+        map[".ico"] = "image/x-icon;"
+        return map
     }
 
 }
