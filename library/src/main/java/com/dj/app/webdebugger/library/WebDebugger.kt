@@ -39,6 +39,9 @@ import kotlin.collections.HashMap
  */
 class WebDebugger {
     companion object {
+        internal var httpDebugger: HttpDebugger? = null
+        internal var webSocketDebugger: WebSocketDebugger? = null
+        internal var resourceDebugger: ResourceDebugger? = null
         val httpMatchs = ArrayList<IHttpRouterMatch>()
         val webSocketMatchs = ArrayList<IWebSocketMatch>()
         internal var context: Context? = null
@@ -76,21 +79,21 @@ class WebDebugger {
 
         @JvmStatic
         internal fun startHttpServer(port: Int, context: Context) {
-            val httpDebugger = HttpDebugger(port)
-            httpDebugger.httpMatchs.addAll(httpMatchs)
+            httpDebugger = HttpDebugger(port)
+            httpDebugger?.httpMatchs?.addAll(httpMatchs)
             // 添加自带的模块
-            httpDebugger.httpMatchs.add(AutoRouterMatch(context))
-            httpDebugger.httpMatchs.add(AssetsRouterMatch(context))
-            httpDebugger.start(NanoHTTPD.SOCKET_READ_TIMEOUT)
+            httpDebugger?.httpMatchs?.add(AutoRouterMatch(context))
+            httpDebugger?.httpMatchs?.add(AssetsRouterMatch(context))
+            httpDebugger?.start(NanoHTTPD.SOCKET_READ_TIMEOUT)
         }
 
         @JvmStatic
         internal fun startWebSocketServer(port: Int, context: Context) {
-            val webSocketDebugger = WebSocketDebugger(port)
-            webSocketDebugger.webSocketMatchs.addAll(webSocketMatchs)
+            webSocketDebugger = WebSocketDebugger(port)
+            webSocketDebugger?.webSocketMatchs?.addAll(webSocketMatchs)
             // 添加自带的模块
-            webSocketDebugger.webSocketMatchs.add(AutoWebSocketMatch(context))
-            webSocketDebugger.start(0)
+            webSocketDebugger?.webSocketMatchs?.add(AutoWebSocketMatch(context))
+            webSocketDebugger?.start(0)
         }
 
         /**
@@ -109,7 +112,8 @@ class WebDebugger {
          */
         @JvmStatic
         internal fun reloadResourceServer() {
-            ResourceDebugger.create(this.context!!, this.resourcePort!!)?.start(0)
+            resourceDebugger = ResourceDebugger.create(this.context!!, this.resourcePort)
+            resourceDebugger?.start(0)
         }
 
         /**
