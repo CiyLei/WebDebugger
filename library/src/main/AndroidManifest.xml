@@ -9,9 +9,4 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
-    <application>
-        <provider
-            android:name=".WebDebuggerInitProvider"
-            android:authorities="com.dj.app.webdebugger.library.WebDebuggerInitProvider" />
-    </application>
 </manifest>
