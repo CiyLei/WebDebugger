@@ -18,16 +18,11 @@ class WebDebugger {
         val webSocketMatchs = ArrayList<IWebSocketMatch>()
 
         @JvmStatic
-        fun start(context: Context, httpPort: Int, webSocketPort: Int, resourcePort: Int) {
-
-        }
-
-        @JvmStatic
         fun injectionRetrofit(retrofit: Retrofit, environment: Map<String, String>) {
 
         }
 
-        fun initApplication(application: Application) {
+        fun install(application: Application) {
 
         }
 
