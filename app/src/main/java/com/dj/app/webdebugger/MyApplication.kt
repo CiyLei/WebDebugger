@@ -12,6 +12,6 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        WebDebugger.initApplication(this)
+        WebDebugger.install(this)
     }
 }

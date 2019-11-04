@@ -64,7 +64,7 @@ class WebDebugger {
          * @ResourcePort 资源服务器端口
          */
         @JvmStatic
-        fun start(context: Context, httpPort: Int, webSocketPort: Int, resourcePort: Int) {
+        internal fun start(context: Context, httpPort: Int, webSocketPort: Int, resourcePort: Int) {
             this.context = context
             this.httpPort = httpPort
             this.webSocketPort = webSocketPort
@@ -115,7 +115,7 @@ class WebDebugger {
         /**
          * 在Application中初始化（主要的目的是为了获取顶层的Activity）
          */
-        fun initApplication(application: Application) {
+        fun install(application: Application) {
             val httpPort = application.getString(R.string.HTTP_PORT).toInt()
             val webSocketPort = application.getString(R.string.WEB_SOCKET_PORT).toInt()
             val resourcePort = application.getString(R.string.RESOURCE_PORT).toInt()
