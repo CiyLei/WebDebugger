@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import com.dj.app.webdebugger.library.R
 import com.dj.app.webdebugger.library.utils.DisplayUtil
+import java.lang.Exception
 
 
 /**
@@ -49,13 +50,17 @@ internal class ScreenRecordingPrompt(val context: Context) {
     val handler = object : Handler() {
         override fun handleMessage(msg: Message?) {
             super.handleMessage(msg)
-            when(msg?.what) {
-                1 -> {
-                    windowsManage.addView(pointView, msg.obj as WindowManager.LayoutParams)
+            try {
+                when(msg?.what) {
+                    1 -> {
+                        windowsManage.addView(pointView, msg.obj as WindowManager.LayoutParams)
+                    }
+                    2 -> {
+                        windowsManage.removeViewImmediate(pointView)
+                    }
                 }
-                2 -> {
-                    windowsManage.removeViewImmediate(pointView)
-                }
+            } catch (e: Exception) {
+
             }
         }
     }
