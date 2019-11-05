@@ -3,7 +3,6 @@ package com.dj.app.webdebugger.library.http.server.retrofit
 import okhttp3.HttpUrl
 import retrofit2.Retrofit
 import java.lang.reflect.Field
-import java.util.Map
 
 /**
  * Create by ChenLei on 2019/10/31
@@ -38,7 +37,7 @@ internal object RetrofitUtil {
             getField(retrofit, "serviceMethodCache")?.get(retrofit) as? Map<*, *>
         var modifyCount = 0
         if (serviceMethodCache != null) {
-            for (entry in serviceMethodCache.entrySet()) {
+            for (entry in serviceMethodCache.entries) {
                 val serviceMethod = entry.value
                 val requestFactory = getField(serviceMethod, "requestFactory")?.get(serviceMethod)
                 if (requestFactory != null) {
@@ -50,7 +49,7 @@ internal object RetrofitUtil {
                 }
             }
         }
-        if (modifyCount == serviceMethodCache?.size() ?: 0) {
+        if (modifyCount == serviceMethodCache?.size ?: 0) {
             return true
         }
         return false
