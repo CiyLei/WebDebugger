@@ -11,4 +11,5 @@ internal enum class ResponseConstant(val code: Int, val message: String) {
     FAIL_EDIT_URL(103,"修改RetrofitUrl失败"),
     RECORDING_SCREENONLY_SUPPORTS_ANDROID5(104,"录屏只支持Android5.0以上"),
     MEDIA_CACHE_ACQUISITION_FAILED(105,"媒体缓存获取失败"),
+    GET_DEVICE_SCREEN_FAILED(106,"获取屏幕信息失败"),
 }

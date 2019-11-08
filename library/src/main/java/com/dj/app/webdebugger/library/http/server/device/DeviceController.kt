@@ -17,6 +17,7 @@ import android.telephony.TelephonyManager
 import android.view.WindowManager
 import java.lang.Exception
 import android.util.DisplayMetrics
+import com.dj.app.webdebugger.library.common.ResponseConstant
 
 
 /**
@@ -25,6 +26,18 @@ import android.util.DisplayMetrics
  */
 @Controller("/device")
 internal class DeviceController : HttpController() {
+
+    @GetMapping("/getScreenInfo")
+    fun getScreenInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        getWindowManager()?.let {
+            val dm = DisplayMetrics()
+            it.defaultDisplay.getMetrics(dm)
+            val widthPixels = dm.widthPixels
+            val heightPixels = dm.heightPixels
+            return success(DeviceScreenInfoBean(widthPixels, heightPixels))
+        }
+        return fail(ResponseConstant.GET_DEVICE_SCREEN_FAILED)
+    }
 
     @GetMapping("/info")
     fun info(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
