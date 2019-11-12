@@ -18,6 +18,8 @@ import android.view.WindowManager
 import java.lang.Exception
 import android.util.DisplayMetrics
 import com.dj.app.webdebugger.library.common.ResponseConstant
+import com.dj.app.webdebugger.library.utils.FileUtil
+import java.io.File
 
 
 /**
@@ -27,14 +29,14 @@ import com.dj.app.webdebugger.library.common.ResponseConstant
 @Controller("/device")
 internal class DeviceController : HttpController() {
 
-    @GetMapping("/getScreenInfo")
+    @GetMapping("/getAdbNeedInfo")
     fun getScreenInfo(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         getWindowManager()?.let {
             val dm = DisplayMetrics()
             it.defaultDisplay.getMetrics(dm)
             val widthPixels = dm.widthPixels
             val heightPixels = dm.heightPixels
-            return success(DeviceScreenInfoBean(widthPixels, heightPixels))
+            return success(AdbNeedInfoBean(widthPixels, heightPixels, FileUtil.getMediaCacheFile(context!!).absolutePath + File.separator))
         }
         return fail(ResponseConstant.GET_DEVICE_SCREEN_FAILED)
     }
