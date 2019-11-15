@@ -50,6 +50,7 @@ class WebDebugger {
         internal var resourcePort: Int = 8082
         internal var retrofit: Retrofit? = null
         internal val environment = HashMap<String, String>()
+        internal var apiService: Class<*>? = null
         internal var topActivity: Activity? = null
         // 媒体变化被观察者
         internal val mediaObservable = WebDebuggerObservable()
@@ -100,10 +101,11 @@ class WebDebugger {
          * @environment: 设置预设的环境（key：环境名称，value：环境url）
          */
         @JvmStatic
-        fun injectionRetrofit(retrofit: Retrofit, environment: Map<String, String>) {
+        fun injectionRetrofit(retrofit: Retrofit, environment: Map<String, String>, service: Class<*>? = null) {
             this.retrofit = retrofit
             this.environment.clear()
             this.environment.putAll(environment)
+            this.apiService = service
         }
 
         /**

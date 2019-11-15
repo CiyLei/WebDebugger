@@ -6,7 +6,7 @@ import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.annotation.GetMapping
 import com.dj.app.webdebugger.library.annotation.PostMapping
 import com.dj.app.webdebugger.library.http.server.HttpController
-import com.google.gson.Gson
+import com.dj.app.webdebugger.library.utils.RetrofitUtil
 import fi.iki.elonen.NanoHTTPD
 import okhttp3.HttpUrl
 import java.lang.reflect.Field
@@ -67,5 +67,20 @@ internal class RetrofitController : HttpController() {
         val f = target::class.java.getDeclaredField(field)
         f.isAccessible = true
         return f
+    }
+
+    /**
+     * 查看接口清单
+     */
+    @GetMapping("/apiList")
+    fun handleApiList(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        if (WebDebugger.retrofit != null && WebDebugger.apiService != null) {
+            RetrofitUtil.serviceMethodCache.clear()
+            RetrofitUtil.analysisApiService(WebDebugger.retrofit!!, WebDebugger.apiService!!)
+            if (RetrofitUtil.serviceMethodCache.isNotEmpty()) {
+                return success(RetrofitUtil.serviceMethodCache.values.map { it.toMap() })
+            }
+        }
+        return fail(ResponseConstant.GET_API_LIST_FAILED)
     }
 }

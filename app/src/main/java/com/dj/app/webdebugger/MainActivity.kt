@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         val map = HashMap<String, String>()
         map["百度"] = "http://www.baidu.com"
         map["搜狗"] = "https://www.sogou.com"
-        WebDebugger.injectionRetrofit(retrofit, map)
+        WebDebugger.injectionRetrofit(retrofit, map, ApiServer::class.java)
         btnTest.setOnClickListener {
             Log.v("v", "v")
             Log.d("d", "d")
