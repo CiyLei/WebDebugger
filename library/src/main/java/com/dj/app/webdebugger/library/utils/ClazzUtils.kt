@@ -13,6 +13,7 @@ import java.util.jar.JarEntry
 import java.util.jar.JarFile
 
 import dalvik.system.DexFile
+import java.lang.reflect.Field
 
 /**
  * ClazzUtils
@@ -44,6 +45,30 @@ internal object ClazzUtils {
             e.printStackTrace()
         }
         return classNameList
+    }
+
+
+    /**
+     * 反射获取字段
+     */
+    fun getField(target: Any?, field: String, targetIsClass: Boolean = false, count: Int = 0): Field? {
+        if (target == null) {
+            return null
+        }
+        var f: Field? = null
+        try {
+            if (targetIsClass) {
+                f = (target as Class<*>).getDeclaredField(field)
+            } else {
+                f = target::class.java.getDeclaredField(field)
+            }
+        } catch (e: Exception) {
+            if (count < 3) {
+                f = getField(target::class.java.superclass, field, true, count + 1)
+            }
+        }
+        f?.isAccessible = true
+        return f
     }
 }
 

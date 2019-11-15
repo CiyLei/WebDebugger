@@ -1,10 +1,11 @@
 package com.dj.app.webdebugger.library.utils
 
+import com.dj.app.webdebugger.library.annotation.ApiDescription
 import com.dj.app.webdebugger.library.common.ApiInfo
+import com.dj.app.webdebugger.library.utils.ClazzUtils.getField
 import okhttp3.HttpUrl
 import retrofit2.Retrofit
 import retrofit2.http.*
-import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Type
 import java.util.concurrent.ConcurrentHashMap
@@ -109,19 +110,32 @@ internal object RetrofitUtil {
     }
 
     private fun parseMethodAnnotation(annotations: Array<Annotation>): ApiInfo? {
+        var url = ""
+        var method = ""
+        var description = ""
         for (annotation in annotations) {
             if (annotation is DELETE && annotation.value.isNotBlank()) {
-                return ApiInfo(annotation.value.trim(), "DELETE")
+                url = annotation.value.trim()
+                method = "DELETE"
             }
             if (annotation is GET && annotation.value.isNotBlank()) {
-                return ApiInfo(annotation.value.trim(), "GET")
+                url = annotation.value.trim()
+                method = "GET"
             }
             if (annotation is POST && annotation.value.isNotBlank()) {
-                return ApiInfo(annotation.value.trim(), "POST")
+                url = annotation.value.trim()
+                method = "POST"
             }
             if (annotation is PUT && annotation.value.isNotBlank()) {
-                return ApiInfo(annotation.value.trim(), "PUT")
+                url = annotation.value.trim()
+                method = "PUT"
             }
+            if (annotation is ApiDescription && annotation.value.isNotBlank()) {
+                description = annotation.value.trim()
+            }
+        }
+        if (url.isNotBlank() || method.isNotBlank() || description.isNotBlank()) {
+            return ApiInfo(url, method, description)
         }
         return null
     }
@@ -139,7 +153,7 @@ internal object RetrofitUtil {
                         apiInfo.requestBody[annotation.value] = typeName
                     }
                 }
-                is retrofit2.http.Field -> {
+                is Field -> {
                     if (annotation.value.isNotBlank()) {
                         apiInfo.requestBody[annotation.value] = typeName
                     }
@@ -155,25 +169,5 @@ internal object RetrofitUtil {
                 }
             }
         }
-    }
-
-    fun getField(target: Any?, field: String, targetIsClass: Boolean = false, count: Int = 0): Field? {
-        if (target == null) {
-            return null
-        }
-        var f: Field? = null
-        try {
-            if (targetIsClass) {
-                f = (target as Class<*>).getDeclaredField(field)
-            } else {
-                f = target::class.java.getDeclaredField(field)
-            }
-        } catch (e: Exception) {
-            if (count < 3) {
-                f = getField(target::class.java.superclass, field, true, count + 1)
-            }
-        }
-        f?.isAccessible = true
-        return f
     }
 }

@@ -1,6 +1,6 @@
 package com.dj.app.webdebugger.library.common
 
-import com.dj.app.webdebugger.library.utils.RetrofitUtil.getField
+import com.dj.app.webdebugger.library.utils.ClazzUtils.getField
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.internal.bind.CollectionTypeAdapterFactory
@@ -15,8 +15,9 @@ import java.lang.reflect.Type
  * Describe: Retrofit api 模型
  */
 internal data class ApiInfo(
-    val url: String,
-    val method: String,
+    val url: String = "",
+    val method: String = "",
+    val description: String = "",
     val requestBody: HashMap<String, String> = HashMap(),
     var returnType: Type? = null
 ) {
@@ -25,6 +26,7 @@ internal data class ApiInfo(
         val map = HashMap<String, Any>()
         map["url"] = url
         map["method"] = method
+        map["description"] = description
         map["requestBody"] = requestBody
         map["returnType"] = addParameterizedType(Gson().getAdapter(TypeToken.get(returnType))) ?: Any()
         return map
