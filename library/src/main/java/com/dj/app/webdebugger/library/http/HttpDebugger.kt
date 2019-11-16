@@ -1,6 +1,8 @@
 package com.dj.app.webdebugger.library.http
 
 import fi.iki.elonen.NanoHTTPD
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 import java.lang.Exception
 
 
@@ -20,8 +22,12 @@ internal class HttpDebugger(port: Int) : NanoHTTPD(port) {
                     val response = it.handle(session)
                     if (response != null)
                         return response
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                } catch (e: Throwable) {
+//                    e.printStackTrace()
+                    val baos = ByteArrayOutputStream()
+                    e.printStackTrace(PrintStream(baos))
+                    baos.close()
+                    return newFixedLengthResponse(baos.toString())
                 }
             }
         }
