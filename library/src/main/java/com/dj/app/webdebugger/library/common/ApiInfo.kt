@@ -33,7 +33,7 @@ internal data class ApiInfo(
     /**
      * 已经处理的 Type
      */
-    private val alreadyAnalyzedTypeAdapter = ArrayList<Type>()
+    private val alreadyAnalyzedTypeAdapter = ArrayList<TypeAdapter<*>>()
 
     fun toMap(): Map<String, Any> {
         val typeAdapter = Gson().getAdapter(TypeToken.get(returnType))
@@ -48,6 +48,7 @@ internal data class ApiInfo(
     }
 
     private fun analysisReturnType(adapter: TypeAdapter<*>): Any {
+        alreadyAnalyzedTypeAdapter.clear()
         val type = handleReturnType(adapter)
         if (type is HashMap<*, *> || type is ArrayList<*>) {
             return type
@@ -61,6 +62,7 @@ internal data class ApiInfo(
      * 分析返回类型
      */
     private fun handleReturnType(adapter: TypeAdapter<*>): Any? {
+        alreadyAnalyzedTypeAdapter.add(adapter)
         // enclosingClass 内部类获取所在的类
         when {
             adapter::class.java.enclosingClass == ReflectiveTypeAdapterFactory::class.java -> {
@@ -85,14 +87,20 @@ internal data class ApiInfo(
                                 typeAdapterFactory,
                                 "val\$typeAdapter"
                             )?.get(typeAdapterFactory) as? TypeAdapter<*>
+                            // 如果还有字段的话
                             if (typeAdapter != null && typeAdapter::class.java.enclosingClass != TypeAdapters::class.java) {
-                                // 还有字段的话
-                                val type = handleReturnType(typeAdapter)
-                                if (type != null) {
-                                    if (type is MapTypeAdapterCarrier) {
-                                        paramMap[fieldName] = "Map<${type.keyType}, ${type.valueType}>"
-                                    } else {
-                                        paramMap[fieldName] = type
+                                // 如果此字段已经处理过的话，直接显示名称
+                                if (alreadyAnalyzedTypeAdapter.contains(adapter)) {
+                                    paramMap[fieldName] = fieldType.toString()
+                                } else {
+                                    // 继续分析字段
+                                    val type = handleReturnType(typeAdapter)
+                                    if (type != null) {
+                                        if (type is MapTypeAdapterCarrier) {
+                                            paramMap[fieldName] = "Map<${type.keyType}, ${type.valueType}>"
+                                        } else {
+                                            paramMap[fieldName] = type
+                                        }
                                     }
                                 }
                             }
@@ -158,6 +166,11 @@ internal data class ApiInfo(
     }
 
     private fun handleDetailedType(adapter: TypeAdapter<*>): DetailedTypeInfo? {
+        if (alreadyAnalyzedTypeAdapter.contains(adapter)) {
+            // 分析过了不在分析了
+            return null
+        }
+        alreadyAnalyzedTypeAdapter.add(adapter)
         when {
             adapter::class.java.enclosingClass == ReflectiveTypeAdapterFactory::class.java -> {
                 // 普通的类
@@ -202,10 +215,15 @@ internal data class ApiInfo(
                 // 取出泛型，继续分析
                 val keyTypeAdapter = getField(adapter, "keyTypeAdapter")?.get(adapter)
                 val keyDelegate = getField(keyTypeAdapter, "delegate")?.get(keyTypeAdapter) as TypeAdapter<*>
+                val keyType = getField(keyTypeAdapter, "type")?.get(keyTypeAdapter)
+
                 val valueTypeAdapter = getField(adapter, "valueTypeAdapter")?.get(adapter)
                 val valueDelegate = getField(valueTypeAdapter, "delegate")?.get(valueTypeAdapter) as TypeAdapter<*>
+                val valueType = getField(valueTypeAdapter, "type")?.get(valueTypeAdapter)
+
                 addAnalysisDetailedType(keyDelegate)
                 addAnalysisDetailedType(valueDelegate)
+                return DetailedTypeInfo("java.util.Map<$keyType, $valueType>")
             }
             adapter::class.java.simpleName == "FutureTypeAdapter" -> {
                 // 内部类

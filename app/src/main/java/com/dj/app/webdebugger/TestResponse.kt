@@ -6,5 +6,5 @@ package com.dj.app.webdebugger
  * Describe:
  */
 data class TestResponse<T>(val t: T, val a: String, val b: B) {
-    data class B(val c: Int, val map: Map<Boolean, Double>)
+    data class B(val c: Int, val map: Map<Boolean, Double>, val v: B)
 }
