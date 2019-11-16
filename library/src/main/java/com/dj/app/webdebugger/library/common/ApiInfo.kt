@@ -62,68 +62,77 @@ internal data class ApiInfo(
      */
     private fun handleReturnType(adapter: TypeAdapter<*>): Any? {
         // enclosingClass 内部类获取所在的类
-        if (adapter::class.java.enclosingClass == ReflectiveTypeAdapterFactory::class.java) {
-            // 普通的类
-            val paramMap = HashMap<String, Any>()
-            val fields = getField(adapter, "boundFields")?.get(adapter) as? Map<String, Any>
-            for (field in fields?.entries ?: emptySet()) {
-                val fieldName = field.key
-                val typeAdapterFactory = field.value
-                // fieldType是匿名内部类引用外部变量的值，所以有val$的前缀
-                val fieldType = getField(
-                    typeAdapterFactory,
-                    "val\$fieldType"
-                )?.get(typeAdapterFactory) as? TypeToken<*>
-                if (fieldType != null) {
-                    // 判断是否是基本类型
-                    if (isBaseType(fieldType.rawType)) {
-                        paramMap[fieldName] = fieldType.toString()
-                    } else {
-                        // 非基本类型
-                        val typeAdapter = getField(
-                            typeAdapterFactory,
-                            "val\$typeAdapter"
-                        )?.get(typeAdapterFactory) as? TypeAdapter<*>
-                        if (typeAdapter != null && typeAdapter::class.java.enclosingClass != TypeAdapters::class.java) {
-                            // 还有字段的话
-                            val type = handleReturnType(typeAdapter)
-                            if (type != null) {
-                                if (type is MapTypeAdapterCarrier) {
-                                    paramMap[fieldName] = "Map<${type.keyType}, ${type.valueType}>"
-                                } else {
-                                    paramMap[fieldName] = type
+        when {
+            adapter::class.java.enclosingClass == ReflectiveTypeAdapterFactory::class.java -> {
+                // 普通的类
+                val paramMap = HashMap<String, Any>()
+                val fields = getField(adapter, "boundFields")?.get(adapter) as? Map<String, Any>
+                for (field in fields?.entries ?: emptySet()) {
+                    val fieldName = field.key
+                    val typeAdapterFactory = field.value
+                    // fieldType是匿名内部类引用外部变量的值，所以有val$的前缀
+                    val fieldType = getField(
+                        typeAdapterFactory,
+                        "val\$fieldType"
+                    )?.get(typeAdapterFactory) as? TypeToken<*>
+                    if (fieldType != null) {
+                        // 判断是否是基本类型
+                        if (isBaseType(fieldType.rawType)) {
+                            paramMap[fieldName] = fieldType.toString()
+                        } else {
+                            // 非基本类型
+                            val typeAdapter = getField(
+                                typeAdapterFactory,
+                                "val\$typeAdapter"
+                            )?.get(typeAdapterFactory) as? TypeAdapter<*>
+                            if (typeAdapter != null && typeAdapter::class.java.enclosingClass != TypeAdapters::class.java) {
+                                // 还有字段的话
+                                val type = handleReturnType(typeAdapter)
+                                if (type != null) {
+                                    if (type is MapTypeAdapterCarrier) {
+                                        paramMap[fieldName] = "Map<${type.keyType}, ${type.valueType}>"
+                                    } else {
+                                        paramMap[fieldName] = type
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                return paramMap
             }
-            return paramMap
-        } else if (adapter::class.java.enclosingClass == CollectionTypeAdapterFactory::class.java) {
-            // 数组类型
-            val elementTypeAdapter = getField(adapter, "elementTypeAdapter")?.get(adapter)
-            val paramList = ArrayList<Any>()
-            if (elementTypeAdapter != null) {
-                val delegate = getField(
-                    elementTypeAdapter,
-                    "delegate"
-                )?.get(elementTypeAdapter) as? TypeAdapter<*>
-                if (delegate != null) {
-                    handleReturnType(delegate)?.let {
-                        paramList.add(it)
+            adapter::class.java.enclosingClass == CollectionTypeAdapterFactory::class.java -> {
+                // 数组类型
+                val elementTypeAdapter = getField(adapter, "elementTypeAdapter")?.get(adapter)
+                val paramList = ArrayList<Any>()
+                if (elementTypeAdapter != null) {
+                    val delegate = getField(
+                        elementTypeAdapter,
+                        "delegate"
+                    )?.get(elementTypeAdapter) as? TypeAdapter<*>
+                    if (delegate != null) {
+                        handleReturnType(delegate)?.let {
+                            paramList.add(it)
+                        }
                     }
                 }
+                return paramList
             }
-            return paramList
-        } else if (adapter::class.java.enclosingClass == MapTypeAdapterFactory::class.java) {
-            // Map类型
-            val keyTypeAdapter = getField(adapter, "keyTypeAdapter")?.get(adapter)
-            val keyType = getField(keyTypeAdapter, "type")?.get(keyTypeAdapter)
-            val valueTypeAdapter = getField(adapter, "valueTypeAdapter")?.get(adapter)
-            val valueType = getField(valueTypeAdapter, "type")?.get(valueTypeAdapter)
-            return MapTypeAdapterCarrier(keyType.toString(), valueType.toString())
+            adapter::class.java.enclosingClass == MapTypeAdapterFactory::class.java -> {
+                // Map类型
+                val keyTypeAdapter = getField(adapter, "keyTypeAdapter")?.get(adapter)
+                val keyType = getField(keyTypeAdapter, "type")?.get(keyTypeAdapter)
+                val valueTypeAdapter = getField(adapter, "valueTypeAdapter")?.get(adapter)
+                val valueType = getField(valueTypeAdapter, "type")?.get(valueTypeAdapter)
+                return MapTypeAdapterCarrier(keyType.toString(), valueType.toString())
+            }
+            adapter::class.java.simpleName == "FutureTypeAdapter" -> {
+                // 内部类
+                val delegate = getField(adapter, "delegate")?.get(adapter) as TypeAdapter<*>
+                return handleReturnType(delegate)
+            }
+            else -> return null
         }
-        return null
     }
 
     /**
@@ -197,6 +206,11 @@ internal data class ApiInfo(
                 val valueDelegate = getField(valueTypeAdapter, "delegate")?.get(valueTypeAdapter) as TypeAdapter<*>
                 addAnalysisDetailedType(keyDelegate)
                 addAnalysisDetailedType(valueDelegate)
+            }
+            adapter::class.java.simpleName == "FutureTypeAdapter" -> {
+                // 内部类
+                val delegate = getField(adapter, "delegate")?.get(adapter) as TypeAdapter<*>
+                addAnalysisDetailedType(delegate)
             }
         }
         return null
