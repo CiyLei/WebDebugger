@@ -4,6 +4,7 @@ import com.dj.app.webdebugger.library.utils.ClazzUtils.getField
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.internal.bind.CollectionTypeAdapterFactory
+import com.google.gson.internal.bind.MapTypeAdapterFactory
 import com.google.gson.internal.bind.ReflectiveTypeAdapterFactory
 import com.google.gson.internal.bind.TypeAdapters
 import com.google.gson.reflect.TypeToken
@@ -28,7 +29,8 @@ internal data class ApiInfo(
         map["method"] = method
         map["description"] = description
         map["requestBody"] = requestBody
-        map["returnType"] = addParameterizedType(Gson().getAdapter(TypeToken.get(returnType))) ?: Any()
+        map["returnType"] =
+            addParameterizedType(Gson().getAdapter(TypeToken.get(returnType))) ?: Any()
         return map
     }
 
@@ -42,18 +44,29 @@ internal data class ApiInfo(
                 val fieldName = field.key
                 val typeAdapterFactory = field.value
                 // fieldType是匿名内部类引用外部变量的值，所以有val$的前缀
-                val fieldType = getField(typeAdapterFactory, "val\$fieldType")?.get(typeAdapterFactory) as? TypeToken<*>
+                val fieldType = getField(
+                    typeAdapterFactory,
+                    "val\$fieldType"
+                )?.get(typeAdapterFactory) as? TypeToken<*>
                 if (fieldType != null) {
                     // 判断是否是基本类型
                     if (isBaseType(fieldType.rawType)) {
                         paramMap[fieldName] = fieldType.rawType.simpleName
                     } else {
                         // 非基本类型
-                        val typeAdapter = getField(typeAdapterFactory, "val\$typeAdapter")?.get(typeAdapterFactory) as? TypeAdapter<*>
+                        val typeAdapter = getField(
+                            typeAdapterFactory,
+                            "val\$typeAdapter"
+                        )?.get(typeAdapterFactory) as? TypeAdapter<*>
                         if (typeAdapter != null && typeAdapter::class.java.enclosingClass != TypeAdapters::class.java) {
                             // 还有字段的话
-                            addParameterizedType(typeAdapter)?.let {
-                                paramMap[fieldName] = it
+                            val type = addParameterizedType(typeAdapter)
+                            if (type != null) {
+                                if (type is MapTypeAdapter) {
+                                    paramMap[fieldName] = "Map&lt;${type.keyType}, ${type.valueType}&gt;"
+                                } else {
+                                    paramMap[fieldName] = type
+                                }
                             }
                         }
                     }
@@ -65,7 +78,10 @@ internal data class ApiInfo(
             val elementTypeAdapter = getField(adapter, "elementTypeAdapter")?.get(adapter)
             val paramList = ArrayList<Any>()
             if (elementTypeAdapter != null) {
-                val delegate = getField(elementTypeAdapter, "delegate")?.get(elementTypeAdapter) as? TypeAdapter<*>
+                val delegate = getField(
+                    elementTypeAdapter,
+                    "delegate"
+                )?.get(elementTypeAdapter) as? TypeAdapter<*>
                 if (delegate != null) {
                     addParameterizedType(delegate)?.let {
                         paramList.add(it)
@@ -73,6 +89,13 @@ internal data class ApiInfo(
                 }
             }
             return paramList
+        } else if (adapter::class.java.enclosingClass == MapTypeAdapterFactory::class.java) {
+            // Map类型
+            val keyTypeAdapter = getField(adapter, "keyTypeAdapter")?.get(adapter)
+            val keyType = getField(keyTypeAdapter, "type")?.get(keyTypeAdapter) as Class<*>
+            val valueTypeAdapter = getField(adapter, "valueTypeAdapter")?.get(adapter)
+            val valueType = getField(valueTypeAdapter, "type")?.get(valueTypeAdapter) as Class<*>
+            return MapTypeAdapter(keyType.simpleName, valueType.simpleName)
         }
         return null
     }
@@ -105,4 +128,6 @@ internal data class ApiInfo(
         }
         return false
     }
+
+    class MapTypeAdapter(val keyType: String, val valueType: String)
 }

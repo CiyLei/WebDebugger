@@ -19,7 +19,7 @@ import kotlin.random.Random
 class MainActivity : AppCompatActivity() {
 
     val okHttpClient = OkHttpClient.Builder().addInterceptor(WebDebuggerInterceptor()).build()
-    val retrofit = Retrofit.Builder().baseUrl("https://www.sogou.com").client(okHttpClient).build()
+    val retrofit = Retrofit.Builder().baseUrl("https://api.bilibili.com").client(okHttpClient).build()
     val apiServer = retrofit.create(ApiServer::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         val map = HashMap<String, String>()
         map["百度"] = "http://www.baidu.com"
         map["搜狗"] = "https://www.sogou.com"
+        map["哔哩哔哩"] = "https://api.bilibili.com"
         WebDebugger.injectionRetrofit(retrofit, map, ApiServer::class.java)
         btnTest.setOnClickListener {
             Log.v("v", "v")

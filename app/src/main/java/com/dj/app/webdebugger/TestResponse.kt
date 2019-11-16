@@ -8,4 +8,5 @@ package com.dj.app.webdebugger
 data class TestResponse(val a: String, val b: B) {
 
 }
-data class B(val c: Int)
+
+data class B(val c: Int, val map: Map<Boolean, Double>)

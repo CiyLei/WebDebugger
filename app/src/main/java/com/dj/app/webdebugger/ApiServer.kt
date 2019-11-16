@@ -12,7 +12,7 @@ import retrofit2.http.Query
  */
 interface ApiServer {
     @ApiDescription("测试")
-    @GET("s?wd=123")
+    @GET("x/web-interface/search/default")
     fun test(): Call<ResponseBody>
 
     @GET("test2/tttttttt.do")
@@ -20,7 +20,7 @@ interface ApiServer {
 
     @ApiDescription("测试3")
     @GET("test3/t33333.do")
-    fun test3(): Call<List<TestResponse>>
+    fun test3(): Call<Map<String, TestResponse>>
 
     @ApiDescription("测试4")
     @GET("test3/t444444.do")
