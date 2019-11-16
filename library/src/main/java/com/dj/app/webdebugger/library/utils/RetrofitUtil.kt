@@ -145,7 +145,7 @@ internal object RetrofitUtil {
         parameterType: Type,
         annotations: Array<Annotation>
     ) {
-        var typeName = (parameterType as Class<*>).simpleName
+        var typeName = (parameterType as Class<*>).name
         for (annotation in annotations) {
             when (annotation) {
                 is Query -> {
@@ -164,7 +164,7 @@ internal object RetrofitUtil {
                     }
                 }
                 else -> {
-                    apiInfo.requestBody["不支持查看的类型 @${annotation.annotationClass.java.simpleName}"] =
+                    apiInfo.requestBody["不支持查看的类型 @${annotation.annotationClass.java.name}"] =
                         typeName
                 }
             }

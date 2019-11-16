@@ -16,13 +16,17 @@ interface ApiServer {
     fun test(): Call<ResponseBody>
 
     @GET("test2/tttttttt.do")
-    fun test2(): Call<TestResponse>
+    fun test2(): Call<TestResponse<Float>>
 
     @ApiDescription("测试3")
     @GET("test3/t33333.do")
-    fun test3(): Call<Map<String, TestResponse>>
+    fun test3(): Call<Map<String, TestResponse<Double>>>
 
     @ApiDescription("测试4")
     @GET("test3/t444444.do")
-    fun test4(@Query("aq") aq: String): Call<List<List<TestResponse>>>
+    fun test4(@Query("aq") aq: String): Call<List<List<TestResponse<String>>>>
+
+    @ApiDescription("测试5")
+    @GET("test3/555555.do")
+    fun test5(@Query("5555aq") aq: String): Call<TestResponse.B>
 }

@@ -9,6 +9,9 @@ import com.google.gson.internal.bind.ReflectiveTypeAdapterFactory
 import com.google.gson.internal.bind.TypeAdapters
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 /**
@@ -23,18 +26,41 @@ internal data class ApiInfo(
     var returnType: Type? = null
 ) {
 
+    /**
+     * 等待处理的 TypeAdapter
+     */
+    private val toBeAnalyzedTypeAdapter = LinkedList<TypeAdapter<*>>()
+    /**
+     * 已经处理的 Type
+     */
+    private val alreadyAnalyzedTypeAdapter = ArrayList<Type>()
+
     fun toMap(): Map<String, Any> {
+        val typeAdapter = Gson().getAdapter(TypeToken.get(returnType))
         val map = HashMap<String, Any>()
         map["url"] = url
         map["method"] = method
         map["description"] = description
         map["requestBody"] = requestBody
-        map["returnType"] =
-            addParameterizedType(Gson().getAdapter(TypeToken.get(returnType))) ?: Any()
+        map["returnType"] = analysisReturnType(typeAdapter)
+        map["detailedReturnType"] = analysisDetailedType(typeAdapter)
         return map
     }
 
-    private fun addParameterizedType(adapter: TypeAdapter<*>): Any? {
+    private fun analysisReturnType(adapter: TypeAdapter<*>): Any {
+        val type = handleReturnType(adapter)
+        if (type is HashMap<*, *> || type is ArrayList<*>) {
+            return type
+        } else if (type is MapTypeAdapterCarrier) {
+            return "Map<${type.keyType}, ${type.valueType}>"
+        }
+        return emptyMap<String, String>()
+    }
+
+    /**
+     * 分析返回类型
+     */
+    private fun handleReturnType(adapter: TypeAdapter<*>): Any? {
         // enclosingClass 内部类获取所在的类
         if (adapter::class.java.enclosingClass == ReflectiveTypeAdapterFactory::class.java) {
             // 普通的类
@@ -51,7 +77,7 @@ internal data class ApiInfo(
                 if (fieldType != null) {
                     // 判断是否是基本类型
                     if (isBaseType(fieldType.rawType)) {
-                        paramMap[fieldName] = fieldType.rawType.simpleName
+                        paramMap[fieldName] = fieldType.toString()
                     } else {
                         // 非基本类型
                         val typeAdapter = getField(
@@ -60,10 +86,10 @@ internal data class ApiInfo(
                         )?.get(typeAdapterFactory) as? TypeAdapter<*>
                         if (typeAdapter != null && typeAdapter::class.java.enclosingClass != TypeAdapters::class.java) {
                             // 还有字段的话
-                            val type = addParameterizedType(typeAdapter)
+                            val type = handleReturnType(typeAdapter)
                             if (type != null) {
-                                if (type is MapTypeAdapter) {
-                                    paramMap[fieldName] = "Map&lt;${type.keyType}, ${type.valueType}&gt;"
+                                if (type is MapTypeAdapterCarrier) {
+                                    paramMap[fieldName] = "Map<${type.keyType}, ${type.valueType}>"
                                 } else {
                                     paramMap[fieldName] = type
                                 }
@@ -83,7 +109,7 @@ internal data class ApiInfo(
                     "delegate"
                 )?.get(elementTypeAdapter) as? TypeAdapter<*>
                 if (delegate != null) {
-                    addParameterizedType(delegate)?.let {
+                    handleReturnType(delegate)?.let {
                         paramList.add(it)
                     }
                 }
@@ -92,12 +118,95 @@ internal data class ApiInfo(
         } else if (adapter::class.java.enclosingClass == MapTypeAdapterFactory::class.java) {
             // Map类型
             val keyTypeAdapter = getField(adapter, "keyTypeAdapter")?.get(adapter)
-            val keyType = getField(keyTypeAdapter, "type")?.get(keyTypeAdapter) as Class<*>
+            val keyType = getField(keyTypeAdapter, "type")?.get(keyTypeAdapter)
             val valueTypeAdapter = getField(adapter, "valueTypeAdapter")?.get(adapter)
-            val valueType = getField(valueTypeAdapter, "type")?.get(valueTypeAdapter) as Class<*>
-            return MapTypeAdapter(keyType.simpleName, valueType.simpleName)
+            val valueType = getField(valueTypeAdapter, "type")?.get(valueTypeAdapter)
+            return MapTypeAdapterCarrier(keyType.toString(), valueType.toString())
         }
         return null
+    }
+
+    /**
+     * 分析详细类型
+     */
+    private fun analysisDetailedType(adapter: TypeAdapter<*>): List<DetailedTypeInfo> {
+        beginAnalysisDetailedType(adapter)
+        var p = toBeAnalyzedTypeAdapter.poll()
+        val results = ArrayList<DetailedTypeInfo>()
+        while (p != null) {
+            handleDetailedType(p)?.let {
+                results.add(it)
+            }
+            p = toBeAnalyzedTypeAdapter.poll()
+        }
+        return results
+    }
+
+    private fun beginAnalysisDetailedType(adapter: TypeAdapter<*>) {
+        toBeAnalyzedTypeAdapter.clear()
+        alreadyAnalyzedTypeAdapter.clear()
+        addAnalysisDetailedType(adapter)
+    }
+
+    private fun handleDetailedType(adapter: TypeAdapter<*>): DetailedTypeInfo? {
+        when {
+            adapter::class.java.enclosingClass == ReflectiveTypeAdapterFactory::class.java -> {
+                // 普通的类
+                val fields = getField(adapter, "boundFields")?.get(adapter) as? Map<String, Any>
+                val constructor = getField(adapter, "constructor")?.get(adapter)
+                val type = getField(constructor, "val\$type")?.get(constructor)
+                val detailedTypeInfo = DetailedTypeInfo((type ?: "不支持此类型").toString())
+                for (field in fields?.entries ?: emptySet()) {
+                    val fieldName = field.key
+                    val typeAdapterFactory = field.value
+                    // fieldType是匿名内部类引用外部变量的值，所以有val$的前缀
+                    val fieldType = getField(
+                        typeAdapterFactory,
+                        "val\$fieldType"
+                    )?.get(typeAdapterFactory) as? TypeToken<*>
+                    if (fieldType != null) {
+                        // 记录类型
+                        detailedTypeInfo.parameterMap[fieldName] = fieldType.toString()
+                        // 如果是非基本类型，继续分析
+                        if (!isBaseType(fieldType.rawType)) {
+                            val typeAdapter = getField(
+                                typeAdapterFactory,
+                                "val\$typeAdapter"
+                            )?.get(typeAdapterFactory) as? TypeAdapter<*>
+                            if (typeAdapter != null) {
+                                addAnalysisDetailedType(typeAdapter)
+                            }
+                        }
+                    }
+                }
+                return detailedTypeInfo
+            }
+            adapter::class.java.enclosingClass == CollectionTypeAdapterFactory::class.java -> {
+                // 取出泛型，继续分析
+                val elementTypeAdapter = getField(adapter, "elementTypeAdapter")?.get(adapter)
+                val delegate = getField(elementTypeAdapter, "delegate")?.get(elementTypeAdapter) as TypeAdapter<*>
+                addAnalysisDetailedType(delegate)
+                val type = getField(elementTypeAdapter, "type")?.get(elementTypeAdapter)
+                return DetailedTypeInfo("java.util.List<${type.toString()}>")
+            }
+            adapter::class.java.enclosingClass == MapTypeAdapterFactory::class.java -> {
+                // 取出泛型，继续分析
+                val keyTypeAdapter = getField(adapter, "keyTypeAdapter")?.get(adapter)
+                val keyDelegate = getField(keyTypeAdapter, "delegate")?.get(keyTypeAdapter) as TypeAdapter<*>
+                val valueTypeAdapter = getField(adapter, "valueTypeAdapter")?.get(adapter)
+                val valueDelegate = getField(valueTypeAdapter, "delegate")?.get(valueTypeAdapter) as TypeAdapter<*>
+                addAnalysisDetailedType(keyDelegate)
+                addAnalysisDetailedType(valueDelegate)
+            }
+        }
+        return null
+    }
+
+    /**
+     * 添加分析
+     */
+    private fun addAnalysisDetailedType(type: TypeAdapter<*>) {
+        toBeAnalyzedTypeAdapter.offer(type)
     }
 
     /**
@@ -129,5 +238,9 @@ internal data class ApiInfo(
         return false
     }
 
-    class MapTypeAdapter(val keyType: String, val valueType: String)
+    class MapTypeAdapterCarrier(val keyType: String, val valueType: String)
+    class DetailedTypeInfo(
+        val fileName: String,
+        val parameterMap: HashMap<String, String> = HashMap()
+    )
 }
