@@ -3,6 +3,7 @@ package com.dj.app.webdebugger.library.common
 import com.dj.app.webdebugger.library.utils.ClazzUtils.getField
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
+import com.google.gson.internal.ObjectConstructor
 import com.google.gson.internal.bind.CollectionTypeAdapterFactory
 import com.google.gson.internal.bind.MapTypeAdapterFactory
 import com.google.gson.internal.bind.ReflectiveTypeAdapterFactory
@@ -177,7 +178,15 @@ internal data class ApiInfo(
                 val fields = getField(adapter, "boundFields")?.get(adapter) as? Map<String, Any>
                 val constructor = getField(adapter, "constructor")?.get(adapter)
                 val type = getField(constructor, "val\$type")?.get(constructor)
-                val detailedTypeInfo = DetailedTypeInfo((type ?: "不支持此类型").toString())
+                var detailedTypeInfo = DetailedTypeInfo((type ?: "不支持此类型").toString())
+                // 不知道为什么我们的BaseResponse是这个类型的
+                if (constructor is ObjectConstructor<*>) {
+                    val c2 = getField(constructor, "val\$constructor")?.get(constructor)
+                    val c2Name = getField(c2, "declaringClass")?.get(c2)?.toString()
+                    if (c2Name?.isNotBlank() == true) {
+                        detailedTypeInfo = DetailedTypeInfo(c2Name)
+                    }
+                }
                 for (field in fields?.entries ?: emptySet()) {
                     val fieldName = field.key
                     val typeAdapterFactory = field.value
