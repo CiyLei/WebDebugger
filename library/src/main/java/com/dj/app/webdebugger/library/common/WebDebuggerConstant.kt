@@ -15,4 +15,7 @@ internal object WebDebuggerConstant {
     // 发起录屏的request
     val REQUEST_SCREEN_RECORDING = 1003
     val SCREEN_RECORDING_FAILED = "录屏权限申请失败"
+    // 获取手机设备码的请求码
+    val PERMISSION_PHONE_STATE_RESOURECE = 1004
+    val RESOURCE_PHONE_STATE_FAILED_TO_OPEN = "获取手机设备码失败，无法开启连接服务"
 }

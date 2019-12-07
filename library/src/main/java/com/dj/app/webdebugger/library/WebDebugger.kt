@@ -9,12 +9,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
-import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.widget.Toast
 import com.dj.app.webdebugger.library.common.ScreenRecordingPrompt
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.PERMISSION_PHONE_STATE_RESOURECE
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.PERMISSION_START_RESOURECE
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant.RESOURCE_PHONE_STATE_FAILED_TO_OPEN
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.RESOURCE_SERVER_FAILED_TO_OPEN
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.SCREEN_CAPTURE_FAILED
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.SCREEN_RECORDING_FAILED
@@ -24,9 +25,11 @@ import com.dj.app.webdebugger.library.http.HttpDebugger
 import com.dj.app.webdebugger.library.http.IHttpRouterMatch
 import com.dj.app.webdebugger.library.http.resource.ResourceDebugger
 import com.dj.app.webdebugger.library.http.server.media.MediaProjectionManagerScreenHelp
+import com.dj.app.webdebugger.library.mars.MarsServer
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
+import com.tencent.mars.BaseEvent
 import fi.iki.elonen.NanoHTTPD
 import retrofit2.Retrofit
 import java.util.*
@@ -60,6 +63,12 @@ class WebDebugger {
         internal val netObservable = WebDebuggerObservable()
         // 录像显示的红点
         internal var screenRecordingPrompt: ScreenRecordingPrompt? = null
+        // 是否开启连接后台服务
+        internal var serviceEnable = false
+        // 应用的别名
+        internal var appAlias: String? = null
+        internal var serviceHost: String = ""
+        internal var servicePort: Int = 8085
 
         /**
          * 框架启动入口
@@ -68,14 +77,17 @@ class WebDebugger {
          * @ResourcePort 资源服务器端口
          */
         @JvmStatic
-        internal fun start(context: Context, httpPort: Int, webSocketPort: Int, resourcePort: Int) {
+        internal fun start(context: Context, httpPort: Int, webSocketPort: Int, resourcePort: Int, serviceHost: String, servicePort: Int) {
             this.context = context
             this.httpPort = httpPort
             this.webSocketPort = webSocketPort
             this.resourcePort = resourcePort
+            this.serviceHost = serviceHost
+            this.servicePort = servicePort
             startHttpServer(httpPort, context)
             startWebSocketServer(webSocketPort, context)
             reloadResourceServer()
+            startMarsServer()
         }
 
         @JvmStatic
@@ -119,27 +131,41 @@ class WebDebugger {
         }
 
         /**
+         * 开启Mars服务
+         */
+        internal fun startMarsServer() {
+            MarsServer.create(this.context!!, this.serviceHost, this.servicePort)?.start()
+        }
+
+        /**
          * 在Application中初始化（主要的目的是为了获取顶层的Activity）
          */
         fun install(application: Application) {
             val httpPort = application.getString(R.string.HTTP_PORT).toInt()
             val webSocketPort = application.getString(R.string.WEB_SOCKET_PORT).toInt()
             val resourcePort = application.getString(R.string.RESOURCE_PORT).toInt()
-            start(application, httpPort, webSocketPort, resourcePort)
+            val serviceHost = application.getString(R.string.SERVICEHOST).toString()
+            val servicePort = application.getString(R.string.SERVICEPORT).toInt()
+            start(application, httpPort, webSocketPort, resourcePort, serviceHost, servicePort)
             screenRecordingPrompt = ScreenRecordingPrompt(application)
 
             application.registerActivityLifecycleCallbacks(object :
                 Application.ActivityLifecycleCallbacks {
                 override fun onActivityPaused(activity: Activity?) {
+                    BaseEvent.onForeground(false)
                 }
 
                 override fun onActivityResumed(activity: Activity?) {
+                    BaseEvent.onForeground(true)
                 }
 
                 override fun onActivityStarted(activity: Activity?) {
                     topActivity = activity
                     if (!ResourceDebugger.isStart) {
                         reloadResourceServer()
+                    }
+                    if (!MarsServer.isStart) {
+                        startMarsServer()
                     }
                 }
 
@@ -158,6 +184,14 @@ class WebDebugger {
         }
 
         /**
+         * 启动连接后台服务
+         */
+        fun serviceEnable(appAlias: String? = "") {
+            this.serviceEnable = true
+            this.appAlias = appAlias
+        }
+
+        /**
          * 需要监听申请权限的返回值
          */
         fun onRequestPermissionsResult(
@@ -172,6 +206,14 @@ class WebDebugger {
                         reloadResourceServer()
                     } else {
                         Toast.makeText(context, RESOURCE_SERVER_FAILED_TO_OPEN, Toast.LENGTH_LONG)
+                            .show()
+                    }
+                }
+                PERMISSION_PHONE_STATE_RESOURECE -> {
+                    if (grantResults[0] == PERMISSION_GRANTED) {
+                        startMarsServer()
+                    } else {
+                        Toast.makeText(context, RESOURCE_PHONE_STATE_FAILED_TO_OPEN, Toast.LENGTH_LONG)
                             .show()
                     }
                 }

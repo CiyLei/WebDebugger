@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.protobuf'
 
 android {
     compileSdkVersion 28
@@ -17,6 +18,8 @@ android {
         resValue("string", "HTTP_PORT", "8080")
         resValue("string", "WEB_SOCKET_PORT", "8081")
         resValue("string", "RESOURCE_PORT", "8082")
+        resValue("string", "SERVICEHOST", "\"192.168.1.105\"")
+        resValue("string", "SERVICEPORT", "8083")
     }
 
     buildTypes {
@@ -26,6 +29,35 @@ android {
         }
     }
 
+    sourceSets {
+        main {
+            java {
+                srcDir 'src/main/java'
+            }
+            proto {
+                srcDir 'src/main/proto'
+            }
+        }
+    }
+
+}
+
+protobuf {
+    //配置protoc编译器
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.6.1'
+    }
+    //这里配置生成目录，编译后会在build的目录下生成对应的java文件
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                remove java
+            }
+            task.builtins {
+                java {}
+            }
+        }
+    }
 }
 
 dependencies {
@@ -41,4 +73,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
     compileOnly 'com.android.support:support-compat:28.0.0'
     implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
+    implementation 'com.tencent.mars:mars-core:1.2.3'
+    implementation 'com.google.protobuf:protobuf-java:3.6.1'
 }

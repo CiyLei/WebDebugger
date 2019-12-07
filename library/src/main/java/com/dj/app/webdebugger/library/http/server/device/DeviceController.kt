@@ -18,6 +18,7 @@ import android.view.WindowManager
 import java.lang.Exception
 import android.util.DisplayMetrics
 import com.dj.app.webdebugger.library.common.ResponseConstant
+import com.dj.app.webdebugger.library.utils.DeviceUtil
 import com.dj.app.webdebugger.library.utils.FileUtil
 import java.io.File
 
@@ -52,7 +53,7 @@ internal class DeviceController : HttpController() {
                         DeviceInfoBean.Info("制造商", Build.MANUFACTURER),
                         DeviceInfoBean.Info("Android 版本", Build.VERSION.RELEASE),
                         DeviceInfoBean.Info("SDK", Build.VERSION.SDK_INT.toString()),
-                        DeviceInfoBean.Info("IMEI", getIMEI())
+                        DeviceInfoBean.Info("IMEI", DeviceUtil.getIMEI(context!!) ?: "无权限，如需查看请在设置中开启")
                     )
                 ),
                 DeviceInfoBean.Group(
@@ -98,21 +99,6 @@ internal class DeviceController : HttpController() {
             )
         }
         return success(deviceInfoBean)
-    }
-
-    private fun getIMEI(): String {
-        try {
-            val tm = context!!.getSystemService(TELEPHONY_SERVICE) as TelephonyManager?
-            if (ActivityCompat.checkSelfPermission(
-                    context!!,
-                    Manifest.permission.READ_PHONE_STATE
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                return tm!!.deviceId
-            }
-        } catch (e: Exception) {
-        }
-        return "无权限，如需查看请在设置中开启"
     }
 
     private fun getWindowManager(): WindowManager? =
