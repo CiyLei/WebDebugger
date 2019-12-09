@@ -2,6 +2,7 @@ package com.dj.app.webdebugger.library.mars
 
 import android.app.Service
 import android.os.Build
+import android.os.VibrationEffect
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.proto.AppProto
 import com.tencent.mars.app.AppLogic
@@ -37,7 +38,11 @@ internal class MarsStub(val marsServer: MarsServer) : StnLogic.ICallBack, SdtLog
             SEND_SHOCK_CMDID -> {
                 // 振动
                 val vibrator = WebDebugger.context!!.getSystemService(Service.VIBRATOR_SERVICE) as Vibrator
-                vibrator.vibrate(1000)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    vibrator.vibrate(1000)
+                }
             }
         }
     }
