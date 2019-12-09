@@ -11,6 +11,8 @@ message Info {
     int32 device_type = 3;
     // 应用名称
     string application_name = 4;
+    // 导向的ip
+    string address = 5;
     // 导向的端口号
-    int32 port = 5;
+    int32 port = 6;
 }

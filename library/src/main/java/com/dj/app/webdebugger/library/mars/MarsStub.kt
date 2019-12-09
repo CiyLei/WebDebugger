@@ -12,8 +12,7 @@ import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import android.os.Vibrator
-
-
+import com.dj.app.webdebugger.library.utils.DeviceUtil
 
 
 /**
@@ -127,6 +126,7 @@ internal class MarsStub(val marsServer: MarsServer) : StnLogic.ICallBack, SdtLog
             .setDeviceCode(marsServer.deviceCode)
             .setDeviceName(Build.MODEL)
             .setDeviceType(1)
+            .setAddress(DeviceUtil.getLocalInetAddress()?.hostAddress ?: "")
             .setPort(WebDebugger.httpPort)
         if (WebDebugger.appAlias?.isNotEmpty() == true) {
             infoBuild.applicationName = WebDebugger.appAlias
