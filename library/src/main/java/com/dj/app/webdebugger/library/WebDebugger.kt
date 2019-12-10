@@ -155,13 +155,17 @@ class WebDebugger {
                     override fun onActivityPaused(activity: Activity?) {
                         try {
                             BaseEvent.onForeground(false)
-                        } catch (e: Throwable) {}
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
+                        }
                     }
 
                     override fun onActivityResumed(activity: Activity?) {
                         try {
                             BaseEvent.onForeground(true)
-                        } catch (e: Throwable) {}
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
+                        }
                     }
 
                     override fun onActivityStarted(activity: Activity?) {
@@ -173,7 +177,9 @@ class WebDebugger {
                             if (!MarsServer.isStart) {
                                 startMarsServer()
                             }
-                        } catch (e: Throwable) {}
+                        } catch (e: Throwable) {
+                            e.printStackTrace()
+                        }
                     }
 
                     override fun onActivityDestroyed(activity: Activity?) {
@@ -188,7 +194,9 @@ class WebDebugger {
                     override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
                     }
                 })
-            } catch (e: Throwable) {}
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
         }
 
         /**
@@ -227,7 +235,9 @@ class WebDebugger {
                         }
                     }
                 }
-            } catch (e: Throwable) {}
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
         }
 
         /**
@@ -296,7 +306,9 @@ class WebDebugger {
                         }
                     }
                 }
-            } catch (e: Throwable) {}
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
         }
     }
 
