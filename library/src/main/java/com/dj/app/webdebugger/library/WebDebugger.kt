@@ -141,46 +141,54 @@ class WebDebugger {
          * 在Application中初始化（主要的目的是为了获取顶层的Activity）
          */
         fun install(application: Application) {
-            val httpPort = application.getString(R.string.HTTP_PORT).toInt()
-            val webSocketPort = application.getString(R.string.WEB_SOCKET_PORT).toInt()
-            val resourcePort = application.getString(R.string.RESOURCE_PORT).toInt()
-            val serviceHost = application.getString(R.string.SERVICEHOST).toString()
-            val servicePort = application.getString(R.string.SERVICEPORT).toInt()
-            start(application, httpPort, webSocketPort, resourcePort, serviceHost, servicePort)
-            screenRecordingPrompt = ScreenRecordingPrompt(application)
+            try {
+                val httpPort = application.getString(R.string.HTTP_PORT).toInt()
+                val webSocketPort = application.getString(R.string.WEB_SOCKET_PORT).toInt()
+                val resourcePort = application.getString(R.string.RESOURCE_PORT).toInt()
+                val serviceHost = application.getString(R.string.SERVICEHOST).toString()
+                val servicePort = application.getString(R.string.SERVICEPORT).toInt()
+                start(application, httpPort, webSocketPort, resourcePort, serviceHost, servicePort)
+                screenRecordingPrompt = ScreenRecordingPrompt(application)
 
-            application.registerActivityLifecycleCallbacks(object :
-                Application.ActivityLifecycleCallbacks {
-                override fun onActivityPaused(activity: Activity?) {
-                    BaseEvent.onForeground(false)
-                }
-
-                override fun onActivityResumed(activity: Activity?) {
-                    BaseEvent.onForeground(true)
-                }
-
-                override fun onActivityStarted(activity: Activity?) {
-                    topActivity = activity
-                    if (!ResourceDebugger.isStart) {
-                        reloadResourceServer()
+                application.registerActivityLifecycleCallbacks(object :
+                    Application.ActivityLifecycleCallbacks {
+                    override fun onActivityPaused(activity: Activity?) {
+                        try {
+                            BaseEvent.onForeground(false)
+                        } catch (e: Throwable) {}
                     }
-                    if (!MarsServer.isStart) {
-                        startMarsServer()
+
+                    override fun onActivityResumed(activity: Activity?) {
+                        try {
+                            BaseEvent.onForeground(true)
+                        } catch (e: Throwable) {}
                     }
-                }
 
-                override fun onActivityDestroyed(activity: Activity?) {
-                }
+                    override fun onActivityStarted(activity: Activity?) {
+                        try {
+                            topActivity = activity
+                            if (!ResourceDebugger.isStart) {
+                                reloadResourceServer()
+                            }
+                            if (!MarsServer.isStart) {
+                                startMarsServer()
+                            }
+                        } catch (e: Throwable) {}
+                    }
 
-                override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
-                }
+                    override fun onActivityDestroyed(activity: Activity?) {
+                    }
 
-                override fun onActivityStopped(activity: Activity?) {
-                }
+                    override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
+                    }
 
-                override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
-                }
-            })
+                    override fun onActivityStopped(activity: Activity?) {
+                    }
+
+                    override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
+                    }
+                })
+            } catch (e: Throwable) {}
         }
 
         /**
@@ -199,92 +207,96 @@ class WebDebugger {
             permissions: Array<out String>,
             grantResults: IntArray
         ) {
-            when (requestCode) {
-                // 开启资源服务器
-                PERMISSION_START_RESOURECE -> {
-                    if (grantResults[0] == PERMISSION_GRANTED) {
-                        reloadResourceServer()
-                    } else {
-                        Toast.makeText(context, RESOURCE_SERVER_FAILED_TO_OPEN, Toast.LENGTH_LONG)
-                            .show()
+            try {
+                when (requestCode) {
+                    // 开启资源服务器
+                    PERMISSION_START_RESOURECE -> {
+                        if (grantResults[0] == PERMISSION_GRANTED) {
+                            reloadResourceServer()
+                        } else {
+                            Toast.makeText(context, RESOURCE_SERVER_FAILED_TO_OPEN, Toast.LENGTH_LONG)
+                                .show()
+                        }
+                    }
+                    PERMISSION_PHONE_STATE_RESOURECE -> {
+                        if (grantResults[0] == PERMISSION_GRANTED) {
+                            startMarsServer()
+                        } else {
+                            Toast.makeText(context, RESOURCE_PHONE_STATE_FAILED_TO_OPEN, Toast.LENGTH_LONG)
+                                .show()
+                        }
                     }
                 }
-                PERMISSION_PHONE_STATE_RESOURECE -> {
-                    if (grantResults[0] == PERMISSION_GRANTED) {
-                        startMarsServer()
-                    } else {
-                        Toast.makeText(context, RESOURCE_PHONE_STATE_FAILED_TO_OPEN, Toast.LENGTH_LONG)
-                            .show()
-                    }
-                }
-            }
+            } catch (e: Throwable) {}
         }
 
         /**
          * 截屏和录屏需要用到
          */
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            when (requestCode) {
-                // 请求截屏
-                REQUEST_SCREEN_CAPTURE -> {
-                    if (data == null) {
-                        // 申请失败
-                        Toast.makeText(context, SCREEN_CAPTURE_FAILED, Toast.LENGTH_LONG).show()
-                    } else if (resultCode == Activity.RESULT_OK) {
-                        // 开始截屏
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-                            // 以防太快导致申请权限的弹框还在
-                            Handler().postDelayed({
-                                val screenCapture =
-                                    MediaProjectionManagerScreenHelp(
-                                        context!!,
-                                        resultCode,
-                                        data
-                                    )
-                                screenCapture.screenCapture(
-                                    object :
-                                        MediaProjectionManagerScreenHelp.OnImageListener {
-                                        override fun onImagePath(fileName: String) {
-                                            mediaObservable.notifyObservers()
-                                        }
-                                    })
-                            }, 300)
+            try {
+                when (requestCode) {
+                    // 请求截屏
+                    REQUEST_SCREEN_CAPTURE -> {
+                        if (data == null) {
+                            // 申请失败
+                            Toast.makeText(context, SCREEN_CAPTURE_FAILED, Toast.LENGTH_LONG).show()
+                        } else if (resultCode == Activity.RESULT_OK) {
+                            // 开始截屏
+                            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                                // 以防太快导致申请权限的弹框还在
+                                Handler().postDelayed({
+                                    val screenCapture =
+                                        MediaProjectionManagerScreenHelp(
+                                            context!!,
+                                            resultCode,
+                                            data
+                                        )
+                                    screenCapture.screenCapture(
+                                        object :
+                                            MediaProjectionManagerScreenHelp.OnImageListener {
+                                            override fun onImagePath(fileName: String) {
+                                                mediaObservable.notifyObservers()
+                                            }
+                                        })
+                                }, 300)
+                            }
                         }
                     }
-                }
-                // 请求录屏
-                REQUEST_SCREEN_RECORDING -> {
-                    if (data == null) {
-                        // 申请失败
-                        Toast.makeText(context, SCREEN_RECORDING_FAILED, Toast.LENGTH_LONG).show()
-                    } else if (resultCode == Activity.RESULT_OK) {
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                if (topActivity != null && !Settings.canDrawOverlays(topActivity)) {
-                                    // 没有显示录像红点的权限
-                                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    topActivity?.startActivityForResult(intent, 1)
-                                    Toast.makeText(
-                                        topActivity,
-                                        "没有录屏提示的权限，必须开启且重新开始录屏",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                    return
+                    // 请求录屏
+                    REQUEST_SCREEN_RECORDING -> {
+                        if (data == null) {
+                            // 申请失败
+                            Toast.makeText(context, SCREEN_RECORDING_FAILED, Toast.LENGTH_LONG).show()
+                        } else if (resultCode == Activity.RESULT_OK) {
+                            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    if (topActivity != null && !Settings.canDrawOverlays(topActivity)) {
+                                        // 没有显示录像红点的权限
+                                        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        topActivity?.startActivityForResult(intent, 1)
+                                        Toast.makeText(
+                                            topActivity,
+                                            "没有录屏提示的权限，必须开启且重新开始录屏",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        return
+                                    }
+                                }
+                                // 显示录像红点
+                                screenRecordingPrompt?.show()
+                                // 开始录屏
+                                if (screenRecordingHelp == null) {
+                                    screenRecordingHelp =
+                                        MediaProjectionManagerScreenHelp(context!!, resultCode, data)
+                                    screenRecordingHelp!!.startScreenRecording()
                                 }
                             }
-                            // 显示录像红点
-                            screenRecordingPrompt?.show()
-                            // 开始录屏
-                            if (screenRecordingHelp == null) {
-                                screenRecordingHelp =
-                                    MediaProjectionManagerScreenHelp(context!!, resultCode, data)
-                                screenRecordingHelp!!.startScreenRecording()
-                            }
                         }
                     }
                 }
-            }
+            } catch (e: Throwable) {}
         }
     }
 
