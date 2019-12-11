@@ -171,7 +171,9 @@ class WebDebugger {
                     Application.ActivityLifecycleCallbacks {
                     override fun onActivityPaused(activity: Activity?) {
                         try {
-                            BaseEvent.onForeground(false)
+                            if (MarsServer.isStart) {
+                                BaseEvent.onForeground(false)
+                            }
                         } catch (e: Throwable) {
                             if (isDebug) {
                                 e.printStackTrace()
@@ -181,7 +183,9 @@ class WebDebugger {
 
                     override fun onActivityResumed(activity: Activity?) {
                         try {
-                            BaseEvent.onForeground(true)
+                            if (MarsServer.isStart) {
+                                BaseEvent.onForeground(true)
+                            }
                         } catch (e: Throwable) {
                             if (isDebug) {
                                 e.printStackTrace()
