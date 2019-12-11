@@ -17,6 +17,10 @@ class WebDebugger {
         val httpMatchs = ArrayList<IHttpRouterMatch>()
         val webSocketMatchs = ArrayList<IWebSocketMatch>()
 
+        fun openDebug() {
+
+        }
+
         @JvmStatic
         fun injectionRetrofit(retrofit: Retrofit, environment: Map<String, String>, service: Class<*>? = null) {
 

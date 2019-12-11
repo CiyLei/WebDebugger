@@ -69,6 +69,12 @@ class WebDebugger {
         internal var appAlias: String? = null
         internal var serviceHost: String = ""
         internal var servicePort: Int = 8085
+        // 是否Debug 决定是否打印日志
+        internal var isDebug = false;
+
+        fun openDebug() {
+            isDebug = true
+        }
 
         /**
          * 框架启动入口
@@ -77,7 +83,14 @@ class WebDebugger {
          * @ResourcePort 资源服务器端口
          */
         @JvmStatic
-        internal fun start(context: Context, httpPort: Int, webSocketPort: Int, resourcePort: Int, serviceHost: String, servicePort: Int) {
+        internal fun start(
+            context: Context,
+            httpPort: Int,
+            webSocketPort: Int,
+            resourcePort: Int,
+            serviceHost: String,
+            servicePort: Int
+        ) {
             this.context = context
             this.httpPort = httpPort
             this.webSocketPort = webSocketPort
@@ -113,7 +126,11 @@ class WebDebugger {
          * @environment: 设置预设的环境（key：环境名称，value：环境url）
          */
         @JvmStatic
-        fun injectionRetrofit(retrofit: Retrofit, environment: Map<String, String>, service: Class<*>? = null) {
+        fun injectionRetrofit(
+            retrofit: Retrofit,
+            environment: Map<String, String>,
+            service: Class<*>? = null
+        ) {
             this.retrofit = retrofit
             this.environment.clear()
             this.environment.putAll(environment)
@@ -156,7 +173,9 @@ class WebDebugger {
                         try {
                             BaseEvent.onForeground(false)
                         } catch (e: Throwable) {
-                            e.printStackTrace()
+                            if (isDebug) {
+                                e.printStackTrace()
+                            }
                         }
                     }
 
@@ -164,7 +183,9 @@ class WebDebugger {
                         try {
                             BaseEvent.onForeground(true)
                         } catch (e: Throwable) {
-                            e.printStackTrace()
+                            if (isDebug) {
+                                e.printStackTrace()
+                            }
                         }
                     }
 
@@ -178,24 +199,34 @@ class WebDebugger {
                                 startMarsServer()
                             }
                         } catch (e: Throwable) {
-                            e.printStackTrace()
+                            if (isDebug) {
+                                e.printStackTrace()
+                            }
                         }
                     }
 
                     override fun onActivityDestroyed(activity: Activity?) {
                     }
 
-                    override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
+                    override fun onActivitySaveInstanceState(
+                        activity: Activity?,
+                        outState: Bundle?
+                    ) {
                     }
 
                     override fun onActivityStopped(activity: Activity?) {
                     }
 
-                    override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
+                    override fun onActivityCreated(
+                        activity: Activity?,
+                        savedInstanceState: Bundle?
+                    ) {
                     }
                 })
             } catch (e: Throwable) {
-                e.printStackTrace()
+                if (isDebug) {
+                    e.printStackTrace()
+                }
             }
         }
 
@@ -222,7 +253,11 @@ class WebDebugger {
                         if (grantResults[0] == PERMISSION_GRANTED) {
                             reloadResourceServer()
                         } else {
-                            Toast.makeText(context, RESOURCE_SERVER_FAILED_TO_OPEN, Toast.LENGTH_LONG)
+                            Toast.makeText(
+                                context,
+                                RESOURCE_SERVER_FAILED_TO_OPEN,
+                                Toast.LENGTH_LONG
+                            )
                                 .show()
                         }
                     }
@@ -230,13 +265,19 @@ class WebDebugger {
                         if (grantResults[0] == PERMISSION_GRANTED) {
                             startMarsServer()
                         } else {
-                            Toast.makeText(context, RESOURCE_PHONE_STATE_FAILED_TO_OPEN, Toast.LENGTH_LONG)
+                            Toast.makeText(
+                                context,
+                                RESOURCE_PHONE_STATE_FAILED_TO_OPEN,
+                                Toast.LENGTH_LONG
+                            )
                                 .show()
                         }
                     }
                 }
             } catch (e: Throwable) {
-                e.printStackTrace()
+                if (isDebug) {
+                    e.printStackTrace()
+                }
             }
         }
 
@@ -277,13 +318,15 @@ class WebDebugger {
                     REQUEST_SCREEN_RECORDING -> {
                         if (data == null) {
                             // 申请失败
-                            Toast.makeText(context, SCREEN_RECORDING_FAILED, Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, SCREEN_RECORDING_FAILED, Toast.LENGTH_LONG)
+                                .show()
                         } else if (resultCode == Activity.RESULT_OK) {
                             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                     if (topActivity != null && !Settings.canDrawOverlays(topActivity)) {
                                         // 没有显示录像红点的权限
-                                        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                                        val intent =
+                                            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                         topActivity?.startActivityForResult(intent, 1)
                                         Toast.makeText(
@@ -299,7 +342,11 @@ class WebDebugger {
                                 // 开始录屏
                                 if (screenRecordingHelp == null) {
                                     screenRecordingHelp =
-                                        MediaProjectionManagerScreenHelp(context!!, resultCode, data)
+                                        MediaProjectionManagerScreenHelp(
+                                            context!!,
+                                            resultCode,
+                                            data
+                                        )
                                     screenRecordingHelp!!.startScreenRecording()
                                 }
                             }
@@ -307,7 +354,9 @@ class WebDebugger {
                     }
                 }
             } catch (e: Throwable) {
-                e.printStackTrace()
+                if (isDebug) {
+                    e.printStackTrace()
+                }
             }
         }
     }
