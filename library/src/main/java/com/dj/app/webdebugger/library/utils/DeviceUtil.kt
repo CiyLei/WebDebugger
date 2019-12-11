@@ -3,6 +3,7 @@ package com.dj.app.webdebugger.library.utils
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.telephony.TelephonyManager
 import java.lang.Exception
@@ -19,13 +20,17 @@ internal object DeviceUtil {
 
     fun getIMEI(context: Context): String? {
         try {
-            val tm = context!!.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
+            val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
             if (ActivityCompat.checkSelfPermission(
-                    context!!,
+                    context,
                     Manifest.permission.READ_PHONE_STATE
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                return tm!!.deviceId
+                if (tm?.deviceId?.isNotEmpty() == true) {
+                    return tm.deviceId
+                } else {
+                    return Settings.Secure.getString(context.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+                }
             }
         } catch (e: Exception) {
         }
