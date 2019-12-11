@@ -37,7 +37,6 @@ internal class MarsServer(val deviceCode: String, val servieHost: String, val se
                     )
                 }
             } else {
-                isStart = true
                 return MarsServer(imei, servieHost, servicePort)
             }
             return null
@@ -48,6 +47,8 @@ internal class MarsServer(val deviceCode: String, val servieHost: String, val se
      * 启动mars服务
      */
     fun start() {
+        isStart = true
+
         marsStub = MarsStub(this)
         Mars.loadDefaultMarsLibrary()
 
