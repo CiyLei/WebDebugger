@@ -124,7 +124,7 @@ internal class MarsStub(val marsServer: MarsServer) : StnLogic.ICallBack, SdtLog
         // 每次连接都要送发送设备信息
         val infoBuild = AppProto.Info.newBuilder()
             .setDeviceCode(marsServer.deviceCode)
-            .setDeviceName(Build.MODEL)
+            .setDeviceName(Build.BRAND + " " + Build.MODEL)
             .setDeviceType(1)
             .setAddress(DeviceUtil.getLocalInetAddress()?.hostAddress ?: "")
             .setPort(WebDebugger.httpPort)
