@@ -145,7 +145,10 @@ internal object RetrofitUtil {
         parameterType: Type,
         annotations: Array<Annotation>
     ) {
-        var typeName = (parameterType as Class<*>).name
+        var typeName = parameterType.typeName
+        if (parameterType is Class<*>) {
+            typeName = parameterType.name
+        }
         for (annotation in annotations) {
             when (annotation) {
                 is Query -> {
