@@ -50,19 +50,23 @@ class WebDebuggerInterceptor : Interceptor {
         } else {
             responseBodyStringBuild.append("不支持查看的类型：$contentType")
         }
-        WebDebugger.netObservable.notifyObservers(
-            NetInfoBean(
-                url,
-                method,
-                requestDataTime,
-                timeCost,
-                requestHeaders,
-                responseHeaders,
-                code,
-                requestBodyStringBuild.toString(),
-                responseBodyStringBuild.toString()
-            )
+        val netInfoBean = NetInfoBean(
+            0,
+            url,
+            method,
+            requestDataTime,
+            timeCost,
+            requestHeaders,
+            responseHeaders,
+            code,
+            requestBodyStringBuild.toString(),
+            responseBodyStringBuild.toString()
         )
+        WebDebugger.netObservable.notifyObservers(netInfoBean)
+        if (WebDebugger.context != null) {
+            // 持久化请求记录
+            WebDebugger.dataBase.netHistoryDao().addNetHistory(netInfoBean)
+        }
         return response
     }
 

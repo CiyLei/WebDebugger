@@ -2,6 +2,7 @@ package com.dj.app.webdebugger.library
 
 import android.app.Activity
 import android.app.Application
+import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -19,6 +20,7 @@ import com.dj.app.webdebugger.library.common.WebDebuggerConstant.RESOURCE_PHONE_
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.RESOURCE_SERVER_FAILED_TO_OPEN
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.SCREEN_CAPTURE_FAILED
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.SCREEN_RECORDING_FAILED
+import com.dj.app.webdebugger.library.db.WebDebuggerDataBase
 import com.dj.app.webdebugger.library.http.AssetsRouterMatch
 import com.dj.app.webdebugger.library.http.AutoRouterMatch
 import com.dj.app.webdebugger.library.http.HttpDebugger
@@ -71,6 +73,13 @@ class WebDebugger {
         internal var servicePort: Int = 8085
         // 是否Debug 决定是否打印日志
         internal var isDebug = false;
+        // 数据库对象
+        internal val dataBase: WebDebuggerDataBase by lazy {
+            // allowMainThreadQueries 允许主线程查询
+            // fallbackToDestructiveMigration 设置迁移数据库如果发生错误，将会重新创建数据库，而不是发生崩溃
+            Room.databaseBuilder(context!!, WebDebuggerDataBase::class.java, "db_webdebugger.db")
+                .allowMainThreadQueries().fallbackToDestructiveMigration().build()
+        }
 
         fun openDebug() {
             isDebug = true
