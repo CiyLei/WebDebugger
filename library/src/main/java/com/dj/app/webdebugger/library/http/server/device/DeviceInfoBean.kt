@@ -5,7 +5,7 @@ package com.dj.app.webdebugger.library.http.server.device
  * Describe: 设备信息模型
  */
 
-internal data class DeviceInfoBean(val port: Int, val groups: ArrayList<Group>) {
+internal data class DeviceInfoBean(val port: Int, val groups: ArrayList<Group>, val dbPort: Int) {
 
     data class Group(val groupName: String, val infos: ArrayList<Info>)
     data class Info(val name: String, val value: String)

@@ -1,6 +1,5 @@
 package com.dj.app.webdebugger.library.http.server.device
 
-import android.Manifest
 import android.content.Context
 import android.os.Build
 import com.dj.app.webdebugger.library.WebDebugger
@@ -10,13 +9,9 @@ import com.dj.app.webdebugger.library.http.server.HttpController
 import fi.iki.elonen.NanoHTTPD
 import java.text.SimpleDateFormat
 import java.util.*
-import android.content.Context.TELEPHONY_SERVICE
-import android.content.pm.PackageManager
-import android.support.v4.app.ActivityCompat
-import android.telephony.TelephonyManager
 import android.view.WindowManager
-import java.lang.Exception
 import android.util.DisplayMetrics
+import com.dj.app.webdebugger.library.R
 import com.dj.app.webdebugger.library.common.ResponseConstant
 import com.dj.app.webdebugger.library.utils.DeviceUtil
 import com.dj.app.webdebugger.library.utils.FileUtil
@@ -73,8 +68,8 @@ internal class DeviceController : HttpController() {
                         DeviceInfoBean.Info("用户", Build.USER)
                     )
                 )
-
-            )
+            ),
+            WebDebugger.context!!.getString(R.string.PORT_NUMBER).toInt()
         )
         getWindowManager()?.let {
             val dm = DisplayMetrics()
