@@ -22,7 +22,7 @@ internal object FileUtil {
         val sb = StringBuffer()
         var line = br.readLine()
         while (line != null) {
-            sb.append(line)
+            sb.append(line + "\n")
             line = br.readLine()
         }
         return sb.toString()
