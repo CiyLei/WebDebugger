@@ -1,6 +1,5 @@
 package com.dj.app.webdebugger.library.http.server.media
 
-import android.content.ContentValues.TAG
 import android.media.projection.MediaProjection
 import android.hardware.display.DisplayManager
 import android.os.Build
@@ -12,20 +11,18 @@ import android.media.ImageReader
 import android.support.annotation.RequiresApi
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import com.dj.app.webdebugger.library.utils.FileUtil
 import java.io.File
 import android.graphics.Bitmap
 import android.media.Image
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Handler
+import com.dj.app.webdebugger.library.utils.FileUtil
 import com.dj.app.webdebugger.library.utils.ScreenUtil
 import com.dj.app.webdebugger.library.utils.VideoUtils
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -144,7 +141,8 @@ internal class MediaProjectionManagerScreenHelp(
             mMediaProjection?.stop()
             // 合并此次录制的所有屏幕
             try {
-                saveMediaPath = FileUtil.getMediaCacheFile(mContext).absolutePath + File.separator + ScreenUtil.getScreenRecordingName()
+                saveMediaPath =
+                    FileUtil.getMediaCacheFile(mContext).absolutePath + File.separator + ScreenUtil.getScreenRecordingName()
                 VideoUtils.appendMp4List(mediaPathList, saveMediaPath)
                 // 删除合并前的视频
                 mediaPathList.forEach {
@@ -194,7 +192,8 @@ internal class MediaProjectionManagerScreenHelp(
 //        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
         mediaRecorder.setMaxDuration(1 * 60 * 1000)               // 设置最大时长5分钟
         mediaRecorder.setVideoEncodingBitRate(1 * 1024 * 1024)   //  设置视频文件的比特率,经过测试该属性对于视频大小影响最大
-        mediaRecorder.setVideoSize(windowWidth, windowHeight)
+        setVideoSize(mediaRecorder);
+//        mediaRecorder.setVideoSize(windowWidth, windowHeight)
         mediaRecorder.setVideoFrameRate(30)
         mediaRecorder.setOnErrorListener(OnRecordErrorListener()) // 录制发生错误的监听
         mediaRecorder.setOnInfoListener(OnRecordInfoListener()) //
@@ -204,6 +203,15 @@ internal class MediaProjectionManagerScreenHelp(
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    /**
+     * 因为某些手机的齐刘海会导致录屏失败，但是减去状态栏高度就可以了
+     */
+    private fun setVideoSize(mediaRecorder: MediaRecorder) {
+        val identifier = mContext.resources.getIdentifier("status_bar_height", "dimen", "android");
+        val height = mContext.resources.getDimensionPixelSize(identifier)
+        mediaRecorder.setVideoSize(windowWidth, windowHeight - height)
     }
 
     /**
