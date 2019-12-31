@@ -191,7 +191,7 @@ internal class MediaProjectionManagerScreenHelp(
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
 //        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
         mediaRecorder.setMaxDuration(1 * 60 * 1000)               // 设置最大时长5分钟
-        mediaRecorder.setVideoEncodingBitRate(1 * 1024 * 1024)   //  设置视频文件的比特率,经过测试该属性对于视频大小影响最大
+        mediaRecorder.setVideoEncodingBitRate(10 * 1024 * 1024)   //  设置视频文件的比特率,经过测试该属性对于视频大小影响最大
         setVideoSize(mediaRecorder);
 //        mediaRecorder.setVideoSize(windowWidth, windowHeight)
         mediaRecorder.setVideoFrameRate(30)
