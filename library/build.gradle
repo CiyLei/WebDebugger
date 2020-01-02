@@ -84,4 +84,5 @@ dependencies {
     implementation ('com.amitshekhar.android:debug-db:1.0.6', {
         exclude group: 'com.android.support'
     })
+    implementation 'com.github.smarxpan:NotchScreenTool:0.0.1'
 }

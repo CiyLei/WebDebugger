@@ -17,6 +17,7 @@ import android.media.Image
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Handler
+import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.utils.FileUtil
 import com.dj.app.webdebugger.library.utils.ScreenUtil
 import com.dj.app.webdebugger.library.utils.VideoUtils
@@ -206,12 +207,10 @@ internal class MediaProjectionManagerScreenHelp(
     }
 
     /**
-     * 因为某些手机的齐刘海会导致录屏失败，但是减去状态栏高度就可以了
+     * 因为某些手机的齐刘海会导致录屏失败，但是减去刘海屏的高度就可以了
      */
     private fun setVideoSize(mediaRecorder: MediaRecorder) {
-        val identifier = mContext.resources.getIdentifier("status_bar_height", "dimen", "android");
-        val height = mContext.resources.getDimensionPixelSize(identifier)
-        mediaRecorder.setVideoSize(windowWidth, windowHeight - height)
+        mediaRecorder.setVideoSize(windowWidth, windowHeight - (WebDebugger.notchHeight ?: 0))
     }
 
     /**

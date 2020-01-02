@@ -31,6 +31,7 @@ import com.dj.app.webdebugger.library.mars.MarsServer
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
+import com.smarx.notchlib.NotchScreenManager
 import com.tencent.mars.BaseEvent
 import fi.iki.elonen.NanoHTTPD
 import retrofit2.Retrofit
@@ -80,6 +81,8 @@ class WebDebugger {
             Room.databaseBuilder(context!!, WebDebuggerDataBase::class.java, "db_webdebugger.db")
                 .allowMainThreadQueries().fallbackToDestructiveMigration().build()
         }
+        // 刘海屏的刘海高度（录屏的时候需要用到）
+        internal var notchHeight: Int? = null
 
         fun openDebug() {
             isDebug = true
@@ -234,6 +237,17 @@ class WebDebugger {
                         activity: Activity?,
                         savedInstanceState: Bundle?
                     ) {
+                        if (notchHeight == null) {
+                            // 获取刘海屏的刘海高度
+                            NotchScreenManager.getInstance().getNotchInfo(activity
+                            ) { notchScreenInfo ->
+                                notchHeight = if (notchScreenInfo?.hasNotch == true && notchScreenInfo.notchRects.size > 0) {
+                                    notchScreenInfo.notchRects[0].height()
+                                } else {
+                                    0
+                                }
+                            }
+                        }
                     }
                 })
             } catch (e: Throwable) {
