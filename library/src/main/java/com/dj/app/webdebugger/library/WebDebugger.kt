@@ -241,7 +241,7 @@ class WebDebugger {
                             // 获取刘海屏的刘海高度
                             NotchScreenManager.getInstance().getNotchInfo(activity
                             ) { notchScreenInfo ->
-                                notchHeight = if (notchScreenInfo?.hasNotch == true && notchScreenInfo.notchRects.size > 0) {
+                                notchHeight = if (notchScreenInfo?.hasNotch == true && (notchScreenInfo.notchRects?.size ?: 0) > 0) {
                                     notchScreenInfo.notchRects[0].height()
                                 } else {
                                     0
