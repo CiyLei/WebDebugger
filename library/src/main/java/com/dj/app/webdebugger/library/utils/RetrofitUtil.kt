@@ -145,7 +145,7 @@ internal object RetrofitUtil {
         parameterType: Type,
         annotations: Array<Annotation>
     ) {
-        var typeName = parameterType.typeName
+        var typeName = parameterType.toString()
         if (parameterType is Class<*>) {
             typeName = parameterType.name
         }
