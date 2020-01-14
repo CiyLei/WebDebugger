@@ -76,6 +76,9 @@ releaseImplementation 'com.ciy:WebDebugger-no-op:1.0.0'
 
 ## 使用
 
+浏览地址：手机ip:8080
+> 端口由上面配置的 HTTP_PORT 决定，默认是 8080
+
 查看 [api](https://github.com/CiyLei/WebDebugger/blob/master/Api.md)
 
 ### 设备信息模块
