@@ -22,7 +22,7 @@ class DynamicExecute private constructor(
         private val GENERATE_PACKAGE = TaskExecutor::class.java.`package`.name
 
         // 生成的类名的前缀
-        private val GENERATE_CLASS_PREFIX = "Task_"
+        private const val GENERATE_CLASS_PREFIX = "Task_"
 
         /**
          * 只能通过此方法创建实例
