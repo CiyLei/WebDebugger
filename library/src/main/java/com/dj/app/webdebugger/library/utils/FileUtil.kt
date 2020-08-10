@@ -57,11 +57,28 @@ internal object FileUtil {
      * 获取媒体缓存路径
      */
     fun getMediaCacheFile(context: Context): File {
-        val mediaCacheFile = File(getCachePath(context).absolutePath + File.separator + getMediaCachePath())
-        if (!mediaCacheFile.exists()) {
-            mediaCacheFile.mkdirs()
+        val mediaCacheFile =
+            File(getCachePath(context).absolutePath + File.separator + getMediaCachePath())
+        return getAndMkdirs(mediaCacheFile)
+    }
+
+    /**
+     * 获取动态执行任务的缓存地址
+     */
+    fun getTaskCacheFile(context: Context): File {
+        val taskCacheFile =
+            File("${getCachePath(context).absolutePath}${File.separator}task${File.separator}")
+        return getAndMkdirs(taskCacheFile)
+    }
+
+    /**
+     * 返回并创建文件夹
+     */
+    private fun getAndMkdirs(path: File): File {
+        if (!path.exists()) {
+            path.mkdirs()
         }
-        return mediaCacheFile
+        return path
     }
 
 }

@@ -13,4 +13,5 @@ internal enum class ResponseConstant(val code: Int, val message: String) {
     MEDIA_CACHE_ACQUISITION_FAILED(105,"媒体缓存获取失败"),
     GET_DEVICE_SCREEN_FAILED(106,"获取屏幕信息失败"),
     GET_API_LIST_FAILED(107,"获取API清单失败"),
+    EXECUTE_CODE_FAIL(108,"执行代码失败"),
 }
