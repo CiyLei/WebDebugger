@@ -25,7 +25,7 @@ internal class CodeController : HttpController() {
         val import = (postParamt?.get("import") as? String) ?: ""
         // 是否运行在主线程
         val runOnMainThread = (postParamt?.get("runOnMainThread") as? Boolean) ?: false
-        if (context != null) {
+        if (context != null && code.isNotBlank()) {
             val execute = DynamicExecute.newInstance(context!!, import, code)
             val result = execute.execute(runOnMainThread)
             if (result) {

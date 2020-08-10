@@ -4,7 +4,6 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.WebDebuggerInterceptor
 import kotlinx.android.synthetic.main.activity_main.*
@@ -14,7 +13,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 

@@ -73,16 +73,8 @@ class DynamicExecute private constructor(
         // 反射调用执行代码
         val taskExecutor =
             cl.loadClass(completeClassName).newInstance() as? TaskExecutor ?: return false
-        try {
-            run(taskExecutor, runOnMainThread)
-            outContent = taskExecutor.getOutContent()
-            return true
-        } catch (e: Exception) {
-            if (WebDebugger.isDebug) {
-                e.printStackTrace()
-            }
-        }
-        return false
+        run(taskExecutor, runOnMainThread)
+        return true
     }
 
     /**
@@ -116,7 +108,12 @@ class DynamicExecute private constructor(
         if (runOnMainThread) {
             val o = Object()
             Handler(Looper.getMainLooper()).post {
-                task.run()
+                try {
+                    task.run()
+                } catch (e: Exception) {
+                    // 添加异常信息
+                    e.printStackTrace(task.out)
+                }
                 synchronized(o) {
                     o.notifyAll()
                 }
@@ -133,7 +130,14 @@ class DynamicExecute private constructor(
                 task.out.println("任务执行超时")
             }
         } else {
-            task.run()
+            try {
+                task.run()
+            } catch (e: Exception) {
+                // 添加异常信息
+                e.printStackTrace(task.out)
+            }
         }
+        // 读取输出的信息
+        outContent = task.getOutContent()
     }
 }

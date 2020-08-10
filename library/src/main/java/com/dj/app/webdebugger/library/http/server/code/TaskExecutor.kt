@@ -1,5 +1,6 @@
 package com.dj.app.webdebugger.library.http.server.code
 
+import android.app.Activity
 import android.content.Context
 import com.dj.app.webdebugger.library.WebDebugger
 import java.io.ByteArrayOutputStream
@@ -34,4 +35,10 @@ abstract class TaskExecutor : Runnable {
     fun getOutContent() = mByteArrayOutputStream.toString()
 
     fun getContext(): Context = WebDebugger.context!!
+
+    /**
+     * 获取顶上的Activity
+     */
+    fun getTopActivity(): Activity? = WebDebugger.topActivity
+
 }
