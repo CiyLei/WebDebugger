@@ -136,4 +136,9 @@ releaseImplementation 'com.ciy:WebDebugger-no-op:1.0.0'
 -keep class com.tencent.mars.** {
   public protected private *;
 }
+-keep class org.antlr.runtime.** { *; }
+-keep class org.objectweb.asm.** { *; }
+-keep class com.googlecode.** { *; }
+-keep class com.android.dx.** { *; }
+-keep class junit.** { *; }
 ```
