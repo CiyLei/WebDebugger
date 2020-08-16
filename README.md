@@ -89,6 +89,8 @@ releaseImplementation 'com.ciy:WebDebugger-no-op:1.1.0'
 
 ### 控制台模块
 
+提交运行代码（类似于chrome的Console）
+
 ![控制台模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/%e6%8e%a7%e5%88%b6%e5%8f%b0.png)
 
 ### logcat模块
