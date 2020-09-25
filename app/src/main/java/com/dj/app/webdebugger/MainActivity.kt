@@ -6,18 +6,26 @@ import android.os.Bundle
 import android.util.Log
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.WebDebuggerInterceptor
+import com.dj.app.webdebugger.library.WebDebuggerNetEventListener
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
+import okhttp3.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.io.IOException
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Proxy
 
 class MainActivity : AppCompatActivity() {
 
-    val okHttpClient = OkHttpClient.Builder().addInterceptor(WebDebuggerInterceptor()).build()
-    val retrofit = Retrofit.Builder().baseUrl("https://api.bilibili.com").client(okHttpClient).build()
+    val okHttpClient =
+        OkHttpClient.Builder().addInterceptor(WebDebuggerInterceptor()).eventListener(
+            WebDebuggerNetEventListener()
+        ).build()
+    val retrofit =
+        Retrofit.Builder().baseUrl("https://api.bilibili.com").client(okHttpClient).build()
     val apiServer = retrofit.create(ApiServer::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +46,7 @@ class MainActivity : AppCompatActivity() {
             Log.wtf("wtf", "wtf")
             apiServer.test().enqueue(object : Callback<ResponseBody> {
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    t.printStackTrace()
                     tvContent.text = t.message
                 }
 

@@ -1,6 +1,7 @@
 package com.dj.app.webdebugger.library
 
 import com.dj.app.webdebugger.library.common.NetInfoBean
+import com.dj.app.webdebugger.library.http.server.net.CallManager
 import okhttp3.*
 import okio.Buffer
 import java.lang.Exception
@@ -8,6 +9,8 @@ import java.lang.StringBuilder
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * Create by ChenLei on 2019/11/1
@@ -29,19 +32,7 @@ class WebDebuggerInterceptor : Interceptor {
         val code = response.code()
         val responseHeaders = response.headers().toMultimap()
         // 读取请求body数据
-        val requestBodyStringBuild = StringBuilder()
-        if (request.body() is MultipartBody) {
-            (request.body() as MultipartBody).parts().forEach {
-                val contentType = it.body().contentType().toString()
-                if (contentType.contains("text") || contentType.contains("json")) {
-                    requestBodyStringBuild.append(requestBodyToString(it.body())).append("\r\n")
-                } else {
-                    requestBodyStringBuild.append("不支持查看的类型：$contentType").append("\r\n")
-                }
-            }
-        } else if (request.body() != null) {
-            requestBodyStringBuild.append(requestBodyToString(request.body()!!))
-        }
+        val requestBodyString = requestToString(request)
         // 读取返回body数据
         val responseBodyStringBuild = StringBuilder()
         val contentType = response.body()?.contentType()?.toString()
@@ -50,61 +41,97 @@ class WebDebuggerInterceptor : Interceptor {
         } else {
             responseBodyStringBuild.append("不支持查看的类型：$contentType")
         }
-        val netInfoBean = NetInfoBean(
-            0,
-            url,
-            method,
-            requestDataTime,
-            timeCost,
-            requestHeaders,
-            responseHeaders,
-            code,
-            requestBodyStringBuild.toString(),
-            responseBodyStringBuild.toString()
-        )
-        WebDebugger.netObservable.notifyObservers(netInfoBean)
-        if (WebDebugger.context != null) {
-            // 持久化请求记录
-            WebDebugger.dataBase.netHistoryDao().addNetHistory(netInfoBean)
+        CallManager.instance.get(chain.call()).let {
+            it.url = url
+            it.method = method
+            it.requestDataTime = requestDataTime
+            it.timeCost = timeCost
+            it.requestHeaders = map2map(requestHeaders)
+            it.responseHeaders = map2map(responseHeaders)
+            it.code = code
+            it.requestBody = requestBodyString
+            it.responseBody = responseBodyStringBuild.toString()
         }
         return response
     }
 
-    private fun requestBodyToString(requestBody: RequestBody): String {
-        return try {
-            val buffer = Buffer()
-            requestBody.writeTo(buffer)
-            var charset: Charset = Charset.forName("UTF-8")
-            val contentType = requestBody.contentType()
-            if (contentType != null) {
-                val c = contentType.charset(charset)
-                if (c != null) {
-                    charset = c
+    companion object {
+
+        /**
+         * 请求转字符串
+         */
+        internal fun requestToString(request: Request): String {
+            val requestBodyStringBuild = StringBuilder()
+            if (request.body() is MultipartBody) {
+                (request.body() as MultipartBody).parts().forEach {
+                    val contentType = it.body().contentType().toString()
+                    if (contentType.contains("text") || contentType.contains("json")) {
+                        requestBodyStringBuild.append(requestBodyToString(it.body())).append("\r\n")
+                    } else {
+                        requestBodyStringBuild.append("不支持查看的类型：$contentType").append("\r\n")
+                    }
                 }
+            } else if (request.body() != null) {
+                requestBodyStringBuild.append(requestBodyToString(request.body()!!))
             }
-            buffer.readString(charset)
-        } catch (e: Exception) {
-            e.message ?: ""
+            return requestBodyStringBuild.toString()
+        }
+
+        /**
+         * 请求体转字符串
+         */
+        internal fun requestBodyToString(requestBody: RequestBody): String {
+            return try {
+                val buffer = Buffer()
+                requestBody.writeTo(buffer)
+                var charset: Charset = Charset.forName("UTF-8")
+                val contentType = requestBody.contentType()
+                if (contentType != null) {
+                    val c = contentType.charset(charset)
+                    if (c != null) {
+                        charset = c
+                    }
+                }
+                buffer.readString(charset)
+            } catch (e: Exception) {
+                e.message ?: ""
+            }
+        }
+
+        /**
+         * 响应体转字符串
+         */
+        internal fun responseBodyToString(responseBody: ResponseBody): String {
+            return try {
+                val source = responseBody.source()
+                source.request(java.lang.Long.MAX_VALUE)
+                val buffer = source.buffer()
+                var charset: Charset = Charset.forName("UTF-8")
+                val contentType = responseBody.contentType()
+                if (contentType != null) {
+                    val c = contentType.charset(charset)
+                    if (c != null) {
+                        charset = c
+                    }
+                }
+                return buffer.clone().readString(charset)
+            } catch (e: Exception) {
+                e.message ?: ""
+            }
+        }
+
+        internal fun map2map(map: Map<String, List<String>>): HashMap<String, ArrayList<String>> {
+            val m = HashMap<String, ArrayList<String>>()
+            map.entries.forEach { e ->
+                val list = ArrayList<String>()
+                e.value.forEach { v ->
+                    list.add(v)
+                }
+                m[e.key] = list
+            }
+            return m
         }
     }
 
-    private fun responseBodyToString(responseBody: ResponseBody): String {
-        return try {
-            val source = responseBody.source()
-            source.request(java.lang.Long.MAX_VALUE)
-            val buffer = source.buffer()
-            var charset: Charset = Charset.forName("UTF-8")
-            val contentType = responseBody.contentType()
-            if (contentType != null) {
-                val c = contentType.charset(charset)
-                if (c != null) {
-                    charset = c
-                }
-            }
-            return buffer.clone().readString(charset)
-        } catch (e: Exception) {
-            e.message ?: ""
-        }
-    }
 
 }

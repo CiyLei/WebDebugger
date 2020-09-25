@@ -58,29 +58,39 @@ class WebDebugger {
         internal val environment = HashMap<String, String>()
         internal var apiService: Class<*>? = null
         internal var topActivity: Activity? = null
+
         // 媒体变化被观察者
         internal val mediaObservable = WebDebuggerObservable()
+
         // 录屏的实例
         internal var screenRecordingHelp: MediaProjectionManagerScreenHelp? = null
+
         // 网络调试被观察者
         internal val netObservable = WebDebuggerObservable()
+
         // 录像显示的红点
         internal var screenRecordingPrompt: ScreenRecordingPrompt? = null
+
         // 是否开启连接后台服务
         internal var serviceEnable = false
+
         // 应用的别名
         internal var appAlias: String? = null
         internal var serviceHost: String = ""
         internal var servicePort: Int = 8085
+
         // 是否Debug 决定是否打印日志
         internal var isDebug = false;
+
         // 数据库对象
         internal val dataBase: WebDebuggerDataBase by lazy {
             // allowMainThreadQueries 允许主线程查询
             // fallbackToDestructiveMigration 设置迁移数据库如果发生错误，将会重新创建数据库，而不是发生崩溃
             Room.databaseBuilder(context!!, WebDebuggerDataBase::class.java, "db_webdebugger.db")
-                .allowMainThreadQueries().fallbackToDestructiveMigration().build()
+                .addMigrations(WebDebuggerDataBase.MIGRATION_1_TO_2).allowMainThreadQueries()
+                .fallbackToDestructiveMigration().build()
         }
+
         // 刘海屏的刘海高度（录屏的时候需要用到）
         internal var notchHeight: Int? = null
 
@@ -239,13 +249,17 @@ class WebDebugger {
                     ) {
                         if (notchHeight == null) {
                             // 获取刘海屏的刘海高度
-                            NotchScreenManager.getInstance().getNotchInfo(activity
+                            NotchScreenManager.getInstance().getNotchInfo(
+                                activity
                             ) { notchScreenInfo ->
-                                notchHeight = if (notchScreenInfo?.hasNotch == true && (notchScreenInfo.notchRects?.size ?: 0) > 0) {
-                                    notchScreenInfo.notchRects[0].height()
-                                } else {
-                                    0
-                                }
+                                notchHeight =
+                                    if (notchScreenInfo?.hasNotch == true && (notchScreenInfo.notchRects?.size
+                                            ?: 0) > 0
+                                    ) {
+                                        notchScreenInfo.notchRects[0].height()
+                                    } else {
+                                        0
+                                    }
                             }
                         }
                     }

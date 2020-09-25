@@ -8,19 +8,19 @@ import com.google.gson.reflect.TypeToken
  * Create by ChenLei on 2019/12/16
  * Describe: ROOM 数据转化器
  */
-internal class DBConverters {
+internal class WebDebuggerDBConverters {
 
     companion object {
         @JvmStatic
         @TypeConverter
-        fun mapToString(map: Map<String, List<String>>): String {
+        fun mapToString(map: HashMap<String, ArrayList<String>>): String {
             return Gson().toJson(map)
         }
 
         @JvmStatic
         @TypeConverter
-        fun stringToMap(str: String): Map<String, List<String>> {
-            return Gson().fromJson(str, object : TypeToken<Map<String, List<String>>>() {}.type)
+        fun stringToMap(str: String): HashMap<String, ArrayList<String>> {
+            return Gson().fromJson(str, object : TypeToken<HashMap<String, ArrayList<String>>>() {}.type)
         }
     }
 }
