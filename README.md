@@ -14,8 +14,8 @@ allprojects {
 }
 ```
 ```groovy
-debugImplementation 'com.ciy:WebDebugger:1.0.0'
-releaseImplementation 'com.ciy:WebDebugger-no-op:1.0.0'
+debugImplementation 'com.ciy:WebDebugger:1.1.0'
+releaseImplementation 'com.ciy:WebDebugger-no-op:1.1.0'
 ```
 
 ## 接入
@@ -86,6 +86,12 @@ releaseImplementation 'com.ciy:WebDebugger-no-op:1.0.0'
 实时监控FPS、内存情况，查看手机信息
 
 ![设备信息模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/%E8%AE%BE%E5%A4%87%E4%BF%A1%E6%81%AF.png)
+
+### 控制台模块
+
+提交运行代码（类似于chrome的Console）
+
+![控制台模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/%e6%8e%a7%e5%88%b6%e5%8f%b0.png)
 
 ### logcat模块
 
