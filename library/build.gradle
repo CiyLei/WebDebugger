@@ -79,9 +79,6 @@ protobuf {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api 'org.nanohttpd:nanohttpd:2.3.1'
     api 'org.nanohttpd:nanohttpd-websocket:2.3.1'
     api 'org.nanohttpd:nanohttpd-webserver:2.3.1'
@@ -94,7 +91,9 @@ dependencies {
     implementation ('android.arch.persistence.room:runtime:1.1.1', {
         exclude group: 'com.android.support'
     })
-    kapt 'android.arch.persistence.room:compiler:1.1.1'
+    kapt ('android.arch.persistence.room:compiler:1.1.1', {
+        exclude group: 'com.android.support'
+    })
     implementation ('com.amitshekhar.android:debug-db:1.0.6', {
         exclude group: 'com.android.support'
     })
