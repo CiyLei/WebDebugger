@@ -16,6 +16,13 @@ internal open class HttpController {
 
     var context: Context? = null
 
+    /**
+     * 在context注入之后调用
+     */
+    open fun onStart() {
+
+    }
+
     fun success(data: Any? = null, message: String = ""): NanoHTTPD.Response {
         return NanoHTTPD.newFixedLengthResponse(
             Gson().toJson(

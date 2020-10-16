@@ -14,4 +14,6 @@ internal enum class ResponseConstant(val code: Int, val message: String) {
     GET_DEVICE_SCREEN_FAILED(106,"获取屏幕信息失败"),
     GET_API_LIST_FAILED(107,"获取API清单失败"),
     EXECUTE_CODE_FAIL(108,"执行代码失败"),
+    MUST_PARAMETER_URL(109,"缺失url参数"),
+    NOT_FOUND_DOWNLOAD_SERVICE(110,"无法找到下载服务"),
 }

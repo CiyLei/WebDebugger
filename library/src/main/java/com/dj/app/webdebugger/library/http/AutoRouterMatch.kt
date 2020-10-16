@@ -42,6 +42,7 @@ internal class AutoRouterMatch(context: Context, scanPackName: String = "") : IH
                 val controller = controllerClass.newInstance() as? HttpController
                 if (controller != null && controllerUri != null) {
                     controller.context = context
+                    controller.onStart()
                     controllers[controllerUri] = controller
                     // 遍历所有Controller中的方法，找出所有由GetMapping或者PostMapping注解过的方法
                     for (method in controller::class.java.declaredMethods) {

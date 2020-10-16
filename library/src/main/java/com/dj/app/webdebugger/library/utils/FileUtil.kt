@@ -72,6 +72,15 @@ internal object FileUtil {
     }
 
     /**
+     * 获取下载任务的缓存地址
+     */
+    fun getDownLoadCacheFile(context: Context): File {
+        val taskCacheFile =
+            File("${getCachePath(context).absolutePath}${File.separator}downLoad${File.separator}")
+        return getAndMkdirs(taskCacheFile)
+    }
+
+    /**
      * 返回并创建文件夹
      */
     private fun getAndMkdirs(path: File): File {
