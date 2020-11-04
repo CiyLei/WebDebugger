@@ -43,6 +43,8 @@ internal abstract class WebDebuggerDataBase : RoomDatabase() {
                 database.execSQL("alter table net_history add column callFailedTime INTEGER NOT NULL DEFAULT 0")
                 database.execSQL("alter table net_history add column callEndTime INTEGER NOT NULL DEFAULT 0")
                 database.execSQL("alter table net_history add column callFailError TEXT NOT NULL DEFAULT \"\"")
+                database.execSQL("alter table net_history add column callFailErrorDetail TEXT NOT NULL DEFAULT \"\"")
+                database.execSQL("alter table net_history add column requestTime INTEGER NOT NULL DEFAULT 0")
             }
         }
 

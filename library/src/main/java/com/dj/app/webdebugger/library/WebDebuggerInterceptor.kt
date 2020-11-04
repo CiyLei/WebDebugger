@@ -24,11 +24,11 @@ class WebDebuggerInterceptor : Interceptor {
         val method = request.method()
         // 开始请求的时间
         val requestDataTime = SimpleDateFormat.getDateTimeInstance().format(Date())
+        val requestTime = System.currentTimeMillis()
         val requestHeaders = request.headers().toMultimap()
-        val t1 = System.currentTimeMillis()
         val response = chain.proceed(request)
         // 请求的时间用时（单位毫秒）
-        val timeCost = System.currentTimeMillis() - t1
+        val timeCost = System.currentTimeMillis() - requestTime
         val code = response.code()
         val responseHeaders = response.headers().toMultimap()
         // 读取请求body数据
@@ -45,6 +45,7 @@ class WebDebuggerInterceptor : Interceptor {
             it.url = url
             it.method = method
             it.requestDataTime = requestDataTime
+            it.requestTime = requestTime
             it.timeCost = timeCost
             it.requestHeaders = map2map(requestHeaders)
             it.responseHeaders = map2map(responseHeaders)

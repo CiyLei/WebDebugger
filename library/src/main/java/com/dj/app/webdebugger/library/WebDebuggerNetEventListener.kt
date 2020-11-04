@@ -5,6 +5,9 @@ import com.dj.app.webdebugger.library.http.server.net.CallManager
 import okhttp3.*
 import okhttp3.EventListener
 import java.io.IOException
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.lang.Exception
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -70,6 +73,17 @@ class WebDebuggerNetEventListener : EventListener() {
         val netInfo = CallManager.instance.get(call)
         netInfo.callFailedTime = System.currentTimeMillis()
         netInfo.callFailError = ioe.toString()
+        // 读取详细信息
+        try {
+            val sw = StringWriter()
+            val pw = PrintWriter(sw)
+            ioe.printStackTrace(pw)
+            netInfo.callFailErrorDetail = sw.toString()
+            sw.close()
+            pw.close()
+        } catch (e: Exception) {
+            netInfo.callFailError = e.toString()
+        }
         sendNetInfo(call, netInfo)
     }
 
@@ -151,6 +165,7 @@ class WebDebuggerNetEventListener : EventListener() {
         if (netInfo.method.isBlank()) netInfo.method = request.method()
         if (netInfo.requestDataTime.isBlank()) netInfo.requestDataTime =
             SimpleDateFormat.getDateTimeInstance().format(Date())
+        if (netInfo.requestTime == 0L) netInfo.requestTime = System.currentTimeMillis()
         if (netInfo.requestHeaders.isEmpty()) netInfo.requestHeaders =
             WebDebuggerInterceptor.map2map(request.headers().toMultimap())
         if (netInfo.requestBody.isBlank()) netInfo.requestBody =

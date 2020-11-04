@@ -28,6 +28,11 @@ internal data class NetInfoBean(
     var requestDataTime: String = "",
 
     /**
+     * 开始请求的时间
+     */
+    var requestTime: Long = 0L,
+
+    /**
      * 请求总耗时
      */
     var timeCost: Long = 0L,
@@ -160,5 +165,10 @@ internal data class NetInfoBean(
     /**
      * 请求异常
      */
-    var callFailError: String = ""
+    var callFailError: String = "",
+
+    /**
+     * 请求详细异常
+     */
+    var callFailErrorDetail: String = ""
 )

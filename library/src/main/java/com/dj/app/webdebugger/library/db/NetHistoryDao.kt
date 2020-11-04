@@ -21,7 +21,7 @@ internal interface NetHistoryDao {
     /**
      * 获取所有的历史请求记录
      */
-    @Query("select * from net_history order by requestDataTime desc limit (:page - 1)*:pageSize,:pageSize")
+    @Query("select * from net_history order by requestTime desc limit (:page - 1)*:pageSize,:pageSize")
     fun getAllNetHistory(page: Int, pageSize: Int): List<NetInfoBean>
 
     /**
