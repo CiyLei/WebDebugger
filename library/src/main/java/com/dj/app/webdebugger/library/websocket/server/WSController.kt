@@ -15,7 +15,7 @@ import java.util.concurrent.Executors
 internal abstract class WSController(handle: NanoHTTPD.IHTTPSession) : NanoWSD.WebSocket(handle) {
 
     companion object {
-        val threadPool = Executors.newCachedThreadPool()
+        val threadPool = Executors.newFixedThreadPool(5)
     }
 
     var context: Context? = null
