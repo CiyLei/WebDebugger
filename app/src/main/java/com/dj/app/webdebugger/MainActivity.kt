@@ -44,7 +44,12 @@ class MainActivity : AppCompatActivity() {
             Log.w("w", "w")
             Log.e("e", "e")
             Log.wtf("wtf", "wtf")
-            apiServer.test().enqueue(object : Callback<ResponseBody> {
+            apiServer.test(
+                RequestBody.create(
+                    MediaType.parse("application/json; charset=utf-8"),
+                    List(100) { it }.joinToString()
+                )
+            ).enqueue(object : Callback<ResponseBody> {
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     t.printStackTrace()
                     tvContent.text = t.message
