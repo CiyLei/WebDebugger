@@ -16,21 +16,18 @@ internal abstract class WSController(handle: NanoHTTPD.IHTTPSession) : NanoWSD.W
 
     companion object {
         val threadPool = Executors.newFixedThreadPool(5)
+        val gson = Gson()
     }
 
     var context: Context? = null
 
-    override fun send(payload: String?) {
+    fun sendOfJson(data: Any) {
         threadPool.execute {
             try {
-                super.send(payload)
+                send(gson.toJson(data))
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-    }
-
-    fun sendOfJson(data: Any) {
-        send(Gson().toJson(data))
     }
 }
