@@ -16,4 +16,5 @@ internal enum class ResponseConstant(val code: Int, val message: String) {
     EXECUTE_CODE_FAIL(108,"执行代码失败"),
     MUST_PARAMETER_URL(109,"缺失url参数"),
     NOT_FOUND_DOWNLOAD_SERVICE(110,"无法找到下载服务"),
+    FAIL_UPLOAD(111,"上传文件错误"),
 }

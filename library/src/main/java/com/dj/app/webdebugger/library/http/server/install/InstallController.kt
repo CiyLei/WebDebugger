@@ -10,11 +10,15 @@ import android.os.Build
 import android.support.v4.content.FileProvider
 import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.annotation.GetMapping
+import com.dj.app.webdebugger.library.annotation.PostMapping
 import com.dj.app.webdebugger.library.common.ResponseConstant
 import com.dj.app.webdebugger.library.http.server.HttpController
 import com.dj.app.webdebugger.library.utils.FileUtil
+import fi.iki.elonen.NanoFileUpload
 import fi.iki.elonen.NanoHTTPD
 import okhttp3.HttpUrl
+import org.apache.commons.fileupload.disk.DiskFileItem
+import org.apache.commons.fileupload.disk.DiskFileItemFactory
 import java.io.File
 import java.net.URI
 
@@ -27,6 +31,9 @@ internal class InstallController : HttpController() {
 
     // 下载服务
     private lateinit var mDownloadManager: DownloadManager
+
+    // 上传服务
+    private lateinit var mUploader: NanoFileUpload
 
     /**
      * 监听下载的广播
@@ -61,8 +68,15 @@ internal class InstallController : HttpController() {
             mDownloadReceiver,
             IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
         )
+        // 初始化文件上传服务
+        mUploader = NanoFileUpload(
+            DiskFileItemFactory(0, FileUtil.getDownLoadCacheFile(context!!))
+        )
     }
 
+    /**
+     * 根据url下载安装apk
+     */
     @GetMapping("/installFromUrl")
     fun installFromUrl(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         if (!::mDownloadManager.isInitialized) {
@@ -86,6 +100,19 @@ internal class InstallController : HttpController() {
         request.setDestinationUri(Uri.fromFile(file))
         // 开始异步下载
         mDownloadManager.enqueue(request)
+        return success()
+    }
+
+    /**
+     * 上传apk进行安装
+     */
+    @PostMapping("/installFromUpload")
+    fun installFromUpload(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val fileMap = mUploader.parseParameterMap(session)
+        val apkFileItem = fileMap.values.first().first() as? DiskFileItem
+            ?: return fail(ResponseConstant.FAIL_UPLOAD)
+        // 安装apk
+        installApk(apkFileItem.storeLocation)
         return success()
     }
 
