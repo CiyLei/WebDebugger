@@ -67,7 +67,7 @@ releaseImplementation 'com.ciy:WebDebugger-no-op:1.1.0'
 
 4. 其余设置
 
-    * 需要网络监听生效，要在你的 OkHttpClient 中添加此 `WebDebuggerInterceptor` 拦截器
+    * 需要网络监听生效，要在你的 OkHttpClient 中添加此 `WebDebuggerInterceptor` 拦截器 和 `WebDebuggerNetEventListener` 事件监听
     * 需要切换环境生效，要调用一下方法 `WebDebugger.injectionRetrofit(retrofit, map, ApiServer::class.java)`
         * Retrofit: retrofit 对象
         * environment: 环境预配置（key为环境名，value为环境具体地址）
