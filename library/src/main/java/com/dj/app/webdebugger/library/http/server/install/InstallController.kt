@@ -126,7 +126,7 @@ internal class InstallController : HttpController() {
             //参数1 上下文, 参数2 Provider主机地址 和配置文件中保持一致   参数3  共享的文件
             val apkUri = FileProvider.getUriForFile(
                 context!!,
-                "com.dj.app.webdebugger.fileprovider",
+                getPackName() + ".webdebugger.fileprovider",
                 apkFile
             )
             //添加这一句表示对目标应用临时授权该Uri所代表的文件
@@ -136,5 +136,12 @@ internal class InstallController : HttpController() {
             intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive")
         }
         context!!.startActivity(intent)
+    }
+
+    /**
+     * 获取包名
+     */
+    private fun getPackName(): String {
+        return context?.packageName ?: ""
     }
 }
