@@ -50,7 +50,12 @@ class WebDebuggerNetEventListener : EventListener() {
         super.callEnd(call)
         val netInfo = CallManager.instance.get(call)
         netInfo.callEndTime = System.currentTimeMillis()
-        sendNetInfo(call, netInfo)
+        // WebDebuggerNetEventListener的callend和Interceptor到底哪个先触发居然不确定，所以都判断一下
+        // 如果已经走完了Interceptor，写入了相应结果还是没有发送数据的话，就发送数据
+        if (netInfo.code != 0 && !netInfo.isSent) {
+            netInfo.isSent = true
+            sendNetInfo(call, netInfo)
+        }
     }
 
     override fun requestHeadersStart(call: okhttp3.Call) {
@@ -84,6 +89,7 @@ class WebDebuggerNetEventListener : EventListener() {
         } catch (e: Exception) {
             netInfo.callFailError = e.toString()
         }
+        netInfo.isSent = true
         sendNetInfo(call, netInfo)
     }
 
@@ -155,26 +161,28 @@ class WebDebuggerNetEventListener : EventListener() {
         CallManager.instance.get(call).secureConnectEndTime = System.currentTimeMillis()
     }
 
-    /**
-     * 发送请求信息
-     */
-    private fun sendNetInfo(call: Call, netInfo: NetInfoBean) {
-        val request = call.request()
-        // 补充请求信息
-        if (netInfo.url.isBlank()) netInfo.url = request.url().toString()
-        if (netInfo.method.isBlank()) netInfo.method = request.method()
-        if (netInfo.requestDataTime.isBlank()) netInfo.requestDataTime =
-            SimpleDateFormat.getDateTimeInstance().format(Date())
-        if (netInfo.requestTime == 0L) netInfo.requestTime = System.currentTimeMillis()
-        if (netInfo.requestHeaders.isEmpty()) netInfo.requestHeaders =
-            WebDebuggerInterceptor.map2map(request.headers().toMultimap())
-        if (netInfo.requestBody.isBlank()) netInfo.requestBody =
-            WebDebuggerInterceptor.requestToString(request)
-        // 发送请求详情
-        WebDebugger.netObservable.notifyObservers(netInfo)
-        if (WebDebugger.context != null) {
-            // 持久化请求记录
-            WebDebugger.dataBase.netHistoryDao().addNetHistory(netInfo)
+    companion object {
+        /**
+         * 发送请求信息
+         */
+        internal fun sendNetInfo(call: Call, netInfo: NetInfoBean) {
+            val request = call.request()
+            // 补充请求信息
+            if (netInfo.url.isBlank()) netInfo.url = request.url().toString()
+            if (netInfo.method.isBlank()) netInfo.method = request.method()
+            if (netInfo.requestDataTime.isBlank()) netInfo.requestDataTime =
+                SimpleDateFormat.getDateTimeInstance().format(Date())
+            if (netInfo.requestTime == 0L) netInfo.requestTime = System.currentTimeMillis()
+            if (netInfo.requestHeaders.isEmpty()) netInfo.requestHeaders =
+                WebDebuggerInterceptor.map2map(request.headers().toMultimap())
+            if (netInfo.requestBody.isBlank()) netInfo.requestBody =
+                WebDebuggerInterceptor.requestToString(request)
+            // 发送请求详情
+            WebDebugger.netObservable.notifyObservers(netInfo)
+            if (WebDebugger.context != null) {
+                // 持久化请求记录
+                WebDebugger.dataBase.netHistoryDao().addNetHistory(netInfo)
+            }
         }
     }
 }

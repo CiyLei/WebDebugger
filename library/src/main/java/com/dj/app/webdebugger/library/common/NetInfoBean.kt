@@ -1,6 +1,7 @@
 package com.dj.app.webdebugger.library.common
 
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 
 /**
@@ -170,5 +171,11 @@ internal data class NetInfoBean(
     /**
      * 请求详细异常
      */
-    var callFailErrorDetail: String = ""
+    var callFailErrorDetail: String = "",
+
+    /**
+     * 是否发送过
+     */
+    @Ignore
+    var isSent: Boolean = false
 )

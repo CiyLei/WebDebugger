@@ -52,6 +52,13 @@ class WebDebuggerInterceptor : Interceptor {
             it.code = code
             it.requestBody = requestBodyString
             it.responseBody = responseBodyStringBuild.toString()
+            // WebDebuggerNetEventListener的callend和这个到底哪个先触发居然不确定，所以都判断一下
+            // 如果结束的call还没发送数据的话，就发送数据
+            // 如果没有初始化WebDebuggerNetEventListener(判断connectionAcquiredTime是否等于0) 而且还没发送数据的话，就发送数据
+            if ((it.callEndTime != 0L || it.connectionAcquiredTime == 0L) && !it.isSent) {
+                it.isSent = true
+                WebDebuggerNetEventListener.sendNetInfo(chain.call(), it)
+            }
         }
         return response
     }
