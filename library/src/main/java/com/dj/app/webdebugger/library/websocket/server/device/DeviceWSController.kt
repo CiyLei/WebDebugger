@@ -6,8 +6,8 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
-import android.support.annotation.RequiresApi
 import android.view.Choreographer
+import androidx.annotation.RequiresApi
 import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.websocket.server.WSController
 import fi.iki.elonen.NanoHTTPD
