@@ -1,8 +1,9 @@
 package com.dj.app.webdebugger.library.common
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.Ignore
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
+
 
 /**
  * Create by ChenLei on 2019/11/1

@@ -6,7 +6,7 @@ import android.os.Build
 import com.dj.app.webdebugger.library.WebDebugger
 import android.graphics.Bitmap
 import android.media.projection.MediaProjectionManager
-import android.support.annotation.RequiresApi
+import androidx.annotation.RequiresApi
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
 import java.io.File
