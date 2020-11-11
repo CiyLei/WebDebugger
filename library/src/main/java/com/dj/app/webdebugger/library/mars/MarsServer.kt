@@ -13,6 +13,7 @@ import com.tencent.mars.Mars
 import com.tencent.mars.app.AppLogic
 import com.tencent.mars.sdt.SdtLogic
 import com.tencent.mars.stn.StnLogic
+import java.util.*
 
 /**
  * Create by ChenLei on 2019/12/7
@@ -23,12 +24,19 @@ internal class MarsServer(val deviceCode: String, val servieHost: String, val se
     lateinit var marsStub: MarsStub
 
     companion object {
+
+        // 申请次数（最多申请5次）
+        private var mRequestCount = 0
+
+        // 如果超过5次没有获取到设备号，则直接返回随机值
+        private val mRandom = Random()
+
         var isStart = false
 
         @JvmStatic
         fun create(context: Context, servieHost: String, servicePort: Int): MarsServer? {
             val imei = DeviceUtil.getIMEI(context)
-            if (imei == null) {
+            if (imei == null && (mRequestCount++) < 5) {
                 if (WebDebugger.topActivity != null) {
                     ActivityCompat.requestPermissions(
                         WebDebugger.topActivity!!, arrayOf(
@@ -37,7 +45,11 @@ internal class MarsServer(val deviceCode: String, val servieHost: String, val se
                     )
                 }
             } else {
-                return MarsServer(imei, servieHost, servicePort)
+                return MarsServer(
+                    imei ?: "随机值(${mRandom.nextInt(100000)})",
+                    servieHost,
+                    servicePort
+                )
             }
             return null
         }

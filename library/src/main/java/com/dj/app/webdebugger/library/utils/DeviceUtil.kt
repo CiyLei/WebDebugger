@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.telephony.TelephonyManager
+import com.dj.app.webdebugger.library.WebDebugger
 import java.lang.Exception
 import java.net.InetAddress
 import java.net.NetworkInterface
@@ -28,11 +29,20 @@ internal object DeviceUtil {
             ) {
                 if (tm?.deviceId?.isNotEmpty() == true) {
                     return tm.deviceId
-                } else {
-                    return Settings.Secure.getString(context.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
                 }
             }
         } catch (e: Exception) {
+            if (WebDebugger.isDebug) {
+                e.printStackTrace()
+            }
+        }
+        try {
+            return Settings.Secure.getInt(context.contentResolver, Settings.Secure.ANDROID_ID)
+                .toString()
+        } catch (e: Exception) {
+            if (WebDebugger.isDebug) {
+                e.printStackTrace()
+            }
         }
         return null
     }
