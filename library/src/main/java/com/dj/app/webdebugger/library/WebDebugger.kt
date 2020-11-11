@@ -3,7 +3,6 @@ package com.dj.app.webdebugger.library
 import android.Manifest
 import android.app.Activity
 import android.app.Application
-import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -13,6 +12,7 @@ import android.os.Handler
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.widget.Toast
+import androidx.room.Room
 import com.dj.app.webdebugger.library.common.ScreenRecordingPrompt
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
@@ -265,7 +265,7 @@ class WebDebugger {
 
                 application.registerActivityLifecycleCallbacks(object :
                     Application.ActivityLifecycleCallbacks {
-                    override fun onActivityPaused(activity: Activity?) {
+                    override fun onActivityPaused(activity: Activity) {
                         try {
                             if (MarsServer.isStart) {
                                 BaseEvent.onForeground(false)
@@ -277,7 +277,7 @@ class WebDebugger {
                         }
                     }
 
-                    override fun onActivityResumed(activity: Activity?) {
+                    override fun onActivityResumed(activity: Activity) {
                         try {
                             if (MarsServer.isStart) {
                                 BaseEvent.onForeground(true)
@@ -289,7 +289,7 @@ class WebDebugger {
                         }
                     }
 
-                    override fun onActivityStarted(activity: Activity?) {
+                    override fun onActivityStarted(activity: Activity) {
                         try {
                             topActivity = activity
                             checkPermissions()
@@ -300,20 +300,20 @@ class WebDebugger {
                         }
                     }
 
-                    override fun onActivityDestroyed(activity: Activity?) {
+                    override fun onActivityDestroyed(activity: Activity) {
                     }
 
                     override fun onActivitySaveInstanceState(
-                        activity: Activity?,
-                        outState: Bundle?
+                        activity: Activity,
+                        outState: Bundle
                     ) {
                     }
 
-                    override fun onActivityStopped(activity: Activity?) {
+                    override fun onActivityStopped(activity: Activity) {
                     }
 
                     override fun onActivityCreated(
-                        activity: Activity?,
+                        activity: Activity,
                         savedInstanceState: Bundle?
                     ) {
                         if (notchHeight == null) {

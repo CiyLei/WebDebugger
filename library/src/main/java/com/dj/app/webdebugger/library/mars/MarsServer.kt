@@ -5,10 +5,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.app.ActivityCompat
+import androidx.core.app.ActivityCompat
 import android.util.Log
 import com.dj.app.webdebugger.library.WebDebugger
-import com.dj.app.webdebugger.library.common.WebDebuggerConstant
 import com.dj.app.webdebugger.library.utils.DeviceUtil
 import com.tencent.mars.BaseEvent
 import com.tencent.mars.Mars
