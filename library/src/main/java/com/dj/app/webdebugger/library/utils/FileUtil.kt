@@ -37,7 +37,7 @@ internal object FileUtil {
         if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()
             || !Environment.isExternalStorageRemovable()
         ) {
-            path = context.externalCacheDir.path + File.separator + cacheName + File.separator;
+            path = context.externalCacheDir?.path + File.separator + cacheName + File.separator;
         } else {
             path = context.cacheDir.path + File.separator + cacheName + File.separator;
         }
