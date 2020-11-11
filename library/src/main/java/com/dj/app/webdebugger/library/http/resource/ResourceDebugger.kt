@@ -3,8 +3,8 @@ package com.dj.app.webdebugger.library.http.resource
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.utils.FileUtil
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.PERMISSION_START_RESOURECE

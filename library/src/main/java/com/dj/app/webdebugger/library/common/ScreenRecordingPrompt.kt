@@ -48,7 +48,7 @@ internal class ScreenRecordingPrompt(val context: Context) {
     }
 
     val handler = object : Handler() {
-        override fun handleMessage(msg: Message?) {
+        override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             try {
                 when(msg?.what) {

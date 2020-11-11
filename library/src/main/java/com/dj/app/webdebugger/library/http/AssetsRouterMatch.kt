@@ -35,9 +35,9 @@ internal class AssetsRouterMatch(context: Context) : IHttpRouterMatch {
 
     private fun loadAssetsPaths(assetManager: AssetManager, path: String) {
         val list = assetManager.list(path)
-        list.forEach {
+        list?.forEach {
             val childPath = path + File.separator + it
-            val childCount = assetManager.list(childPath).size
+            val childCount = assetManager.list(childPath)?.size ?: 0
             if (childCount == 0) {
                 assetsPaths.add(childPath)
             } else {

@@ -8,7 +8,6 @@ import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjectionManager
 import android.content.Intent
 import android.media.ImageReader
-import android.support.annotation.RequiresApi
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import java.io.File
@@ -17,6 +16,7 @@ import android.media.Image
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Handler
+import androidx.annotation.RequiresApi
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.utils.FileUtil
 import com.dj.app.webdebugger.library.utils.ScreenUtil
