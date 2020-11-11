@@ -4,7 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.app.ActivityCompat
+import androidx.core.app.ActivityCompat
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant
 import com.dj.app.webdebugger.library.utils.DeviceUtil
