@@ -10,7 +10,7 @@ group="com.github.CiyLei"
 version = library_version
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
 
     lintOptions {
         abortOnError false
@@ -18,11 +18,11 @@ android {
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'consumer-rules.pro'
         resValue("string", "HTTP_PORT", "8080")
         resValue("string", "WEB_SOCKET_PORT", "8081")
@@ -108,14 +108,14 @@ dependencies {
     api 'org.nanohttpd:nanohttpd-apache-fileupload:2.3.1'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
-    compileOnly 'com.android.support:support-compat:28.0.0'
+//    compileOnly 'androidx.core:core:1.0.0'
     implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
     implementation 'com.tencent.mars:mars-core:1.2.3'
     implementation 'com.google.protobuf:protobuf-java:3.6.1'
-    implementation ('android.arch.persistence.room:runtime:1.1.1', {
+    implementation ('androidx.room:room-runtime:2.0.0', {
         exclude group: 'com.android.support'
     })
-    kapt ('android.arch.persistence.room:compiler:1.1.1', {
+    kapt ('androidx.room:room-compiler:2.0.0', {
         exclude group: 'com.android.support'
     })
     implementation ('com.amitshekhar.android:debug-db:1.0.6', {

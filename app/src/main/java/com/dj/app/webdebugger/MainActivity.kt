@@ -1,9 +1,9 @@
 package com.dj.app.webdebugger
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.WebDebuggerInterceptor
 import com.dj.app.webdebugger.library.WebDebuggerNetEventListener

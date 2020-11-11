@@ -1,6 +1,6 @@
 package com.dj.app.webdebugger.library
 
-import android.support.v4.content.FileProvider
+import androidx.core.content.FileProvider
 
 internal class WebDebuggerFileProvider : FileProvider() {
 }
