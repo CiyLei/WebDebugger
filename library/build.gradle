@@ -73,12 +73,29 @@ protobuf {
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    classifier 'sources'
     from android.sourceSets.main.javaDirectories
 }
 
 artifacts {
     archives sourcesJar
+}
+
+android.libraryVariants.all { variant ->
+    if (variant.name.toLowerCase().contains("debug")) {
+        return
+    }
+
+    def bundleTask = tasks["bundle${variant.name.capitalize()}Aar"]
+
+    artifacts {
+        archives(bundleTask.archivePath) {
+            classifier variant.flavorName
+            builtBy bundleTask
+            name = project.name
+        }
+    }
+
 }
 
 dependencies {
