@@ -4,6 +4,8 @@
 
 ## 安装
 
+[![](https://jitpack.io/v/CiyLei/WebDebugger.svg)](https://jitpack.io/#CiyLei/WebDebugger)
+
 ```groovy
 allprojects {
     repositories {
@@ -14,8 +16,8 @@ allprojects {
 }
 ```
 ```groovy
-debugImplementation 'com.ciy:WebDebugger:1.1.0'
-releaseImplementation 'com.ciy:WebDebugger-no-op:1.1.0'
+debugImplementation 'com.github.CiyLei.WebDebugger:library:1.2.0'
+releaseImplementation 'com.github.CiyLei.WebDebugger:library-no-op:1.2.0'
 ```
 
 ## 接入
