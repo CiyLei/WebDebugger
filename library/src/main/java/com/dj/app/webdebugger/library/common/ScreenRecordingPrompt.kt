@@ -47,10 +47,10 @@ internal class ScreenRecordingPrompt(val context: Context) {
     }
 
     val handler = object : Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: Message?) {
+        override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             try {
-                when (msg?.what) {
+                when (msg.what) {
                     1 -> {
                         windowsManage.addView(pointView, msg.obj as WindowManager.LayoutParams)
                     }

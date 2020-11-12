@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application>
         <provider
@@ -23,5 +24,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/webdebugger_file_paths" />
         </provider>
+        <service
+            android:name=".http.server.media.ScreenRecorderService"
+            android:enabled="true"
+            android:foregroundServiceType="mediaProjection" />
     </application>
 </manifest>
