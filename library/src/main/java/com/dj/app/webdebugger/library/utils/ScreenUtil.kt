@@ -2,6 +2,7 @@ package com.dj.app.webdebugger.library.utils
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import com.dj.app.webdebugger.library.WebDebugger
 import android.graphics.Bitmap
@@ -9,6 +10,8 @@ import android.media.projection.MediaProjectionManager
 import androidx.annotation.RequiresApi
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
+import com.dj.app.webdebugger.library.http.server.media.MediaProjectionManagerScreenHelp
+import com.dj.app.webdebugger.library.http.server.media.ScreenRecorderService
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -103,10 +106,13 @@ internal object ScreenUtil {
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun stopScreenRecording() {
+        // 关闭小红点
         WebDebugger.screenRecordingPrompt?.hide()
-        WebDebugger.screenRecordingHelp?.stopScreenRecording()
+        // 停止录像
+        WebDebugger.screenService?.stopScreenRecording()
+        // 通知媒体更新
         WebDebugger.mediaObservable.notifyObservers()
-        WebDebugger.screenRecordingHelp = null
+        WebDebugger.screenService = null
     }
 
     /**
@@ -114,4 +120,95 @@ internal object ScreenUtil {
      */
     fun getScreenRecordingName(): String =
         "${SimpleDateFormat.getDateTimeInstance().format(Date())} 录屏.mp4"
+
+    /**
+     * 本地截屏、录屏服务
+     */
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    fun getLocalScreenService(context: Context, code: Int, data: Intent) = object : ScreenService {
+
+        val mHelp = MediaProjectionManagerScreenHelp(context, code, data)
+
+        override fun screenshot() {
+            mHelp.screenCapture(object : MediaProjectionManagerScreenHelp.OnImageListener {
+                override fun onImagePath(fileName: String) {
+                    WebDebugger.mediaObservable.notifyObservers()
+                }
+            })
+        }
+
+        override fun startScreenRecording() {
+            mHelp.startScreenRecording()
+        }
+
+        override fun stopScreenRecording() {
+            mHelp.stopScreenRecording()
+        }
+
+    }
+
+    /**
+     * 远程截屏、录屏服务
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getRemoteScreenService(context: Context, code: Int, data: Intent) = object : ScreenService {
+
+        val serviceIntent = Intent(context, ScreenRecorderService::class.java).apply {
+            putExtra(ScreenRecorderService.SCREENSHOT_KEY_CODE, code)
+            putExtra(ScreenRecorderService.SCREENSHOT_KEY_DATA, data)
+        }
+
+        override fun screenshot() {
+            context.startForegroundService(serviceIntent.apply {
+                action = ScreenRecorderService.ACTION_SCREENSHOT
+            })
+        }
+
+        override fun startScreenRecording() {
+            context.startForegroundService(serviceIntent.apply {
+                action = ScreenRecorderService.ACTION_START_SCREEN_RECORDING
+            })
+        }
+
+        override fun stopScreenRecording() {
+            context.startForegroundService(serviceIntent.apply {
+                action = ScreenRecorderService.ACTION_STOP_SCREEN_RECORDING
+            })
+        }
+
+    }
+
+    /**
+     * 获取截屏、录屏服务
+     */
+    fun getScreenService(context: Context, code: Int, data: Intent): ScreenService? {
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                getRemoteScreenService(context, code, data)
+            }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
+                getLocalScreenService(context, code, data)
+            }
+            else -> {
+                null
+            }
+        }
+    }
+
+    interface ScreenService {
+        /**
+         * 截屏
+         */
+        fun screenshot()
+
+        /**
+         * 开始录屏
+         */
+        fun startScreenRecording()
+
+        /**
+         * 结束录屏
+         */
+        fun stopScreenRecording()
+    }
 }
