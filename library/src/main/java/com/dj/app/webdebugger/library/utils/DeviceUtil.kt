@@ -37,7 +37,7 @@ internal object DeviceUtil {
             }
         }
         try {
-            return Settings.Secure.getInt(context.contentResolver, Settings.Secure.ANDROID_ID)
+            return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
                 .toString()
         } catch (e: Exception) {
             if (WebDebugger.isDebug) {
