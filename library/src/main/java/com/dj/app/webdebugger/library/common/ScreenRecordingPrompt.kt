@@ -3,6 +3,7 @@ package com.dj.app.webdebugger.library.common
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.view.Gravity
 import android.view.View
@@ -47,11 +48,11 @@ internal class ScreenRecordingPrompt(val context: Context) {
         handler.obtainMessage(2).sendToTarget()
     }
 
-    val handler = object : Handler() {
+    val handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             try {
-                when(msg?.what) {
+                when (msg.what) {
                     1 -> {
                         windowsManage.addView(pointView, msg.obj as WindowManager.LayoutParams)
                     }

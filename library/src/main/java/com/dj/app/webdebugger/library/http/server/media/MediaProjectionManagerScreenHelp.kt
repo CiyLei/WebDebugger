@@ -16,6 +16,7 @@ import android.media.Image
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Handler
+import android.os.Looper
 import androidx.annotation.RequiresApi
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.utils.FileUtil
@@ -86,10 +87,10 @@ internal class MediaProjectionManagerScreenHelp(
     fun screenCapture(mListener: OnImageListener) {
         mImageReader!!.setOnImageAvailableListener({
             saveImage(it.acquireLatestImage(), mListener)
-            mImageReader!!.setOnImageAvailableListener(null, Handler())
+            mImageReader!!.setOnImageAvailableListener(null, Handler(Looper.getMainLooper()))
             stopVirtual()
             tearDownMediaProjection()
-        }, Handler())
+        }, Handler(Looper.getMainLooper()))
         setUpMediaProjection();
         virtualDisplay()
     }
