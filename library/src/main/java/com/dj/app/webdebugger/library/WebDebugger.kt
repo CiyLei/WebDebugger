@@ -9,6 +9,7 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.widget.Toast
@@ -31,6 +32,7 @@ import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributes
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesTextView
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesView
 import com.dj.app.webdebugger.library.mars.MarsServer
+import com.dj.app.webdebugger.library.utils.ScreenUtil
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
@@ -66,7 +68,7 @@ class WebDebugger {
         internal val mediaObservable = WebDebuggerObservable()
 
         // 录屏的实例
-        internal var screenRecordingHelp: MediaProjectionManagerScreenHelp? = null
+        internal var screenService: ScreenUtil.ScreenService? = null
 
         // 网络调试被观察者
         internal val netObservable = WebDebuggerObservable()
@@ -386,20 +388,9 @@ class WebDebugger {
                             // 开始截屏
                             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                                 // 以防太快导致申请权限的弹框还在
-                                Handler().postDelayed({
-                                    val screenCapture =
-                                        MediaProjectionManagerScreenHelp(
-                                            context!!,
-                                            resultCode,
-                                            data
-                                        )
-                                    screenCapture.screenCapture(
-                                        object :
-                                            MediaProjectionManagerScreenHelp.OnImageListener {
-                                            override fun onImagePath(fileName: String) {
-                                                mediaObservable.notifyObservers()
-                                            }
-                                        })
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    ScreenUtil.getScreenService(context!!, resultCode, data)
+                                        ?.screenshot()
                                 }, 300)
                             }
                         }
@@ -430,14 +421,14 @@ class WebDebugger {
                                 // 显示录像红点
                                 screenRecordingPrompt?.show()
                                 // 开始录屏
-                                if (screenRecordingHelp == null) {
-                                    screenRecordingHelp =
-                                        MediaProjectionManagerScreenHelp(
+                                if (screenService == null) {
+                                    screenService =
+                                        ScreenUtil.getLocalScreenService(
                                             context!!,
                                             resultCode,
                                             data
                                         )
-                                    screenRecordingHelp!!.startScreenRecording()
+                                    screenService?.startScreenRecording()
                                 }
                             }
                         }
