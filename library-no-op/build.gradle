@@ -27,7 +27,7 @@ android {
         }
     }
 
-    defaultPublishConfig "library-no-op"
+    defaultPublishConfig "libraryX-no-op"
 
 }
 

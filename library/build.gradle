@@ -39,7 +39,7 @@ android {
         }
     }
 
-    defaultPublishConfig "library"
+    defaultPublishConfig "libraryX"
 
     sourceSets {
         main {
