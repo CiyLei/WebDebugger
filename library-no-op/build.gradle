@@ -1,21 +1,13 @@
-apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-publish {
-    userOrg = 'ciy'//bintray用户名
-    repoName = 'android'//要传到的maven的名字。你可能有多个maven，要传哪个写哪个。
-    groupId = 'com.ciy'//jcenter上的路径
-    artifactId = 'WebDebugger-no-op'//项目名称
-    publishVersion = '1.1.0'//版本号
-    desc = 'android debug'//描述，不重要
-    website = 'https://github.com/CiyLei/WebDebugger'//网站，不重要；尽量模拟github上的地址
-}
+//帮你发布到jcenter
+apply plugin: 'com.github.dcendents.android-maven'
+group="com.github.CiyLei"
 
 android {
     compileSdkVersion 28
-
 
     defaultConfig {
         minSdkVersion 14
