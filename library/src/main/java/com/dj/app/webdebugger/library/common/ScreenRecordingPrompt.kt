@@ -18,11 +18,13 @@ import java.lang.Exception
 internal class ScreenRecordingPrompt(val context: Context) {
     val windowsManage =
         context.applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    val pointView = FlashingPointView(context)
+    var pointView: FlashingPointView? = null
 
     fun show() {
         val dp10 = DisplayUtil.dip2px(context, 10f)
-        pointView.setPadding(dp10, dp10, dp10, dp10)
+        pointView = FlashingPointView(context).apply {
+            setPadding(dp10, dp10, dp10, dp10)
+        }
         val params = WindowManager.LayoutParams()
         // 类型
         params.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
