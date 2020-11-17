@@ -30,18 +30,18 @@ internal object DynamicCompilerUtil {
      * @param javaSource java源代码
      * @param classLoader 类加载器
      */
-    fun compile(javaSource: String, classLoader: ClassLoader): ByteArray? {
+    fun compile(javaSource: String, classLoader: ClassLoader): Array<ClassFile> {
         try {
             return SimpleCompiler().apply {
                 setParentClassLoader(classLoader)
                 cook(javaSource)
-            }.classFiles.firstOrNull()?.toByteArray()
+            }.classFiles ?: emptyArray()
         } catch (e: Exception) {
             if (WebDebugger.isDebug) {
                 e.printStackTrace()
             }
         }
-        return null
+        return emptyArray()
     }
 
     /**
@@ -56,7 +56,7 @@ internal object DynamicCompilerUtil {
         context: Context,
         packageName: String,
         className: String,
-        classData: ByteArray
+        classDatas: Array<ClassFile>
     ): String? {
         // jar保存路径
         val jarPath =
@@ -64,10 +64,14 @@ internal object DynamicCompilerUtil {
         val jarOutputStream = JarOutputStream(FileOutputStream(jarPath))
         try {
             // class在jar中的路径
-            val classPathForJar = packageName.replace(".", "/") + "/$className.class"
-            jarOutputStream.putNextEntry(JarEntry(classPathForJar))
-            // 写入class数据
-            jarOutputStream.write(classData)
+//            val classPathForJar = packageName.replace(".", "/") + "/$className.class"
+            // 循环写入每个class
+            classDatas.forEach {
+                // 写入class路径
+                jarOutputStream.putNextEntry(JarEntry("${it.thisClassName.replace(".", "/")}.class"))
+                // 写入class数据
+                jarOutputStream.write(it.toByteArray())
+            }
             return jarPath
         } catch (e: Exception) {
             if (WebDebugger.isDebug) {

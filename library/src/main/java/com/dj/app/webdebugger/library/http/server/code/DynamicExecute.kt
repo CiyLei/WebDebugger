@@ -58,11 +58,10 @@ class DynamicExecute private constructor(
         // 替换System.out为TaskExecutor中的out
         javaSource = javaSource.replace("System.out", "out")
         // 编译Java代码
-        val classData =
-            DynamicCompilerUtil.compile(javaSource, mContext.classLoader) ?: return false
+        val classDatas = DynamicCompilerUtil.compile(javaSource, mContext.classLoader)
         // class数据写入jar文件
         val jarPath =
-            DynamicCompilerUtil.class2Jar(mContext, GENERATE_PACKAGE, mClassName, classData)
+            DynamicCompilerUtil.class2Jar(mContext, GENERATE_PACKAGE, mClassName, classDatas)
                 ?: return false
         // jar文件转dex文件
         val dexPath = DynamicCompilerUtil.jar2Dex(jarPath) ?: return false
