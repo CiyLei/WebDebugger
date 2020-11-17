@@ -16,8 +16,8 @@ allprojects {
 }
 ```
 ```groovy
-debugImplementation 'com.github.CiyLei.WebDebugger:library:1.2.0'
-releaseImplementation 'com.github.CiyLei.WebDebugger:library-no-op:1.2.0'
+debugImplementation 'com.github.CiyLei.WebDebugger:library:1.2.1'
+releaseImplementation 'com.github.CiyLei.WebDebugger:library-no-op:1.2.1'
 ```
 
 ## 接入
