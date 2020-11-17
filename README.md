@@ -16,9 +16,10 @@ allprojects {
 }
 ```
 ```groovy
-debugImplementation 'com.github.CiyLei.WebDebugger:library:1.2.1'
-releaseImplementation 'com.github.CiyLei.WebDebugger:library-no-op:1.2.1'
+debugImplementation 'com.github.CiyLei.WebDebugger:library:tag'
+releaseImplementation 'com.github.CiyLei.WebDebugger:library-no-op:tag'
 ```
+> androidx请在版本后面带一个x（如1.2.0x），非androidx不用（如1.2.0）
 
 ## 接入
 
