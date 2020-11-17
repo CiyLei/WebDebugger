@@ -97,8 +97,9 @@ internal object ScreenUtil {
             )
         }
     }
+
     /**
-     * 开始录屏
+     * 停止录屏
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun stopScreenRecording() {
