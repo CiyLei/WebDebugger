@@ -6,13 +6,19 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnTest"
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btnStartTest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="tets" />
+        android:text="start tets" />
 
-    <ScrollView
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btnHttpTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="htpp tets" />
+
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -20,6 +26,6 @@
             android:id="@+id/tvContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

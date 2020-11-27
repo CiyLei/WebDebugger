@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         map["搜狗"] = "https://www.sogou.com"
         map["哔哩哔哩"] = "https://api.bilibili.com"
         WebDebugger.injectionRetrofit(retrofit, map, ApiServer::class.java)
-        btnTest.setOnClickListener {
+        btnHttpTest.setOnClickListener {
             Log.v("v", "v")
             Log.d("d", "d")
             Log.i("i", "i")
@@ -58,6 +58,9 @@ class MainActivity : AppCompatActivity() {
                     tvContent.text = "code:${response.code()} ${response.body()?.string()}"
                 }
             })
+        }
+        btnStartTest.setOnClickListener {
+            startActivity(Intent(this, TestActivity::class.java))
         }
     }
 

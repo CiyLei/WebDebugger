@@ -68,6 +68,9 @@ class WebDebugger {
         // 网络调试被观察者
         internal val netObservable = WebDebuggerObservable()
 
+        // 网络调试被观察者
+        internal val viewMonitorObservable = WebDebuggerObservable()
+
         // 录像显示的红点
         internal var screenRecordingPrompt: ScreenRecordingPrompt? = null
 
