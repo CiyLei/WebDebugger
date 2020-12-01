@@ -3,8 +3,8 @@ package com.dj.app.webdebugger.library.http.server.view
 import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.view.WindowManager
+import androidx.fragment.app.DialogFragment
 import com.dj.app.webdebugger.library.R
 import com.dj.app.webdebugger.library.utils.ViewUtils
 
