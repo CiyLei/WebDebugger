@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.WindowManager
 import com.dj.app.webdebugger.library.R
+import com.dj.app.webdebugger.library.utils.ViewUtils
 
 /**
  * Create by ChenLei on 2020/11/26
@@ -33,7 +34,7 @@ internal class MonitorDialog : DialogFragment() {
             // 如果有默认的选择View
             val hashCode = arguments?.getInt(KEY_HASH_CODE)
             if (MonitorView.topView != null && hashCode != null && hashCode != 0) {
-                MonitorView.findView(MonitorView.topView!!, hashCode)?.let {
+                ViewUtils.findView(MonitorView.topView!!, hashCode)?.let {
                     monitorView.refresh(it)
                 }
             }

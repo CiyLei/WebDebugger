@@ -27,6 +27,8 @@ import com.dj.app.webdebugger.library.http.HttpDebugger
 import com.dj.app.webdebugger.library.http.IHttpRouterMatch
 import com.dj.app.webdebugger.library.http.resource.ResourceDebugger
 import com.dj.app.webdebugger.library.http.server.media.MediaProjectionManagerScreenHelp
+import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesTextView
+import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesView
 import com.dj.app.webdebugger.library.mars.MarsServer
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
@@ -96,6 +98,15 @@ class WebDebugger {
 
         // 刘海屏的刘海高度（录屏的时候需要用到）
         internal var notchHeight: Int? = null
+
+        // 所有的属性抽象
+        val viewAttributesList = ArrayList<ViewAttributes<*>>().apply {
+
+            add(ViewAttributesTextView.Text())
+
+            add(ViewAttributesView.ID())
+            add(ViewAttributesView.Visibility())
+        }
 
         fun openDebug() {
             isDebug = true

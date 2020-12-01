@@ -14,6 +14,7 @@ import java.util.jar.JarFile
 
 import dalvik.system.DexFile
 import java.lang.reflect.Field
+import java.lang.reflect.ParameterizedType
 
 /**
  * ClazzUtils
@@ -51,7 +52,12 @@ internal object ClazzUtils {
     /**
      * 反射获取字段
      */
-    fun getField(target: Any?, field: String, targetIsClass: Boolean = false, count: Int = 0): Field? {
+    fun getField(
+        target: Any?,
+        field: String,
+        targetIsClass: Boolean = false,
+        count: Int = 0
+    ): Field? {
         if (target == null) {
             return null
         }
@@ -69,6 +75,14 @@ internal object ClazzUtils {
         }
         f?.isAccessible = true
         return f
+    }
+
+    /**
+     * 获取泛型类型名称
+     */
+    fun getGenericType(any: Any): String {
+        return (((any.javaClass as? Class)?.genericSuperclass as? ParameterizedType)?.actualTypeArguments?.first() as? Class<*>)?.simpleName
+            ?: any.javaClass.simpleName
     }
 }
 

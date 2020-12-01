@@ -17,6 +17,9 @@ class WebDebugger {
         val httpMatchs = ArrayList<IHttpRouterMatch>()
         val webSocketMatchs = ArrayList<IWebSocketMatch>()
 
+        // 所有的属性抽象
+        val viewAttributesList = ArrayList<ViewAttributes<*>>()
+
         fun openDebug() {
 
         }

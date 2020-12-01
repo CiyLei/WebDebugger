@@ -2,11 +2,12 @@ package com.dj.app.webdebugger.library.http.server.view
 
 import android.content.Context
 import android.graphics.*
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.*
+import com.dj.app.webdebugger.library.R
 import com.dj.app.webdebugger.library.WebDebugger
-import java.lang.Exception
-import kotlin.collections.ArrayList
+import com.dj.app.webdebugger.library.utils.ViewUtils
 import kotlin.collections.HashSet
 import kotlin.math.abs
 
@@ -26,51 +27,6 @@ internal class MonitorView @JvmOverloads constructor(
 
         // 顶部View
         var topView: View? = null
-
-        /**
-         * 获取最顶层的View
-         */
-        fun obtainTopView(): View? {
-            var topView = WebDebugger.topActivity?.window?.decorView
-            // 获取顶层window的view
-            try {
-                val wm =
-                    WebDebugger.topActivity?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-                val mGlobal = wm.javaClass.getDeclaredField("mGlobal").apply {
-                    isAccessible = true
-                }.get(wm)
-                val mRoots = mGlobal.javaClass.getDeclaredField("mRoots").apply {
-                    isAccessible = true
-                }.get(mGlobal)
-                val viewList = (mRoots as? ArrayList<*>)?.map {
-                    it?.javaClass?.getDeclaredField("mView")?.apply {
-                        isAccessible = true
-                    }?.get(it) as? ViewGroup
-                } ?: ArrayList<ViewGroup>()
-                topView = viewList.last() ?: topView
-            } catch (e: Exception) {
-                if (WebDebugger.isDebug) {
-                    e.printStackTrace()
-                }
-            }
-            return topView
-        }
-
-        /**
-         * 从View中找到hashCode一致的View
-         */
-        fun findView(view: View, hashCode: Int): View? {
-            if (view.hashCode() == hashCode) return view
-            if (view is ViewGroup) {
-                for (i in 0 until view.childCount) {
-                    val v = findView(view.getChildAt(i), hashCode)
-                    if (v != null) {
-                        return v
-                    }
-                }
-            }
-            return null
-        }
     }
 
     // 边框画笔
@@ -90,15 +46,17 @@ internal class MonitorView @JvmOverloads constructor(
     private var mMoveFound = false
 
     // 上一个寻找到的View
-    private var mPreTargetView: View?
+    private var mPreTargetView: View? = null
 
     // 寻找过的view
     private var mFoundView = HashSet<View>()
 
     init {
-        topView = obtainTopView()
-        mPreTargetView = topView
-        WebDebugger.viewMonitorObservable.notifyObservers(mPreTargetView?.hashCode())
+        ViewUtils.getTopView()?.let {
+            mPreTargetView = it
+            WebDebugger.viewMonitorObservable.notifyObservers(ViewUtils.toCode(it))
+        }
+        id = R.id.webdedebugger_monitorView_id
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -121,7 +79,13 @@ internal class MonitorView @JvmOverloads constructor(
                     abs(mDownPoint.y - event.rawY.toInt()) > MOVE_SENSITIVITY
                 ) {
                     mMoveFound = true
-                    refresh(findTargetView(mPreTargetView!!, event.rawX.toInt(), event.rawY.toInt()))
+                    refresh(
+                        findTargetView(
+                            mPreTargetView!!,
+                            event.rawX.toInt(),
+                            event.rawY.toInt()
+                        )
+                    )
                 }
             }
         }
@@ -133,7 +97,7 @@ internal class MonitorView @JvmOverloads constructor(
      */
     fun refresh(targetView: View) {
         mPreTargetView = targetView
-        WebDebugger.viewMonitorObservable.notifyObservers(mPreTargetView?.hashCode())
+        WebDebugger.viewMonitorObservable.notifyObservers(ViewUtils.toCode(mPreTargetView!!))
         invalidate()
     }
 
