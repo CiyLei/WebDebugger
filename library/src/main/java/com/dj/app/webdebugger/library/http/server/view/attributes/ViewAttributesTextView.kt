@@ -1,9 +1,12 @@
 package com.dj.app.webdebugger.library.http.server.view.attributes
 
 import android.graphics.Color
+import android.graphics.Typeface
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import com.dj.app.webdebugger.library.ViewAttributes
+import com.dj.app.webdebugger.library.ViewSelectAttributes
 import com.dj.app.webdebugger.library.utils.DisplayUtil
 
 /**
@@ -58,6 +61,36 @@ internal abstract class ViewAttributesTextView<T : TextView> : ViewAttributes<T>
         override fun setValue(view: TextView, value: String) {
             view.textSize = value.trim().toFloat()
         }
+    }
+
+    class Typeface : ViewSelectAttributes<TextView>() {
+        companion object {
+            val attributesMap = linkedMapOf(
+                android.graphics.Typeface.NORMAL to "NORMAL",
+                android.graphics.Typeface.BOLD to "BOLD",
+                android.graphics.Typeface.ITALIC to "ITALIC",
+                android.graphics.Typeface.BOLD_ITALIC to "BOLD_ITALIC"
+            )
+        }
+
+        override fun attribute(view: TextView): String = "typeface"
+
+        override fun selectOptions(view: TextView): List<String> = attributesMap.values.toList()
+
+        override fun setValue(view: TextView, value: String) {
+            attributesMap.forEach {
+                if (it.value == value) {
+                    view.typeface = android.graphics.Typeface.defaultFromStyle(it.key)
+                    return
+                }
+            }
+        }
+
+        override fun description(view: TextView): String = "字体样式"
+
+        override fun getValue(view: TextView): String = attributesMap[view.typeface.style] ?: ""
+
+        override fun match(view: View): Boolean = view is TextView
     }
 
     class Hint : ViewAttributesTextView<TextView>() {

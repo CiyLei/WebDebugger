@@ -111,6 +111,7 @@ class WebDebugger {
             add(ViewAttributesTextView.Text())
             add(ViewAttributesTextView.TextColor())
             add(ViewAttributesTextView.TextSize())
+            add(ViewAttributesTextView.Typeface())
             add(ViewAttributesTextView.Hint())
             add(ViewAttributesTextView.HintTextColor())
             add(ViewAttributesTextView.Gravity())
