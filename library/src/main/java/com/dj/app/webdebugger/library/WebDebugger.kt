@@ -27,6 +27,8 @@ import com.dj.app.webdebugger.library.http.HttpDebugger
 import com.dj.app.webdebugger.library.http.IHttpRouterMatch
 import com.dj.app.webdebugger.library.http.resource.ResourceDebugger
 import com.dj.app.webdebugger.library.http.server.media.MediaProjectionManagerScreenHelp
+import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesImageView
+import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesLinearLayout
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesTextView
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesView
 import com.dj.app.webdebugger.library.mars.MarsServer
@@ -102,10 +104,32 @@ class WebDebugger {
         // 所有的属性抽象
         val viewAttributesList = ArrayList<ViewAttributes<*>>().apply {
 
+            add(ViewAttributesLinearLayout.Orientation())
+
+            add(ViewAttributesImageView.ScaleType())
+
             add(ViewAttributesTextView.Text())
+            add(ViewAttributesTextView.TextColor())
+            add(ViewAttributesTextView.TextSize())
+            add(ViewAttributesTextView.Hint())
+            add(ViewAttributesTextView.HintTextColor())
+            add(ViewAttributesTextView.Gravity())
 
             add(ViewAttributesView.ID())
+            add(ViewAttributesView.WidthHeight())
+            add(ViewAttributesView.Background())
             add(ViewAttributesView.Visibility())
+            add(ViewAttributesView.Enabled())
+            add(ViewAttributesView.Margin())
+            add(ViewAttributesView.Padding())
+//            add(ViewAttributesView.PaddingStartEnd())
+            add(ViewAttributesView.Scroll())
+            add(ViewAttributesView.XY())
+            add(ViewAttributesView.Alpha())
+            add(ViewAttributesView.Rotation())
+            add(ViewAttributesView.RotationXY())
+            add(ViewAttributesView.ScaleXY())
+            add(ViewAttributesView.TranslationXY())
         }
 
         fun openDebug() {

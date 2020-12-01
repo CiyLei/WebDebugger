@@ -98,7 +98,7 @@ internal object ViewUtils {
             } ?: ArrayList<ViewGroup>()
             // 寻找最后一个不包含MonitorView的根布局
             var lastView: View? = null
-            for (i in (viewList.size - 1)..0 step -1) {
+            for (i in (viewList.size - 1) downTo 0) {
                 if (viewList[i]?.findViewById<View>(R.id.webdedebugger_monitorView_id) == null) {
                     lastView = viewList[i]
                     break
