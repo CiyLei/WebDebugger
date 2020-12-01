@@ -19,6 +19,21 @@ import java.net.SocketException
  */
 internal object DeviceUtil {
 
+    /**
+     * 获取设备唯一识别码
+     */
+    fun getDeviceCode(context: Context): String? {
+        try {
+            return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                .toString()
+        } catch (e: Exception) {
+            if (WebDebugger.isDebug) {
+                e.printStackTrace()
+            }
+        }
+        return getIMEI(context)
+    }
+
     fun getIMEI(context: Context): String? {
         try {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
@@ -31,14 +46,6 @@ internal object DeviceUtil {
                     return tm.deviceId
                 }
             }
-        } catch (e: Exception) {
-            if (WebDebugger.isDebug) {
-                e.printStackTrace()
-            }
-        }
-        try {
-            return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-                .toString()
         } catch (e: Exception) {
             if (WebDebugger.isDebug) {
                 e.printStackTrace()

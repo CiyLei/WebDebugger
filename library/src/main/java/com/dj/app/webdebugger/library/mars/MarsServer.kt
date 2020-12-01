@@ -35,8 +35,8 @@ internal class MarsServer(val deviceCode: String, val servieHost: String, val se
 
         @JvmStatic
         fun create(context: Context, servieHost: String, servicePort: Int): MarsServer? {
-            val imei = DeviceUtil.getIMEI(context)
-            if (imei == null && (mRequestCount++) < 5) {
+            val uuid = DeviceUtil.getDeviceCode(context)
+            if (uuid == null && (mRequestCount++) < 5) {
                 if (WebDebugger.topActivity != null) {
                     ActivityCompat.requestPermissions(
                         WebDebugger.topActivity!!, arrayOf(
@@ -46,7 +46,7 @@ internal class MarsServer(val deviceCode: String, val servieHost: String, val se
                 }
             } else {
                 return MarsServer(
-                    imei ?: "随机值(${mRandom.nextInt(100000)})",
+                    uuid ?: "随机值(${mRandom.nextInt(100000)})",
                     servieHost,
                     servicePort
                 )
