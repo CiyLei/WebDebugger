@@ -2,13 +2,11 @@ package com.dj.app.webdebugger.library.utils
 
 import android.content.Context
 import android.content.res.Resources
-import android.support.v4.app.FragmentActivity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.dj.app.webdebugger.library.R
 import com.dj.app.webdebugger.library.WebDebugger
-import com.dj.app.webdebugger.library.http.server.view.ViewController
 import com.dj.app.webdebugger.library.http.server.view.ViewDescription
 import com.dj.app.webdebugger.library.http.server.view.attributes.AttributesBean
 import java.lang.Exception

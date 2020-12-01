@@ -2,7 +2,7 @@ package com.dj.app.webdebugger.library.http.server.view
 
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.annotation.GetMapping
