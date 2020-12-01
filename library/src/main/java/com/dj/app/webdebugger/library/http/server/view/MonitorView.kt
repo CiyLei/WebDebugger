@@ -2,7 +2,6 @@ package com.dj.app.webdebugger.library.http.server.view
 
 import android.content.Context
 import android.graphics.*
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.*
 import com.dj.app.webdebugger.library.R
