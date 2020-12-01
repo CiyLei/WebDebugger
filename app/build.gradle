@@ -13,9 +13,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        resValue("string", "HTTP_PORT", "9190")
-        resValue("string", "WEB_SOCKET_PORT", "9191")
-        resValue("string", "RESOURCE_PORT", "9192")
     }
     buildTypes {
         release {
