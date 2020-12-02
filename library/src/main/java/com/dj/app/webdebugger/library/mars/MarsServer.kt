@@ -2,9 +2,11 @@ package com.dj.app.webdebugger.library.mars
 
 import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
+import android.util.Log
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant
 import com.dj.app.webdebugger.library.utils.DeviceUtil
@@ -25,31 +27,21 @@ internal class MarsServer(val deviceCode: String, val servieHost: String, val se
 
     companion object {
 
-        // 申请次数（最多申请5次）
-        private var mRequestCount = 0
-
-        // 如果超过5次没有获取到设备号，则直接返回随机值
-        private val mRandom = Random()
-
         var isStart = false
 
         @JvmStatic
-        fun create(context: Context, servieHost: String, servicePort: Int): MarsServer? {
-            val uuid = DeviceUtil.getDeviceCode(context)
-            if (uuid == null && (mRequestCount++) < 5) {
-                if (WebDebugger.topActivity != null) {
-                    ActivityCompat.requestPermissions(
-                        WebDebugger.topActivity!!, arrayOf(
-                            Manifest.permission.READ_PHONE_STATE
-                        ), WebDebuggerConstant.PERMISSION_PHONE_STATE_RESOURECE
-                    )
-                }
+        fun create(context: Context, serviceHost: String, servicePort: Int): MarsServer? {
+            val activity = WebDebugger.topActivity ?: return null
+            val permission =
+                ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE)
+            if (permission == PackageManager.PERMISSION_GRANTED) {
+                val deviceCode =
+                    DeviceUtil.getIMEI(context) ?: UUID.randomUUID().toString().replace("-", "")
+                return MarsServer(deviceCode, serviceHost, servicePort)
             } else {
-                return MarsServer(
-                    uuid ?: "随机值(${mRandom.nextInt(100000)})",
-                    servieHost,
-                    servicePort
-                )
+                if (WebDebugger.isDebug) {
+                    Log.e("MarsServer", "无读取设备唯一识别码权限，设备中心服务无法启动")
+                }
             }
             return null
         }

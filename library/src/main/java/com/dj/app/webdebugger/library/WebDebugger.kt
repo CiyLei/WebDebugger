@@ -1,5 +1,6 @@
 package com.dj.app.webdebugger.library
 
+import android.Manifest
 import android.app.Activity
 import android.app.Application
 import android.arch.persistence.room.Room
@@ -10,14 +11,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
+import android.support.v4.app.ActivityCompat
 import android.widget.Toast
 import com.dj.app.webdebugger.library.common.ScreenRecordingPrompt
-import com.dj.app.webdebugger.library.common.WebDebuggerConstant.PERMISSION_PHONE_STATE_RESOURECE
-import com.dj.app.webdebugger.library.common.WebDebuggerConstant.PERMISSION_START_RESOURECE
+import com.dj.app.webdebugger.library.common.WebDebuggerConstant
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_CAPTURE
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.REQUEST_SCREEN_RECORDING
-import com.dj.app.webdebugger.library.common.WebDebuggerConstant.RESOURCE_PHONE_STATE_FAILED_TO_OPEN
-import com.dj.app.webdebugger.library.common.WebDebuggerConstant.RESOURCE_SERVER_FAILED_TO_OPEN
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.SCREEN_CAPTURE_FAILED
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant.SCREEN_RECORDING_FAILED
 import com.dj.app.webdebugger.library.db.WebDebuggerDataBase
@@ -160,8 +159,7 @@ class WebDebugger {
             this.servicePort = servicePort
             startHttpServer(httpPort, context)
             startWebSocketServer(webSocketPort, context)
-            reloadResourceServer()
-            startMarsServer()
+            checkPermissions()
         }
 
         @JvmStatic
@@ -199,11 +197,46 @@ class WebDebugger {
         }
 
         /**
+         * 检查必要权限
+         */
+        @JvmStatic
+        internal fun checkPermissions() {
+            val activity = topActivity ?: return
+            val requestPermission = ArrayList<String>()
+            if (ActivityCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.READ_PHONE_STATE
+                ) != PERMISSION_GRANTED
+            ) {
+                requestPermission.add(Manifest.permission.READ_PHONE_STATE)
+            }
+            if (ActivityCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PERMISSION_GRANTED
+            ) {
+                requestPermission.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+            if (requestPermission.isEmpty()) {
+                // 所有必要的权限已同意
+                reloadResourceServer()
+                startMarsServer()
+            } else {
+                ActivityCompat.requestPermissions(
+                    activity,
+                    requestPermission.toTypedArray(),
+                    WebDebuggerConstant.REQUEST_PERMISSION_CODE
+                )
+            }
+        }
+
+        /**
          * 加载资源服务器
          * 因为需要写文件的权限才能开启成功，所以开放这个方法，可以由外部获得权限后调用开启
          */
         @JvmStatic
         internal fun reloadResourceServer() {
+            if (ResourceDebugger.isStart) return
             resourceDebugger = ResourceDebugger.create(this.context!!, this.resourcePort)
             resourceDebugger?.start(0)
         }
@@ -211,7 +244,9 @@ class WebDebugger {
         /**
          * 开启Mars服务
          */
+        @JvmStatic
         internal fun startMarsServer() {
+            if (MarsServer.isStart) return
             MarsServer.create(this.context!!, this.serviceHost, this.servicePort)?.start()
         }
 
@@ -257,12 +292,7 @@ class WebDebugger {
                     override fun onActivityStarted(activity: Activity?) {
                         try {
                             topActivity = activity
-                            if (!ResourceDebugger.isStart) {
-                                reloadResourceServer()
-                            }
-                            if (!MarsServer.isStart) {
-                                startMarsServer()
-                            }
+                            checkPermissions()
                         } catch (e: Throwable) {
                             if (isDebug) {
                                 e.printStackTrace()
@@ -329,29 +359,9 @@ class WebDebugger {
             try {
                 when (requestCode) {
                     // 开启资源服务器
-                    PERMISSION_START_RESOURECE -> {
-                        if (grantResults[0] == PERMISSION_GRANTED) {
-                            reloadResourceServer()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                RESOURCE_SERVER_FAILED_TO_OPEN,
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        }
-                    }
-                    PERMISSION_PHONE_STATE_RESOURECE -> {
-                        if (grantResults[0] == PERMISSION_GRANTED) {
-                            startMarsServer()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                RESOURCE_PHONE_STATE_FAILED_TO_OPEN,
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        }
+                    WebDebuggerConstant.REQUEST_PERMISSION_CODE -> {
+                        reloadResourceServer()
+                        startMarsServer()
                     }
                 }
             } catch (e: Throwable) {

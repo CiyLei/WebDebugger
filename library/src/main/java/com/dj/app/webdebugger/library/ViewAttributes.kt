@@ -1,6 +1,7 @@
 package com.dj.app.webdebugger.library
 
 import android.view.View
+import com.dj.app.webdebugger.library.utils.DisplayUtil
 
 /**
  * Create by ChenLei on 2020/11/30
@@ -57,4 +58,8 @@ abstract class ViewAttributes<out T : View> {
     open fun setValue(view: @UnsafeVariance T, value: String) {
 
     }
+
+    fun px2dip(view: View, value: Float): Int = DisplayUtil.px2dip(view.context, value)
+
+    fun dip2px(view: View, value: Float): Int = DisplayUtil.dip2px(view.context, value)
 }

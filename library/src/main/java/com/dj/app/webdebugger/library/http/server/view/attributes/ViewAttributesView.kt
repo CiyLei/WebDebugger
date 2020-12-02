@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.dj.app.webdebugger.library.ViewAttributes
 import com.dj.app.webdebugger.library.ViewSelectAttributes
+import com.dj.app.webdebugger.library.utils.DisplayUtil
 import com.dj.app.webdebugger.library.utils.ViewUtils
 
 /**
@@ -27,17 +28,18 @@ internal abstract class ViewAttributesView<T : View> : ViewAttributes<T>() {
     class WidthHeight : ViewAttributesView<View>() {
         override fun attribute(view: View): String = "width, height"
 
-        override fun description(view: View): String = "宽高"
+        override fun description(view: View): String = "宽高（dp）"
 
-        override fun getValue(view: View): String = "${view.width}, ${view.height}"
+        override fun getValue(view: View): String =
+            "${px2dip(view, view.width.toFloat())}, ${px2dip(view, view.height.toFloat())}"
 
         override fun isEdit(view: View): Boolean = true
 
         override fun setValue(view: View, value: String) {
             val split = value.split(",")
             view.layoutParams = view.layoutParams.apply {
-                width = split[0].trim().toInt()
-                height = split[1].trim().toInt()
+                width = dip2px(view, split[0].trim().toFloat())
+                height = dip2px(view, split[1].trim().toFloat())
             }
         }
     }
@@ -130,11 +132,15 @@ internal abstract class ViewAttributesView<T : View> : ViewAttributes<T>() {
 
         override fun attribute(view: View): String = "margin"
 
-        override fun description(view: View): String = "外边距（左，上，右，下）"
+        override fun description(view: View): String = "外边距（左，上，右，下）（dp）"
 
         override fun getValue(view: View): String {
             val lp = view.layoutParams as? ViewGroup.MarginLayoutParams ?: return ""
-            return "${lp.leftMargin}, ${lp.topMargin}, ${lp.rightMargin}, ${lp.bottomMargin}"
+            val lm = px2dip(view, lp.leftMargin.toFloat())
+            val tm = px2dip(view, lp.topMargin.toFloat())
+            val rm = px2dip(view, lp.rightMargin.toFloat())
+            val bm = px2dip(view, lp.bottomMargin.toFloat())
+            return "$lm, $tm, $rm, $bm"
         }
 
         override fun isEdit(view: View): Boolean = true
@@ -142,10 +148,10 @@ internal abstract class ViewAttributesView<T : View> : ViewAttributes<T>() {
         override fun setValue(view: View, value: String) {
             val lp = view.layoutParams as? ViewGroup.MarginLayoutParams ?: return
             val split = value.split(",")
-            val ml = split[0].trim().toInt()
-            val mt = split[1].trim().toInt()
-            val mr = split[2].trim().toInt()
-            val mb = split[3].trim().toInt()
+            val ml = dip2px(view, split[0].trim().toFloat())
+            val mt = dip2px(view, split[1].trim().toFloat())
+            val mr = dip2px(view, split[2].trim().toFloat())
+            val mb = dip2px(view, split[3].trim().toFloat())
             view.layoutParams = lp.apply {
                 setMargins(ml, mt, mr, mb)
             }
@@ -155,19 +161,24 @@ internal abstract class ViewAttributesView<T : View> : ViewAttributes<T>() {
     class Padding : ViewAttributesView<View>() {
         override fun attribute(view: View): String = "padding"
 
-        override fun description(view: View): String = "内边距（左，上，右，下）"
+        override fun description(view: View): String = "内边距（左，上，右，下）（dp）"
 
-        override fun getValue(view: View): String =
-            "${view.paddingLeft}, ${view.paddingTop}, ${view.paddingRight}, ${view.paddingBottom}"
+        override fun getValue(view: View): String {
+            val lp = px2dip(view, view.paddingLeft.toFloat())
+            val tp = px2dip(view, view.paddingTop.toFloat())
+            val rp = px2dip(view, view.paddingRight.toFloat())
+            val bp = px2dip(view, view.paddingBottom.toFloat())
+            return "$lp, $tp, $rp, $bp"
+        }
 
         override fun isEdit(view: View): Boolean = true
 
         override fun setValue(view: View, value: String) {
             val split = value.split(",")
-            val pl = split[0].trim().toInt()
-            val pt = split[1].trim().toInt()
-            val pr = split[2].trim().toInt()
-            val pb = split[3].trim().toInt()
+            val pl = dip2px(view, split[0].trim().toFloat())
+            val pt = dip2px(view, split[1].trim().toFloat())
+            val pr = dip2px(view, split[2].trim().toFloat())
+            val pb = dip2px(view, split[3].trim().toFloat())
             view.setPadding(pl, pt, pr, pb)
         }
     }
@@ -204,16 +215,17 @@ internal abstract class ViewAttributesView<T : View> : ViewAttributes<T>() {
     class XY : ViewAttributesView<View>() {
         override fun attribute(view: View): String = "x, y"
 
-        override fun description(view: View): String = "左上角的坐标"
+        override fun description(view: View): String = "左上角的坐标（dp）"
 
-        override fun getValue(view: View): String = "${view.x}, ${view.y}"
+        override fun getValue(view: View): String =
+            "${px2dip(view, view.x)}, ${px2dip(view, view.y)}"
 
         override fun isEdit(view: View): Boolean = true
 
         override fun setValue(view: View, value: String) {
             val split = value.split(",")
-            view.x = split[0].trim().toFloat()
-            view.y = split[1].trim().toFloat()
+            view.x = dip2px(view, split[0].trim().toFloat()).toFloat()
+            view.y = dip2px(view, split[1].trim().toFloat()).toFloat()
         }
     }
 
@@ -285,16 +297,17 @@ internal abstract class ViewAttributesView<T : View> : ViewAttributes<T>() {
 
         override fun attribute(view: View): String = "translation(x, y)"
 
-        override fun description(view: View): String = "偏移"
+        override fun description(view: View): String = "偏移（dp）"
 
-        override fun getValue(view: View): String = "${view.translationX}, ${view.translationY}"
+        override fun getValue(view: View): String =
+            "${px2dip(view, view.translationX)}, ${px2dip(view, view.translationY)}"
 
         override fun isEdit(view: View): Boolean = true
 
         override fun setValue(view: View, value: String) {
             val split = value.split(",")
-            view.translationX = split[0].trim().toFloat()
-            view.translationY = split[1].trim().toFloat()
+            view.translationX = dip2px(view, split[0].trim().toFloat()).toFloat()
+            view.translationY = dip2px(view, split[1].trim().toFloat()).toFloat()
         }
     }
 }

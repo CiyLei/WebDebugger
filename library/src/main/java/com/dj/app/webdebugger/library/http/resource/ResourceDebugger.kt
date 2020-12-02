@@ -3,11 +3,10 @@ package com.dj.app.webdebugger.library.http.resource
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import com.dj.app.webdebugger.library.WebDebugger
 import com.dj.app.webdebugger.library.utils.FileUtil
-import com.dj.app.webdebugger.library.common.WebDebuggerConstant.PERMISSION_START_RESOURECE
 import fi.iki.elonen.SimpleWebServer
 import java.io.File
 
@@ -37,10 +36,8 @@ internal class ResourceDebugger(port: Int, rootResource: File) :
                 isStart = true
                 return ResourceDebugger(port, cacheFile)
             } else {
-                if (WebDebugger.topActivity != null) {
-                    ActivityCompat.requestPermissions(WebDebugger.topActivity!!, arrayOf(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ), PERMISSION_START_RESOURECE)
+                if (WebDebugger.isDebug) {
+                    Log.e("ResourceDebugger", "无写入权限，下载服务无法启动")
                 }
             }
             return null
