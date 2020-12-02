@@ -11,8 +11,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.support.v4.app.ActivityCompat
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.room.Room
 import com.dj.app.webdebugger.library.common.ScreenRecordingPrompt
 import com.dj.app.webdebugger.library.common.WebDebuggerConstant
@@ -26,7 +26,6 @@ import com.dj.app.webdebugger.library.http.AutoRouterMatch
 import com.dj.app.webdebugger.library.http.HttpDebugger
 import com.dj.app.webdebugger.library.http.IHttpRouterMatch
 import com.dj.app.webdebugger.library.http.resource.ResourceDebugger
-import com.dj.app.webdebugger.library.http.server.media.MediaProjectionManagerScreenHelp
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesImageView
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesLinearLayout
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesTextView
