@@ -11,13 +11,29 @@ import java.lang.Exception
 import java.net.InetAddress
 import java.net.NetworkInterface
 import java.net.SocketException
-
+import java.util.*
 
 /**
  * Create by ChenLei on 2019/12/7
  * Describe: 获取设备信息工具类
  */
 internal object DeviceUtil {
+
+    fun getDeviceCode(context: Context): String {
+        var result = ""
+        try {
+            result =
+                Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)
+        } catch (e: Exception) {
+            if (WebDebugger.isDebug) {
+                e.printStackTrace()
+            }
+        }
+        if (result.isBlank()) {
+            result = UUID.randomUUID().toString().replace("-", "")
+        }
+        return result
+    }
 
     fun getIMEI(context: Context): String? {
         try {

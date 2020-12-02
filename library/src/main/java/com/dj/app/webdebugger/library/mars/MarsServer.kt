@@ -35,8 +35,7 @@ internal class MarsServer(val deviceCode: String, val servieHost: String, val se
             val permission =
                 ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE)
             if (permission == PackageManager.PERMISSION_GRANTED) {
-                val deviceCode =
-                    DeviceUtil.getIMEI(context) ?: UUID.randomUUID().toString().replace("-", "")
+                val deviceCode = DeviceUtil.getIMEI(context) ?: DeviceUtil.getDeviceCode(context)
                 return MarsServer(deviceCode, serviceHost, servicePort)
             } else {
                 if (WebDebugger.isDebug) {
