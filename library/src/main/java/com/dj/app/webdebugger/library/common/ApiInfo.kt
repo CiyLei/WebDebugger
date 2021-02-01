@@ -31,10 +31,14 @@ internal data class ApiInfo(
      * 等待处理的 TypeAdapter
      */
     private val toBeAnalyzedTypeAdapter = LinkedList<TypeAdapter<*>>()
+
     /**
      * 已经处理的 Type
      */
     private val alreadyAnalyzedTypeAdapter = ArrayList<TypeAdapter<*>>()
+
+    // detailedReturnType过滤无效类型
+    private val detailedReturnTypeFilter = "java.util."
 
     fun toMap(): Map<String, Any> {
         val typeAdapter = Gson().getAdapter(TypeToken.get(returnType))
@@ -98,7 +102,8 @@ internal data class ApiInfo(
                                     val type = handleReturnType(typeAdapter)
                                     if (type != null) {
                                         if (type is MapTypeAdapterCarrier) {
-                                            paramMap[fieldName] = "Map<${type.keyType}, ${type.valueType}>"
+                                            paramMap[fieldName] =
+                                                "Map<${type.keyType}, ${type.valueType}>"
                                         } else {
                                             paramMap[fieldName] = type
                                         }
@@ -157,7 +162,7 @@ internal data class ApiInfo(
             }
             p = toBeAnalyzedTypeAdapter.poll()
         }
-        return results
+        return results.filter { !it.fileName.startsWith(detailedReturnTypeFilter) }
     }
 
     private fun beginAnalysisDetailedType(adapter: TypeAdapter<*>) {
@@ -215,7 +220,10 @@ internal data class ApiInfo(
             adapter::class.java.enclosingClass == CollectionTypeAdapterFactory::class.java -> {
                 // 取出泛型，继续分析
                 val elementTypeAdapter = getField(adapter, "elementTypeAdapter")?.get(adapter)
-                val delegate = getField(elementTypeAdapter, "delegate")?.get(elementTypeAdapter) as TypeAdapter<*>
+                val delegate = getField(
+                    elementTypeAdapter,
+                    "delegate"
+                )?.get(elementTypeAdapter) as TypeAdapter<*>
                 addAnalysisDetailedType(delegate)
                 val type = getField(elementTypeAdapter, "type")?.get(elementTypeAdapter)
                 return DetailedTypeInfo("java.util.List<${type.toString()}>")
@@ -223,11 +231,13 @@ internal data class ApiInfo(
             adapter::class.java.enclosingClass == MapTypeAdapterFactory::class.java -> {
                 // 取出泛型，继续分析
                 val keyTypeAdapter = getField(adapter, "keyTypeAdapter")?.get(adapter)
-                val keyDelegate = getField(keyTypeAdapter, "delegate")?.get(keyTypeAdapter) as TypeAdapter<*>
+                val keyDelegate =
+                    getField(keyTypeAdapter, "delegate")?.get(keyTypeAdapter) as TypeAdapter<*>
                 val keyType = getField(keyTypeAdapter, "type")?.get(keyTypeAdapter)
 
                 val valueTypeAdapter = getField(adapter, "valueTypeAdapter")?.get(adapter)
-                val valueDelegate = getField(valueTypeAdapter, "delegate")?.get(valueTypeAdapter) as TypeAdapter<*>
+                val valueDelegate =
+                    getField(valueTypeAdapter, "delegate")?.get(valueTypeAdapter) as TypeAdapter<*>
                 val valueType = getField(valueTypeAdapter, "type")?.get(valueTypeAdapter)
 
                 addAnalysisDetailedType(keyDelegate)

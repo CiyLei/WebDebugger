@@ -62,10 +62,7 @@ internal object RetrofitUtil {
                 }
             }
         }
-        if (modifyCount == serviceMethodCache?.size ?: 0) {
-            return true
-        }
-        return false
+        return modifyCount == (serviceMethodCache?.size ?: 0)
     }
 
     /**
