@@ -35,6 +35,8 @@ internal object MockUtil {
             val content = mockMap[invocation.method().hashCode().toString()] ?: return response
             var body = ResponseBody.create(MediaType.get("application/json"), content)
             if (response.body() != null && response.body()!!.contentType() != null) {
+                // 不降原来的response关掉，影响EventListener的回调
+                response.close()
                 val contentType = response.body()!!.contentType()!!
                 body = ResponseBody.create(contentType, content)
             }
