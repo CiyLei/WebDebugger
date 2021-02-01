@@ -2,8 +2,10 @@ package com.dj.app.webdebugger.library
 
 import com.dj.app.webdebugger.library.common.NetInfoBean
 import com.dj.app.webdebugger.library.http.server.net.CallManager
+import com.dj.app.webdebugger.library.utils.MockUtil
 import okhttp3.*
 import okio.Buffer
+import retrofit2.Invocation
 import java.lang.Exception
 import java.lang.StringBuilder
 import java.nio.charset.Charset
@@ -24,11 +26,13 @@ class WebDebuggerInterceptor : Interceptor {
         val method = request.method()
         // 开始请求的时间
         val requestDataTime = SimpleDateFormat.getDateTimeInstance().format(Date())
-        val requestTime = System.currentTimeMillis()
         val requestHeaders = request.headers().toMultimap()
-        val response = chain.proceed(request)
+        val requestTime = System.currentTimeMillis()
+        var response = chain.proceed(request)
         // 请求的时间用时（单位毫秒）
         val timeCost = System.currentTimeMillis() - requestTime
+        // 模拟响应体
+        response = MockUtil.mock(request, response)
         val code = response.code()
         val responseHeaders = response.headers().toMultimap()
         // 读取请求body数据
@@ -140,6 +144,5 @@ class WebDebuggerInterceptor : Interceptor {
             return m
         }
     }
-
 
 }

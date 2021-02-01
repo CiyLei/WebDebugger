@@ -1,6 +1,7 @@
 package com.dj.app.webdebugger.library.common
 
 import com.dj.app.webdebugger.library.utils.ClazzUtils.getField
+import com.dj.app.webdebugger.library.utils.MockUtil
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.internal.ObjectConstructor
@@ -20,6 +21,7 @@ import kotlin.collections.HashMap
  * Describe: Retrofit api 模型
  */
 internal data class ApiInfo(
+    val methodCode: String,
     val url: String = "",
     val method: String = "",
     val description: String = "",
@@ -27,28 +29,24 @@ internal data class ApiInfo(
     var returnType: Type? = null
 ) {
 
-    /**
-     * 等待处理的 TypeAdapter
-     */
+    // 等待处理的 TypeAdapter
     private val toBeAnalyzedTypeAdapter = LinkedList<TypeAdapter<*>>()
 
-    /**
-     * 已经处理的 Type
-     */
+    // 已经处理的 Type
     private val alreadyAnalyzedTypeAdapter = ArrayList<TypeAdapter<*>>()
-
-    // detailedReturnType过滤无效类型
-    private val detailedReturnTypeFilter = "java.util."
 
     fun toMap(): Map<String, Any> {
         val typeAdapter = Gson().getAdapter(TypeToken.get(returnType))
         val map = HashMap<String, Any>()
+        map["methodCode"] = methodCode
         map["url"] = url
         map["method"] = method
         map["description"] = description
         map["requestBody"] = requestBody
         map["returnType"] = analysisReturnType(typeAdapter)
         map["detailedReturnType"] = analysisDetailedType(typeAdapter)
+        map["isMock"] = MockUtil.mockMap.containsKey(methodCode)
+        map["mock"] = MockUtil.mockMap[methodCode] ?: ""
         return map
     }
 
@@ -162,7 +160,8 @@ internal data class ApiInfo(
             }
             p = toBeAnalyzedTypeAdapter.poll()
         }
-        return results.filter { !it.fileName.startsWith(detailedReturnTypeFilter) }
+        // 过滤基本类型
+        return results.filter { !it.fileName.startsWith("java.util.") }
     }
 
     private fun beginAnalysisDetailedType(adapter: TypeAdapter<*>) {

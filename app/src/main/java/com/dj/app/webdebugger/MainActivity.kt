@@ -13,6 +13,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,7 +22,8 @@ class MainActivity : AppCompatActivity() {
             WebDebuggerNetEventListener()
         ).build()
     val retrofit =
-        Retrofit.Builder().baseUrl("https://api.bilibili.com").client(okHttpClient).build()
+        Retrofit.Builder().baseUrl("https://api.bilibili.com")
+            .addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build()
     val apiServer = retrofit.create(ApiServer::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         map["百度"] = "http://www.baidu.com"
         map["搜狗"] = "https://www.sogou.com"
         map["哔哩哔哩"] = "https://api.bilibili.com"
-        WebDebugger.injectionRetrofit(retrofit, map, ApiServer::class.java)
+        WebDebugger.injectionRetrofit(retrofit, map, ApiServer::class.java, ApiServer2::class.java)
         btnHttpTest.setOnClickListener {
             Log.v("v", "v")
             Log.d("d", "d")
@@ -40,22 +42,23 @@ class MainActivity : AppCompatActivity() {
             Log.w("w", "w")
             Log.e("e", "e")
             Log.wtf("wtf", "wtf")
-            apiServer.test(
-                RequestBody.create(
-                    MediaType.parse("application/json; charset=utf-8"),
-                    List(100) { it }.joinToString()
-                )
-            ).enqueue(object : Callback<ResponseBody> {
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+//            apiServer.test(
+//                RequestBody.create(
+//                    MediaType.parse("application/json; charset=utf-8"),
+//                    List(100) { it }.joinToString()
+//                )
+//            )
+            apiServer.test6().enqueue(object : Callback<BiliBiliRes> {
+                override fun onFailure(call: Call<BiliBiliRes>, t: Throwable) {
                     t.printStackTrace()
                     tvContent.text = t.message
                 }
 
                 override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
+                    call: Call<BiliBiliRes>,
+                    response: Response<BiliBiliRes>
                 ) {
-                    tvContent.text = "code:${response.code()} ${response.body()?.string()}"
+                    tvContent.text = "code:${response.code()} ${response.body()}"
                 }
             })
         }

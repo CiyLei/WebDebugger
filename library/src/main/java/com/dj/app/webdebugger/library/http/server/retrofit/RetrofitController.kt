@@ -6,6 +6,7 @@ import com.dj.app.webdebugger.library.annotation.Controller
 import com.dj.app.webdebugger.library.annotation.GetMapping
 import com.dj.app.webdebugger.library.annotation.PostMapping
 import com.dj.app.webdebugger.library.http.server.HttpController
+import com.dj.app.webdebugger.library.utils.MockUtil
 import com.dj.app.webdebugger.library.utils.RetrofitUtil
 import fi.iki.elonen.NanoHTTPD
 import okhttp3.HttpUrl
@@ -74,13 +75,31 @@ internal class RetrofitController : HttpController() {
      */
     @GetMapping("/apiList")
     fun handleApiList(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
-        if (WebDebugger.retrofit != null && WebDebugger.apiService != null) {
-            RetrofitUtil.serviceMethodCache.clear()
-            RetrofitUtil.analysisApiService(WebDebugger.retrofit!!, WebDebugger.apiService!!)
-            if (RetrofitUtil.serviceMethodCache.isNotEmpty()) {
+        if (WebDebugger.retrofit != null && WebDebugger.apiServices != null) {
+            synchronized(RetrofitUtil::class.java) {
+                RetrofitUtil.serviceMethodCache.clear()
+                RetrofitUtil.analysisApiService(
+                    WebDebugger.retrofit!!,
+                    WebDebugger.apiServices!!.toList()
+                )
                 return success(RetrofitUtil.serviceMethodCache.values.map { it.toMap() })
             }
         }
         return fail(ResponseConstant.GET_API_LIST_FAILED)
+    }
+
+    /**
+     * 添加mock
+     */
+    @PostMapping("/addMock")
+    fun addMock(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        val postParameter = getPostParamt(session)
+        val methodCode = postParameter?.get("methodCode")?.toString() ?: ""
+        val responseContent = postParameter?.get("responseContent")?.toString() ?: ""
+        if (methodCode.isNotBlank()) {
+            MockUtil.addMock(methodCode, responseContent)
+            return success()
+        }
+        return fail(ResponseConstant.MUST_PARAMETER_URL)
     }
 }

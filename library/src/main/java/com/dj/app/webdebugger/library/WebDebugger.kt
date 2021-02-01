@@ -31,6 +31,7 @@ import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributes
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesTextView
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesView
 import com.dj.app.webdebugger.library.mars.MarsServer
+import com.dj.app.webdebugger.library.utils.RetrofitUtil
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
@@ -41,6 +42,7 @@ import retrofit2.Retrofit
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
 /**
  * Create by ChenLei on 2019/10/30
@@ -59,7 +61,7 @@ class WebDebugger {
         internal var resourcePort: Int = 8082
         internal var retrofit: Retrofit? = null
         internal val environment = HashMap<String, String>()
-        internal var apiService: Class<*>? = null
+        internal var apiServices: HashSet<Class<*>>? = null
         internal var topActivity: Activity? = null
 
         // 媒体变化被观察者
@@ -188,12 +190,12 @@ class WebDebugger {
         fun injectionRetrofit(
             retrofit: Retrofit,
             environment: Map<String, String>,
-            service: Class<*>? = null
+            vararg service: Class<*> = emptyArray()
         ) {
             this.retrofit = retrofit
             this.environment.clear()
             this.environment.putAll(environment)
-            this.apiService = service
+            this.apiServices = service.toHashSet()
         }
 
         /**

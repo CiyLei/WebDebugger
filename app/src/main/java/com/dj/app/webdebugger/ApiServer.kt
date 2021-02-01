@@ -24,10 +24,14 @@ interface ApiServer {
     fun test3(): Call<Map<String, TestResponse<Double>>>
 
     @ApiDescription("测试4")
-    @GET("test3/t444444.do")
+    @POST("test3/t444444.do")
     fun test4(@Query("aq") aq: String): Call<List<List<TestResponse<String>>>>
 
     @ApiDescription("测试5")
     @GET("test3/555555.do")
     fun test5(@Query("5555aq") aq: String): Call<TestResponse.B>
+
+    @ApiDescription("测试6")
+    @GET("x/web-interface/search/default")
+    fun test6(): Call<BiliBiliRes>
 }

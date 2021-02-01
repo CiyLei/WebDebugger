@@ -6,7 +6,9 @@ import com.dj.app.webdebugger.library.utils.ClazzUtils.getField
 import okhttp3.HttpUrl
 import retrofit2.Retrofit
 import retrofit2.http.*
+import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
+import java.lang.reflect.Proxy
 import java.lang.reflect.Type
 import java.util.concurrent.ConcurrentHashMap
 
@@ -68,28 +70,26 @@ internal object RetrofitUtil {
     /**
      * 分析 apiService
      */
-    fun analysisApiService(retrofit: Retrofit, service: Class<*>) {
-        for (method in service.declaredMethods) {
-            loadServiceMethod(retrofit, method)
+    fun analysisApiService(retrofit: Retrofit, services: List<Class<*>>) {
+        for (service in services) {
+            for (method in service.declaredMethods) {
+                loadServiceMethod(retrofit, method)
+            }
         }
     }
 
     private fun loadServiceMethod(retrofit: Retrofit, method: Method) {
         if (!serviceMethodCache.containsKey(method)) {
-            synchronized(serviceMethodCache) {
-                if (!serviceMethodCache.containsKey(method)) {
-                    val apiInfo = parseAnnotations(retrofit, method)
-                    if (apiInfo != null) {
-                        serviceMethodCache[method] = apiInfo
-                    }
-                }
+            val apiInfo = parseAnnotations(retrofit, method)
+            if (apiInfo != null) {
+                serviceMethodCache[method] = apiInfo
             }
         }
     }
 
     private fun parseAnnotations(retrofit: Retrofit, method: Method): ApiInfo? {
         val annotations = method.annotations
-        val apiInfo = parseMethodAnnotation(annotations)
+        val apiInfo = parseMethodAnnotation(method, annotations)
         val parameterTypes = method.genericParameterTypes
         if (apiInfo != null) {
             for (i in parameterTypes.indices) {
@@ -106,33 +106,33 @@ internal object RetrofitUtil {
         return apiInfo
     }
 
-    private fun parseMethodAnnotation(annotations: Array<Annotation>): ApiInfo? {
+    private fun parseMethodAnnotation(method: Method, annotations: Array<Annotation>): ApiInfo? {
         var url = ""
-        var method = ""
+        var methodDesc = ""
         var description = ""
         for (annotation in annotations) {
             if (annotation is DELETE && annotation.value.isNotBlank()) {
                 url = annotation.value.trim()
-                method = "DELETE"
+                methodDesc = "DELETE"
             }
             if (annotation is GET && annotation.value.isNotBlank()) {
                 url = annotation.value.trim()
-                method = "GET"
+                methodDesc = "GET"
             }
             if (annotation is POST && annotation.value.isNotBlank()) {
                 url = annotation.value.trim()
-                method = "POST"
+                methodDesc = "POST"
             }
             if (annotation is PUT && annotation.value.isNotBlank()) {
                 url = annotation.value.trim()
-                method = "PUT"
+                methodDesc = "PUT"
             }
             if (annotation is ApiDescription && annotation.value.isNotBlank()) {
                 description = annotation.value.trim()
             }
         }
-        if (url.isNotBlank() || method.isNotBlank() || description.isNotBlank()) {
-            return ApiInfo(url, method, description)
+        if (url.isNotBlank() || methodDesc.isNotBlank() || description.isNotBlank()) {
+            return ApiInfo("${method.hashCode()}", url, methodDesc, description)
         }
         return null
     }
