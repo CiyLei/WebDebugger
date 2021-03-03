@@ -25,7 +25,11 @@ class WebDebugger {
         }
 
         @JvmStatic
-        fun injectionRetrofit(retrofit: Retrofit, environment: Map<String, String>, service: Class<*>? = null) {
+        fun injectionRetrofit(
+            retrofit: Retrofit,
+            environment: Map<String, String>,
+            vararg service: Class<*> = emptyArray()
+        ) {
 
         }
 
