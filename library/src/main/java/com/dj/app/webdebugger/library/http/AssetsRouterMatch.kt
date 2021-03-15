@@ -80,6 +80,7 @@ internal class AssetsRouterMatch(context: Context) : IHttpRouterMatch {
         val map = HashMap<String, String>()
         map[".css"] = "text/css; charset=utf-8"
         map[".ttf"] = "font/ttf;"
+        map[".otf"] = "font/otf;"
         map[".woff"] = "font/woff;"
         map[".ico"] = "image/x-icon;"
         map[".webp"] = "image/webp; charset=UTF-8"
