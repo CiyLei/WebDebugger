@@ -17,7 +17,7 @@ import java.io.File
  */
 
 internal class ResourceDebugger(port: Int, rootResource: File) :
-    SimpleWebServer("0.0.0.0", port, rootResource, true) {
+    SimpleWebServer("0.0.0.0", port, rootResource, true, "*") {
 
     companion object {
         var isStart = false
