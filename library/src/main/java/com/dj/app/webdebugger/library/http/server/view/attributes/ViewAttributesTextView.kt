@@ -125,22 +125,39 @@ internal abstract class ViewAttributesTextView<T : TextView> : ViewAttributes<T>
         }
     }
 
-    class Gravity : ViewAttributesTextView<TextView>() {
+    class Gravity : ViewSelectAttributes<TextView>() {
+        companion object {
+            val attributesMap = linkedMapOf(
+                (android.view.Gravity.START or android.view.Gravity.TOP) to "START_TOP",
+                (android.view.Gravity.TOP or android.view.Gravity.CENTER) to "TOP",
+                (android.view.Gravity.END or android.view.Gravity.TOP) to "END_TOP",
+                android.view.Gravity.START or android.view.Gravity.CENTER to "START",
+                android.view.Gravity.CENTER to "CENTER",
+                android.view.Gravity.END or android.view.Gravity.CENTER to "END",
+                (android.view.Gravity.START or android.view.Gravity.BOTTOM) to "START_BOTTOM",
+                (android.view.Gravity.CENTER or android.view.Gravity.BOTTOM) to "BOTTOM",
+                (android.view.Gravity.END or android.view.Gravity.BOTTOM) to "END_BOTTOM"
+            )
+        }
 
         override fun attribute(view: TextView): String = "gravity"
 
-        override fun description(view: TextView): String =
-            "内部对其方式（左：${android.view.Gravity.START} ，上${android.view.Gravity.TOP} ，" +
-                    "右${android.view.Gravity.END} ，下${android.view.Gravity.BOTTOM} ，" +
-                    "居中${android.view.Gravity.CENTER}）"
+        override fun description(view: TextView): String = "内部对其方式"
 
-        override fun getValue(view: TextView): String = view.gravity.toString()
+        override fun selectOptions(view: TextView): List<String> = attributesMap.values.toList()
 
-        override fun isEdit(view: TextView): Boolean = true
+        override fun getValue(view: TextView): String = attributesMap[view.gravity] ?: ""
 
         override fun setValue(view: TextView, value: String) {
-            view.gravity = value.trim().toInt()
+            attributesMap.forEach {
+                if (it.value == value) {
+                    view.gravity = it.key
+                    return
+                }
+            }
         }
+
+        override fun match(view: View): Boolean = view is TextView
     }
 
 }

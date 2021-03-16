@@ -106,6 +106,7 @@ class WebDebugger {
         val viewAttributesList = ArrayList<ViewAttributes<*>>().apply {
 
             add(ViewAttributesLinearLayout.Orientation())
+            add(ViewAttributesLinearLayout.Gravity())
 
             add(ViewAttributesImageView.ScaleType())
 
