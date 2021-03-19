@@ -1,6 +1,13 @@
 # WebDebugger
 
-在Web中查看Android的各种信息
+为了让非android开发人员更友好地在调试期间调试app，如果你有一下情节的困扰，那么此库非常适合你。
+* 测试人员测试你的app出现bug了，需要截图、录像保存证据时
+* 与后端联调时，需要查看本次请求的具体信息（如请求参数）
+* UI在一旁指手画脚，叫你左移一点右移一点看效果
+* 后端有多套开发环境，需要动态切换环境的需求
+* 本地SQLite数据查看、修改（从 [Android-Debug-Database](https://github.com/amitshekhariitbhu/Android-Debug-Database) 中搬来）
+* Mock请求数据
+* 动态执行Java代码
 
 ## 安装
 
@@ -84,57 +91,7 @@ releaseImplementation 'com.github.CiyLei.WebDebugger:library-no-op:tag'
 
 查看 [api](https://github.com/CiyLei/WebDebugger/blob/master/Api.md)
 
-### 设备信息模块
-
-实时监控FPS、内存情况，查看手机信息
-
-![设备信息模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/%E8%AE%BE%E5%A4%87%E4%BF%A1%E6%81%AF.png)
-
-### 控制台模块
-
-提交运行代码（类似于chrome的Console）
-
-![控制台模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/%e6%8e%a7%e5%88%b6%e5%8f%b0.png)
-
-### logcat模块
-
-实时查看 logcat
-
-![logcat模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/logcat.png)
-
-### 截屏/录屏模块
-
-提供一键截屏、一键开始录屏、结束录屏，实时反馈
-
-![截屏/录屏模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/%E6%88%AA%E5%B1%8F%E5%BD%95%E5%B1%8F.png)
-
-### 网络日志模块
-
-实时查看网络请求日志和查看历史请求日志
-
-![网络日志模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/%E7%BD%91%E7%BB%9C%E6%97%A5%E5%BF%97.png)
-
-### 切换环境模块
-
-一键切换 Retrofit 的 baseUrl
-
-![切换环境模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/%E5%88%87%E6%8D%A2%E7%8E%AF%E5%A2%83.png)
-
-### Api清单模块
-
-查看 Retrofit 的接口类信息
-
-![Api清单模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/api%E6%B8%85%E5%8D%95.png)
-
-### Adb支持模块
-
-![Adb支持模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/adb.png)
-
-### 查看/修改数据库模块
-
-从 [Android-Debug-Database](https://github.com/amitshekhariitbhu/Android-Debug-Database) 中搬来
-
-![查看/修改数据库模块](https://raw.githubusercontent.com/CiyLei/WebDebugger/master/img/db.png)
+<img src="/img/screenshot2.png">
 
 ## 混淆
 

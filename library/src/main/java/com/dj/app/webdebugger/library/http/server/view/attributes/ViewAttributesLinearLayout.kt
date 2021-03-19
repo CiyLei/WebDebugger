@@ -16,10 +16,9 @@
 package com.dj.app.webdebugger.library.http.server.view.attributes
 
 import android.os.Build
-import android.support.annotation.RequiresApi
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.annotation.RequiresApi
 import com.dj.app.webdebugger.library.ViewAttributes
 import com.dj.app.webdebugger.library.ViewSelectAttributes
 
