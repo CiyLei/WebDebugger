@@ -27,6 +27,7 @@ debugImplementation 'com.github.CiyLei.WebDebugger:library:tag'
 releaseImplementation 'com.github.CiyLei.WebDebugger:library-no-op:tag'
 ```
 > tag替换成如1.3.2x（androidx版本库后面带x），support版本库不在维护，support版本库最后版本为1.3.2
+> 1.4.0开始，只维护androidx版本，所以后缀都不会带x
 
 ## 接入
 
