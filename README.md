@@ -19,7 +19,7 @@ allprojects {
 debugImplementation 'com.github.CiyLei.WebDebugger:library:tag'
 releaseImplementation 'com.github.CiyLei.WebDebugger:library-no-op:tag'
 ```
-> androidx请在版本后面带一个x（如1.2.0x），非androidx不用（如1.2.0）
+> tag替换成如1.3.2x（androidx版本库后面带x），support版本库不在维护，support版本库最后版本为1.3.2
 
 ## 接入
 
@@ -150,4 +150,21 @@ releaseImplementation 'com.github.CiyLei.WebDebugger:library-no-op:tag'
 -keep class com.googlecode.** { *; }
 -keep class com.android.dx.** { *; }
 -keep class junit.** { *; }
+```
+
+## License
+```
+Copyright 2020 The Android Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
