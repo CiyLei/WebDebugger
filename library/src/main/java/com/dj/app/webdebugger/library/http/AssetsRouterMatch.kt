@@ -99,6 +99,7 @@ internal class AssetsRouterMatch(context: Context) : IHttpRouterMatch {
         map[".woff"] = "font/woff;"
         map[".ico"] = "image/x-icon;"
         map[".webp"] = "image/webp; charset=UTF-8"
+        map[".wasm"] = "application/octet-stream"
         return map
     }
 
