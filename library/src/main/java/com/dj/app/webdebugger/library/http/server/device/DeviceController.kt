@@ -31,6 +31,7 @@ import com.dj.app.webdebugger.library.common.ResponseConstant
 import com.dj.app.webdebugger.library.utils.DeviceUtil
 import com.dj.app.webdebugger.library.utils.FileUtil
 import java.io.File
+import kotlin.collections.ArrayList
 
 
 /**
@@ -47,7 +48,13 @@ internal class DeviceController : HttpController() {
             it.defaultDisplay.getMetrics(dm)
             val widthPixels = dm.widthPixels
             val heightPixels = dm.heightPixels
-            return success(AdbNeedInfoBean(widthPixels, heightPixels, FileUtil.getMediaCacheFile(context!!).absolutePath + File.separator))
+            return success(
+                AdbNeedInfoBean(
+                    widthPixels,
+                    heightPixels,
+                    FileUtil.getMediaCacheFile(context!!).absolutePath + File.separator
+                )
+            )
         }
         return fail(ResponseConstant.GET_DEVICE_SCREEN_FAILED)
     }
@@ -63,7 +70,10 @@ internal class DeviceController : HttpController() {
                         DeviceInfoBean.Info("制造商", Build.MANUFACTURER),
                         DeviceInfoBean.Info("Android 版本", Build.VERSION.RELEASE),
                         DeviceInfoBean.Info("SDK", Build.VERSION.SDK_INT.toString()),
-                        DeviceInfoBean.Info("IMEI", DeviceUtil.getIMEI(context!!) ?: "无权限，如需查看请在设置中开启")
+                        DeviceInfoBean.Info(
+                            "IMEI",
+                            DeviceUtil.getIMEI(context!!) ?: "无权限，如需查看请在设置中开启"
+                        )
                     )
                 ),
                 DeviceInfoBean.Group(
@@ -84,7 +94,13 @@ internal class DeviceController : HttpController() {
                     )
                 )
             ),
-            WebDebugger.context!!.getString(R.string.PORT_NUMBER).toInt()
+            WebDebugger.context!!.getString(R.string.PORT_NUMBER).toInt(),
+            ArrayList(WebDebugger.routerNavigation.map {
+                DeviceInfoBean.Navigation(
+                    it.key,
+                    it.value
+                )
+            })
         )
         getWindowManager()?.let {
             val dm = DisplayMetrics()

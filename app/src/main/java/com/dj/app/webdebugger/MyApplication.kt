@@ -28,6 +28,8 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         try {
+            WebDebugger.routerNavigation["重新的404"] = "/404.html"
+            WebDebugger.routerNavigation["测试"] = "/测试.html"
             WebDebugger.openDebug()
             WebDebugger.serviceEnable("测试WebDebugger")
             WebDebugger.install(this)

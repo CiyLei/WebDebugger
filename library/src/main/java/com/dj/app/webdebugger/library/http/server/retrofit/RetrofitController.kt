@@ -92,7 +92,7 @@ internal class RetrofitController : HttpController() {
      * 还原设置的环境url
      */
     @GetMapping("/reStoreUrl")
-    fun reStoreUrl(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+    fun handleReStoreUrl(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
         if (context != null) {
             SpUtils.clear(context!!, KEY_RETROFIT_URL)
             return success(true)

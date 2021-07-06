@@ -120,6 +120,9 @@ class WebDebugger {
         // 刘海屏的刘海高度（录屏的时候需要用到）
         internal var notchHeight: Int? = null
 
+        // 用户自定义的路由导航
+        val routerNavigation = HashMap<String, String>()
+
         // 所有的属性抽象
         val viewAttributesList = ArrayList<ViewAttributes<*>>().apply {
 
