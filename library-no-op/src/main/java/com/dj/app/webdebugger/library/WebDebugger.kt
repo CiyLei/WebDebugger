@@ -35,6 +35,9 @@ class WebDebugger {
         // 所有的属性抽象
         val viewAttributesList = ArrayList<ViewAttributes<*>>()
 
+        // 用户自定义的路由导航
+        val routerNavigation = HashMap<String, String>()
+
         fun openDebug() {
 
         }
