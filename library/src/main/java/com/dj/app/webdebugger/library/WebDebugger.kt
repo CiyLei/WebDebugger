@@ -41,12 +41,15 @@ import com.dj.app.webdebugger.library.http.AutoRouterMatch
 import com.dj.app.webdebugger.library.http.HttpDebugger
 import com.dj.app.webdebugger.library.http.IHttpRouterMatch
 import com.dj.app.webdebugger.library.http.resource.ResourceDebugger
+import com.dj.app.webdebugger.library.http.server.retrofit.RetrofitController
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesImageView
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesLinearLayout
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesTextView
 import com.dj.app.webdebugger.library.http.server.view.attributes.ViewAttributesView
 import com.dj.app.webdebugger.library.mars.MarsServer
+import com.dj.app.webdebugger.library.utils.RetrofitUtil
 import com.dj.app.webdebugger.library.utils.ScreenUtil
+import com.dj.app.webdebugger.library.utils.SpUtils
 import com.dj.app.webdebugger.library.websocket.AutoWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.IWebSocketMatch
 import com.dj.app.webdebugger.library.websocket.WebSocketDebugger
@@ -212,6 +215,10 @@ class WebDebugger {
             this.environment.clear()
             this.environment.putAll(environment)
             this.apiServices = service.toHashSet()
+            context?.let {
+                val url = SpUtils.get(it, RetrofitController.KEY_RETROFIT_URL) ?: return
+                RetrofitUtil.replaceRetrofitUrl(retrofit, url)
+            }
         }
 
         /**

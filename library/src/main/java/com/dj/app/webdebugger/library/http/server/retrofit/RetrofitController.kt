@@ -23,6 +23,7 @@ import com.dj.app.webdebugger.library.annotation.PostMapping
 import com.dj.app.webdebugger.library.http.server.HttpController
 import com.dj.app.webdebugger.library.utils.MockUtil
 import com.dj.app.webdebugger.library.utils.RetrofitUtil
+import com.dj.app.webdebugger.library.utils.SpUtils
 import fi.iki.elonen.NanoHTTPD
 import okhttp3.HttpUrl
 import java.lang.reflect.Field
@@ -35,6 +36,10 @@ import java.lang.reflect.Field
 @Controller("/retrofit")
 internal class RetrofitController : HttpController() {
 
+    companion object {
+        const val KEY_RETROFIT_URL = "KEY_RETROFIT_URL"
+    }
+
     /**
      * 编辑Retrofit的Url
      * @newUrl post参数 新地址
@@ -45,9 +50,13 @@ internal class RetrofitController : HttpController() {
             fail(ResponseConstant.NO_RETROFIT)
         } else {
             val param = getPostParamt(session)
-            var newUrl = param?.get("newUrl") as? String
+            val newUrl = param?.get("newUrl") as? String
             if (newUrl?.isNotEmpty() == true) {
                 if (RetrofitUtil.replaceRetrofitUrl(WebDebugger.retrofit!!, newUrl)) {
+                    // 保存url，下次打开app读取使用
+                    context?.let {
+                        SpUtils.put(it, KEY_RETROFIT_URL, newUrl)
+                    }
                     success()
                 } else {
                     fail(ResponseConstant.FAIL_EDIT_URL)
@@ -75,6 +84,18 @@ internal class RetrofitController : HttpController() {
             } else {
                 return fail(ResponseConstant.FAIL_BASE_URL)
             }
+        }
+        return fail(ResponseConstant.NO_RETROFIT)
+    }
+
+    /**
+     * 还原设置的环境url
+     */
+    @GetMapping("/reStoreUrl")
+    fun reStoreUrl(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {
+        if (context != null) {
+            SpUtils.clear(context!!, KEY_RETROFIT_URL)
+            return success(true)
         }
         return fail(ResponseConstant.NO_RETROFIT)
     }
