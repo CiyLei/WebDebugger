@@ -71,7 +71,7 @@ class DynamicExecute private constructor(
         // 生成Java代码
         var javaSource = generateJavaSource(mImportCode, mCode)
         // 替换System.out为TaskExecutor中的out
-        javaSource = javaSource.replace("System.out", "out")
+        javaSource = javaSource.replace("System.out", "$mClassName.this.out")
         // 编译Java代码
         val classDatas = DynamicCompilerUtil.compile(javaSource, mContext.classLoader)
         // class数据写入jar文件
@@ -106,10 +106,7 @@ class DynamicExecute private constructor(
                 "\n" +
                 "public class $mClassName extends TaskExecutor {\n" +
                 "\n" +
-                "    @Override\n" +
-                "    public void execute() {\n" +
-                "        $code\n" +
-                "    }\n" +
+                "    $code\n" +
                 "}\n"
     }
 
@@ -124,6 +121,8 @@ class DynamicExecute private constructor(
             Handler(Looper.getMainLooper()).post {
                 try {
                     task.run()
+                    // 如果有开启子线程进行打印的话，等待一会儿进行收集
+                    Thread.sleep(100)
                 } catch (e: Exception) {
                     // 添加异常信息
                     e.printStackTrace(task.out)
@@ -146,6 +145,8 @@ class DynamicExecute private constructor(
         } else {
             try {
                 task.run()
+                // 如果有开启子线程进行打印的话，等待一会儿进行收集
+                Thread.sleep(100)
             } catch (e: Exception) {
                 // 添加异常信息
                 e.printStackTrace(task.out)
